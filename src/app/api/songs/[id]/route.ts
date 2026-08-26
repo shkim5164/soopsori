@@ -62,3 +62,42 @@ export async function DELETE(
     return NextResponse.json({ error: "서버 오류" }, { status: 500 });
   }
 }
+
+// PATCH /api/songs/[id] - 곡 수정
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "로그인이 필요합니다" }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const song = await prisma.song.findUnique({ where: { id } });
+
+    if (!song) {
+      return NextResponse.json({ error: "곡을 찾을 수 없습니다" }, { status: 404 });
+    }
+
+    if (song.userId !== session.user.id && session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
+    }
+
+    const { title, artist, youtubeUrl, description } = await request.json();
+    if (!title || !artist) {
+      return NextResponse.json({ error: "제목과 아티스트는 필수입니다" }, { status: 400 });
+    }
+
+    const updatedSong = await prisma.song.update({
+      where: { id },
+      data: { title, artist, youtubeUrl, description },
+    });
+
+    return NextResponse.json(updatedSong);
+  } catch (error) {
+    console.error("Failed to update song:", error);
+    return NextResponse.json({ error: "서버 오류" }, { status: 500 });
+  }
+}

@@ -84,6 +84,38 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
     }
   };
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({ title: "", artist: "", youtubeUrl: "", description: "" });
+
+  const handleEditClick = () => {
+    if (song) {
+      setEditForm({
+        title: song.title,
+        artist: song.artist,
+        youtubeUrl: song.youtubeUrl || "",
+        description: song.description || "",
+      });
+      setIsEditing(true);
+    }
+  };
+
+  const handleUpdateSong = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`/api/songs/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm),
+      });
+      if (res.ok) {
+        setIsEditing(false);
+        fetchSong();
+      }
+    } catch (error) {
+      console.error("Failed to update song:", error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -129,39 +161,110 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
 
           {/* Song Info */}
           <div className="glass-card-static p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-neutral-100">{song.title}</h1>
-                <p className="text-lg text-neutral-400 mt-1">{song.artist}</p>
-              </div>
-              {(session?.user?.id === song.user.id || session?.user?.role === "ADMIN") && (
-                <button
-                  onClick={handleDeleteSong}
-                  className="p-2 rounded-lg text-neutral-600 hover:text-danger-400 hover:bg-danger-500/10 transition-colors"
-                  title="곡 삭제"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              )}
-            </div>
+            {isEditing ? (
+              <form onSubmit={handleUpdateSong} className="space-y-4">
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-1">제목</label>
+                  <input
+                    type="text"
+                    required
+                    value={editForm.title}
+                    onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                    className="w-full bg-forest-900/50 border border-forest-700 rounded-lg px-4 py-2 text-neutral-100"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-1">아티스트</label>
+                  <input
+                    type="text"
+                    required
+                    value={editForm.artist}
+                    onChange={(e) => setEditForm({ ...editForm, artist: e.target.value })}
+                    className="w-full bg-forest-900/50 border border-forest-700 rounded-lg px-4 py-2 text-neutral-100"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-1">유튜브 URL (선택)</label>
+                  <input
+                    type="url"
+                    value={editForm.youtubeUrl}
+                    onChange={(e) => setEditForm({ ...editForm, youtubeUrl: e.target.value })}
+                    className="w-full bg-forest-900/50 border border-forest-700 rounded-lg px-4 py-2 text-neutral-100"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-1">설명 (선택)</label>
+                  <textarea
+                    rows={4}
+                    value={editForm.description}
+                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                    className="w-full bg-forest-900/50 border border-forest-700 rounded-lg px-4 py-2 text-neutral-100"
+                  />
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    className="px-4 py-2 rounded-lg text-neutral-400 hover:text-neutral-300"
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-lg bg-emerald-500 text-neutral-950 font-medium hover:bg-emerald-400"
+                  >
+                    저장
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h1 className="text-2xl font-bold text-neutral-100">{song.title}</h1>
+                    <p className="text-lg text-neutral-400 mt-1">{song.artist}</p>
+                  </div>
+                  {(session?.user?.id === song.user.id || session?.user?.role === "ADMIN") && (
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={handleEditClick}
+                        className="p-2 rounded-lg text-neutral-600 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                        title="곡 수정"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={handleDeleteSong}
+                        className="p-2 rounded-lg text-neutral-600 hover:text-danger-400 hover:bg-danger-500/10 transition-colors"
+                        title="곡 삭제"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                </div>
 
-            {song.description && (
-              <p className="mt-4 text-neutral-400 text-sm leading-relaxed whitespace-pre-wrap">
-                {song.description}
-              </p>
+                {song.description && (
+                  <p className="mt-4 text-neutral-400 text-sm leading-relaxed whitespace-pre-wrap">
+                    {song.description}
+                  </p>
+                )}
+
+                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-forest-700/20">
+                  {song.user.image && (
+                    <img src={song.user.image} alt="" className="w-8 h-8 rounded-full border border-forest-700" />
+                  )}
+                  <div>
+                    <p className="text-sm text-neutral-300">{song.user.name}</p>
+                    <p className="text-xs text-neutral-600">{formatDate(song.createdAt)}</p>
+                  </div>
+                </div>
+              </>
             )}
-
-            <div className="flex items-center gap-3 mt-4 pt-4 border-t border-forest-700/20">
-              {song.user.image && (
-                <img src={song.user.image} alt="" className="w-8 h-8 rounded-full border border-forest-700" />
-              )}
-              <div>
-                <p className="text-sm text-neutral-300">{song.user.name}</p>
-                <p className="text-xs text-neutral-600">{formatDate(song.createdAt)}</p>
-              </div>
-            </div>
           </div>
         </div>
 

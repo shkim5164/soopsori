@@ -25,6 +25,7 @@ interface Meeting {
     participants: { id: string; position: string; user: { id: string; name: string; image: string } }[];
   }[];
   attendances: { id: string; attended: boolean; user: { id: string; name: string; image: string } }[];
+  creatorId: string | null;
 }
 
 interface Song {
@@ -119,6 +120,50 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
     }
   };
 
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editForm, setEditForm] = useState({ title: "", date: "", description: "", status: "" });
+
+  const handleEditClick = () => {
+    if (meeting) {
+      setEditForm({
+        title: meeting.title,
+        date: new Date(meeting.date).toISOString().slice(0, 16), // YYYY-MM-DDThh:mm 형식
+        description: meeting.description || "",
+        status: meeting.status,
+      });
+      setIsEditOpen(true);
+    }
+  };
+
+  const handleUpdateMeeting = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`/api/meetings/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm),
+      });
+      if (res.ok) {
+        setIsEditOpen(false);
+        fetchMeeting();
+      }
+    } catch (error) {
+      console.error("Failed to update meeting:", error);
+    }
+  };
+
+  const handleDeleteMeeting = async () => {
+    if (!confirm("정말 이 모임을 삭제하시겠습니까? (연결된 모든 세트리스트와 참석 기록이 함께 삭제됩니다)")) return;
+    try {
+      const res = await fetch(`/api/meetings/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        window.location.href = "/meetings";
+      }
+    } catch (error) {
+      console.error("Failed to delete meeting:", error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -185,6 +230,28 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
               >
                 모임 완료 처리
               </button>
+            )}
+            {(meeting.creatorId === session?.user?.id || session?.user?.role === "ADMIN") && (
+              <div className="flex gap-1 ml-2">
+                <button
+                  onClick={handleEditClick}
+                  className="p-2 rounded-xl text-neutral-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                  title="모임 수정"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={handleDeleteMeeting}
+                  className="p-2 rounded-xl text-neutral-500 hover:text-danger-400 hover:bg-danger-500/10 transition-colors"
+                  title="모임 삭제"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -315,6 +382,68 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             추가하기
           </button>
         </div>
+      </Modal>
+
+      {/* Edit Meeting Modal */}
+      <Modal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} title="모임 수정">
+        <form onSubmit={handleUpdateMeeting} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-neutral-300 mb-1.5">제목 *</label>
+            <input
+              type="text"
+              required
+              value={editForm.title}
+              onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-300 mb-1.5">날짜 및 시간 *</label>
+            <input
+              type="datetime-local"
+              required
+              value={editForm.date}
+              onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 focus:outline-none focus:border-emerald-500/50 transition-colors [&::-webkit-calendar-picker-indicator]:invert-[0.8]"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-300 mb-1.5">상태</label>
+            <select
+              value={editForm.status}
+              onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 focus:outline-none focus:border-emerald-500/50 transition-colors"
+            >
+              <option value="UPCOMING">예정</option>
+              <option value="COMPLETED">완료</option>
+              <option value="CANCELLED">취소</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-300 mb-1.5">설명 (선택)</label>
+            <textarea
+              value={editForm.description}
+              onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+              rows={3}
+              className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors resize-none"
+            />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setIsEditOpen(false)}
+              className="flex-1 px-4 py-2.5 rounded-xl bg-forest-900/40 text-neutral-400 hover:text-neutral-200 transition-colors text-sm font-medium"
+            >
+              취소
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-forest-500 text-white text-sm font-medium transition-all"
+            >
+              저장하기
+            </button>
+          </div>
+        </form>
       </Modal>
     </div>
   );

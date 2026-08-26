@@ -35,6 +35,7 @@ model User {
   meetingParticipants MeetingParticipant[]
   pickedMeetingSongs  MeetingSong[]
   notices             Notice[]
+  createdMeetings     Meeting[] @relation("MeetingCreator")
 }
 
 model Song {
@@ -72,6 +73,9 @@ model Meeting {
   description String?
   status      String   @default("UPCOMING") // UPCOMING | COMPLETED | CANCELLED
   createdAt   DateTime @default(now())
+
+  creatorId   String?
+  creator     User?    @relation("MeetingCreator", fields: [creatorId], references: [id], onDelete: SetNull)
 
   meetingSongs MeetingSong[]
   attendances  MeetingAttendance[]

@@ -22,6 +22,9 @@ export default function NoticesPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [newNotice, setNewNotice] = useState({ title: "", content: "", pinned: false });
 
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingNotice, setEditingNotice] = useState<Notice | null>(null);
+
   const fetchNotices = async () => {
     try {
       const res = await fetch("/api/notices");
@@ -52,6 +55,40 @@ export default function NoticesPage() {
       }
     } catch (error) {
       console.error("Failed to create notice:", error);
+    }
+  };
+
+  const handleUpdateNotice = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingNotice) return;
+    try {
+      const res = await fetch(`/api/notices/${editingNotice.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: editingNotice.title,
+          content: editingNotice.content,
+          pinned: editingNotice.pinned,
+        }),
+      });
+      if (res.ok) {
+        setIsEditOpen(false);
+        setEditingNotice(null);
+        fetchNotices();
+      }
+    } catch (error) {
+      console.error("Failed to update notice:", error);
+    }
+  };
+
+  const handleDeleteNotice = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm("정말 이 공지를 삭제하시겠습니까?")) return;
+    try {
+      const res = await fetch(`/api/notices/${id}`, { method: "DELETE" });
+      if (res.ok) fetchNotices();
+    } catch (error) {
+      console.error("Failed to delete notice:", error);
     }
   };
 
@@ -114,13 +151,36 @@ export default function NoticesPage() {
                     <p className="text-sm text-neutral-500 line-clamp-2">{notice.content}</p>
                   )}
 
-                  <div className="flex items-center gap-2 mt-3 text-xs text-neutral-600">
-                    {notice.author.image && (
-                      <img src={notice.author.image} alt="" className="w-4 h-4 rounded-full" />
+                  <div className="flex items-center justify-between mt-3">
+                    <div className="flex items-center gap-2 text-xs text-neutral-600">
+                      {notice.author.image && (
+                        <img src={notice.author.image} alt="" className="w-4 h-4 rounded-full" />
+                      )}
+                      <span>{notice.author.name}</span>
+                      <span>·</span>
+                      <span>{timeAgo(notice.createdAt)}</span>
+                    </div>
+
+                    {expandedId === notice.id && (session?.user?.id === notice.author.id || session?.user?.role === "ADMIN") && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingNotice(notice);
+                            setIsEditOpen(true);
+                          }}
+                          className="text-xs px-3 py-1 rounded bg-neutral-800 text-neutral-400 hover:text-emerald-400 transition-colors"
+                        >
+                          수정
+                        </button>
+                        <button
+                          onClick={(e) => handleDeleteNotice(notice.id, e)}
+                          className="text-xs px-3 py-1 rounded bg-neutral-800 text-neutral-400 hover:text-danger-400 transition-colors"
+                        >
+                          삭제
+                        </button>
+                      </div>
                     )}
-                    <span>{notice.author.name}</span>
-                    <span>·</span>
-                    <span>{timeAgo(notice.createdAt)}</span>
                   </div>
                 </div>
 
@@ -195,6 +255,58 @@ export default function NoticesPage() {
             </button>
           </div>
         </form>
+      </Modal>
+
+      {/* Edit Notice Modal */}
+      <Modal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} title="공지 수정" size="lg">
+        {editingNotice && (
+          <form onSubmit={handleUpdateNotice} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-neutral-300 mb-1.5">제목 *</label>
+              <input
+                type="text"
+                required
+                value={editingNotice.title}
+                onChange={(e) => setEditingNotice({ ...editingNotice, title: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-neutral-300 mb-1.5">내용 *</label>
+              <textarea
+                required
+                value={editingNotice.content}
+                onChange={(e) => setEditingNotice({ ...editingNotice, content: e.target.value })}
+                rows={6}
+                className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors resize-none"
+              />
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={editingNotice.pinned}
+                onChange={(e) => setEditingNotice({ ...editingNotice, pinned: e.target.checked })}
+                className="w-4 h-4 rounded border-forest-700 text-emerald-500 focus:ring-emerald-500/20 bg-forest-900/40"
+              />
+              <span className="text-sm text-neutral-400">📌 상단 고정</span>
+            </label>
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsEditOpen(false)}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-forest-900/40 text-neutral-400 hover:text-neutral-200 transition-colors font-medium text-sm"
+              >
+                취소
+              </button>
+              <button
+                type="submit"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-forest-500 text-white font-medium text-sm transition-all"
+              >
+                저장하기
+              </button>
+            </div>
+          </form>
+        )}
       </Modal>
     </div>
   );

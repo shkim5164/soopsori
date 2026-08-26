@@ -60,6 +60,7 @@ export async function POST(request: NextRequest) {
         title,
         date: new Date(date),
         description: description || null,
+        creatorId: session.user.id,
       },
     });
 
