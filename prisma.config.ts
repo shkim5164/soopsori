@@ -1,3 +1,10 @@
 import { defineConfig } from '@prisma/config'
+import * as dotenv from 'dotenv'
 
-export default defineConfig({})
+dotenv.config()
+
+export default defineConfig({
+  datasource: {
+    url: process.env.POSTGRES_URL_NON_POOLING || process.env.DATABASE_URL,
+  },
+})
