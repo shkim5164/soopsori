@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "prisma generate"
+  },
+  "allowScripts": {
+    "@prisma/engines": true,
+    "prisma": true,
+    "unrs-resolver": true
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
