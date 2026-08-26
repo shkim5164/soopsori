@@ -9,7 +9,10 @@ const globalForPrisma = globalThis as unknown as {
 function createPrismaClient() {
   const connectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || process.env.DATABASE_URL;
   
-  const pool = new Pool({ connectionString });
+  const pool = new Pool({
+    connectionString,
+    ssl: { rejectUnauthorized: false } // Supabase/Vercel 인증서 에러 해결
+  });
   const adapter = new PrismaPg(pool);
   
   return new PrismaClient({ adapter });
