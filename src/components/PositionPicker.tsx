@@ -60,6 +60,12 @@ export default function PositionPicker({ value, onChange }: PositionPickerProps)
     onChange(updated);
   };
 
+  const handleSetYear = (posId: string, year: number | undefined) => {
+    onChange(
+      value.map((p) => (p.id === posId ? { ...p, startYear: year } : p))
+    );
+  };
+
   const sorted = sortByRank(value);
   const rankedPositions = sorted.filter((p) => p.rank > 0);
   const otherPositions = sorted.filter((p) => p.rank === 0);
@@ -124,6 +130,15 @@ export default function PositionPicker({ value, onChange }: PositionPickerProps)
               <span className={`flex-1 text-sm px-2.5 py-1 rounded-lg ${getPositionBadgeClass(rp.id)}`}>
                 {POSITIONS.find((p) => p.id === rp.id)?.emoji} {getPositionLabel(rp.id)}
               </span>
+              <input
+                type="number"
+                placeholder="시작연도(YYYY)"
+                min="1950"
+                max={new Date().getFullYear()}
+                value={rp.startYear || ""}
+                onChange={(e) => handleSetYear(rp.id, e.target.value ? Number(e.target.value) : undefined)}
+                className="w-28 px-2 py-1.5 rounded-lg bg-forest-900/60 border border-forest-700/30 text-sm text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50"
+              />
               <button
                 type="button"
                 onClick={() => onChange(value.filter((p) => p.id !== rp.id))}
@@ -140,14 +155,23 @@ export default function PositionPicker({ value, onChange }: PositionPickerProps)
                 <span className="text-xs text-neutral-500 w-20">기타</span>
                 <div className="flex flex-wrap gap-1.5 flex-1">
                   {otherPositions.map((rp) => (
-                    <div key={rp.id} className="flex items-center gap-1">
+                    <div key={rp.id} className="flex items-center gap-1.5 p-1.5 rounded-lg border border-forest-700/20 bg-forest-900/30">
                       <span className={`text-xs px-2 py-0.5 rounded-full ${getPositionBadgeClass(rp.id)}`}>
                         {POSITIONS.find((p) => p.id === rp.id)?.emoji} {getPositionLabel(rp.id)}
                       </span>
+                      <input
+                        type="number"
+                        placeholder="연도"
+                        min="1950"
+                        max={new Date().getFullYear()}
+                        value={rp.startYear || ""}
+                        onChange={(e) => handleSetYear(rp.id, e.target.value ? Number(e.target.value) : undefined)}
+                        className="w-16 px-1.5 py-0.5 rounded bg-forest-900/60 border border-forest-700/30 text-xs text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50"
+                      />
                       <button
                         type="button"
                         onClick={() => onChange(value.filter((p) => p.id !== rp.id))}
-                        className="text-neutral-600 hover:text-danger-400 text-xs transition-colors"
+                        className="text-neutral-600 hover:text-danger-400 text-xs transition-colors pr-1"
                       >
                         ✕
                       </button>

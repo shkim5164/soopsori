@@ -14,6 +14,24 @@ export type PositionId = (typeof POSITIONS)[number]["id"];
 export interface RankedPosition {
   id: string;
   rank: number; // 1~3: 순위, 0: 기타(순위 없음)
+  startYear?: number; // 악기 시작 연도 (YYYY)
+}
+
+export function getExperienceYears(startYear?: number): number {
+  if (!startYear) return 0;
+  const currentYear = new Date().getFullYear();
+  return Math.max(0, currentYear - startYear);
+}
+
+export function getExperienceBadge(startYear?: number): { label: string; emoji: string } | null {
+  if (!startYear) return null;
+  const years = getExperienceYears(startYear);
+
+  if (years < 1) return { label: "새싹", emoji: "🌱" };
+  if (years < 3) return { label: "루키", emoji: "🌿" };
+  if (years < 5) return { label: "프로", emoji: "🎵" };
+  if (years < 10) return { label: "베테랑", emoji: "🔥" };
+  return { label: "마스터", emoji: "👑" };
 }
 
 const RANK_LABELS: Record<number, string> = {
