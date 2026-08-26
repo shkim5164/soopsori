@@ -1,0 +1,142 @@
+// Prisma schema for 숲소리 - 밴드 동호회 웹 서비스
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==========================================
+// (OAuth 모델 제거 - 자체 로그인 사용)
+// ==========================================
+
+// ==========================================
+// 도메인 모델
+// ==========================================
+
+model User {
+  id            String    @id @default(cuid())
+  username      String    @unique
+  password      String
+  name          String?
+  email         String?
+  image         String?
+  position      String?   // 어쿠스틱 기타, 일렉기타, 베이스, 드럼, 키보드, 보컬
+  points        Int       @default(0)
+  role          String    @default("MEMBER") // MEMBER | ADMIN
+  createdAt     DateTime  @default(now())
+
+  songs               Song[]
+  songSessions        SongSession[]
+  pointHistories      PointHistory[]
+  meetingAttendances  MeetingAttendance[]
+  meetingParticipants MeetingParticipant[]
+  pickedMeetingSongs  MeetingSong[]
+  notices             Notice[]
+}
+
+model Song {
+  id          String   @id @default(cuid())
+  title       String
+  artist      String
+  youtubeUrl  String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  sessions    SongSession[]
+  meetingSongs MeetingSong[]
+}
+
+model SongSession {
+  id       String  @id @default(cuid())
+  position String  // 필요한 포지션 (어쿠스틱 기타, 일렉기타, 베이스 등)
+  status   String  @default("OPEN") // OPEN | FILLED
+
+  songId String
+  song   Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  userId String? // 참여 신청한 회원 (nullable: 아직 미충원)
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model Meeting {
+  id          String   @id @default(cuid())
+  title       String
+  date        DateTime
+  description String?
+  status      String   @default("UPCOMING") // UPCOMING | COMPLETED | CANCELLED
+  createdAt   DateTime @default(now())
+
+  meetingSongs MeetingSong[]
+  attendances  MeetingAttendance[]
+}
+
+model MeetingSong {
+  id       String @id @default(cuid())
+  orderNum Int    @default(0)
+
+  meetingId String
+  meeting   Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  songId String
+  song   Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  pickerId String
+  picker   User   @relation(fields: [pickerId], references: [id], onDelete: Cascade)
+
+  participants MeetingParticipant[]
+}
+
+model MeetingParticipant {
+  id       String @id @default(cuid())
+  position String // 참여 포지션
+
+  meetingSongId String
+  meetingSong   MeetingSong @relation(fields: [meetingSongId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([meetingSongId, userId])
+}
+
+model MeetingAttendance {
+  id       String  @id @default(cuid())
+  attended Boolean @default(false)
+
+  meetingId String
+  meeting   Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, userId])
+}
+
+model PointHistory {
+  id        String   @id @default(cuid())
+  amount    Int      // 증감량 (+100 참여, -200 선곡 차감)
+  reason    String   // 사유
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notice {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
