@@ -34,6 +34,7 @@ export default function SongsPage() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"latest" | "popular">("latest");
   const [difficultyFilter, setDifficultyFilter] = useState<number | null>(null);
+  const [positionFilter, setPositionFilter] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchSongs = useCallback(async () => {
