@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { useSession } from "next-auth/react";
 import Modal from "@/components/Modal";
+import CreateSongModal from "@/components/CreateSongModal";
 import { formatDateTime, getPositionLabel, getPositionBadgeClass, formatDateForInput } from "@/lib/constants";
 import Link from "next/link";
 
@@ -40,6 +41,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
   const [meeting, setMeeting] = useState<Meeting | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAddSongOpen, setIsAddSongOpen] = useState(false);
+  const [isCreateSongOpen, setIsCreateSongOpen] = useState(false);
   const [availableSongs, setAvailableSongs] = useState<Song[]>([]);
   const [selectedSongId, setSelectedSongId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -68,13 +70,14 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
     fetchMeeting();
   }, [id]);
 
-  const handleAddSong = async () => {
-    if (!selectedSongId) return;
+  const handleAddSong = async (songIdToAdd?: string | React.FormEvent) => {
+    const idToAdd = typeof songIdToAdd === "string" ? songIdToAdd : selectedSongId;
+    if (!idToAdd) return;
     try {
       const res = await fetch(`/api/meetings/${id}/songs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ songId: selectedSongId }),
+        body: JSON.stringify({ songId: idToAdd }),
       });
       if (res.ok) {
         setIsAddSongOpen(false);
@@ -353,13 +356,13 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
         setSearchQuery("");
         setSelectedSongId("");
       }} title="세트리스트에 곡 추가">
-        <div className="mb-4">
+        <div className="flex justify-between items-center mb-4">
           <input
             type="text"
             placeholder="곡 제목 또는 아티스트 검색..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+            className="flex-1 px-4 py-2 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
           />
         </div>
         <div className="space-y-3 max-h-[400px] overflow-y-auto mb-4">
@@ -393,7 +396,18 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             song.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
             song.artist.toLowerCase().includes(searchQuery.toLowerCase())
           ).length === 0 && (
-            <p className="text-center text-sm text-neutral-500 py-4">검색 결과가 없습니다.</p>
+            <div className="text-center py-6">
+              <p className="text-sm text-neutral-500 mb-3">검색 결과가 없습니다.</p>
+              <button
+                onClick={() => {
+                  setIsAddSongOpen(false);
+                  setIsCreateSongOpen(true);
+                }}
+                className="px-4 py-2 rounded-lg bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors text-sm font-medium"
+              >
+                + 새 곡 등록하기
+              </button>
+            </div>
           )}
         </div>
         <div className="flex gap-3">
@@ -408,10 +422,20 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             disabled={!selectedSongId}
             className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-forest-500 text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            추가하기
+            선택한 곡 추가하기
           </button>
         </div>
       </Modal>
+
+      {/* Create Song Modal */}
+      <CreateSongModal
+        isOpen={isCreateSongOpen}
+        onClose={() => setIsCreateSongOpen(false)}
+        onSuccess={(songId) => {
+          setIsCreateSongOpen(false);
+          handleAddSong(songId);
+        }}
+      />
 
       {/* Edit Meeting Modal */}
       <Modal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} title="모임 수정">

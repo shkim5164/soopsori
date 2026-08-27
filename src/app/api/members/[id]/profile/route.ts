@@ -20,13 +20,39 @@ export async function PATCH(
       return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     }
 
-    const { position, name } = await request.json();
+    const { position, name, currentPassword, newPassword } = await request.json();
+
+    let passwordHash: string | undefined = undefined;
+
+    // 비밀번호 변경 요청이 있는 경우
+    if (newPassword) {
+      if (!currentPassword) {
+        return NextResponse.json({ error: "현재 비밀번호를 입력해주세요" }, { status: 400 });
+      }
+
+      const user = await prisma.user.findUnique({ where: { id } });
+      if (!user) {
+        return NextResponse.json({ error: "사용자를 찾을 수 없습니다" }, { status: 404 });
+      }
+
+      // 관리자가 다른 유저의 비밀번호를 강제 변경하는 경우에는 currentPassword 확인 생략할 수 있으나, 
+      // 마이페이지 기능이므로 본인이 직접 변경하는 상황으로 가정하고 currentPassword 검증
+      const bcrypt = require("bcryptjs");
+      const isValid = await bcrypt.compare(currentPassword, user.password);
+      
+      if (!isValid && session.user.role !== "ADMIN") { // 관리자 예외 처리(옵션)
+        return NextResponse.json({ error: "현재 비밀번호가 일치하지 않습니다" }, { status: 400 });
+      }
+
+      passwordHash = await bcrypt.hash(newPassword, 10);
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id },
       data: {
         ...(position !== undefined && { position }),
         ...(name !== undefined && { name }),
+        ...(passwordHash !== undefined && { password: passwordHash }),
       },
       select: {
         id: true,

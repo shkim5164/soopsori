@@ -54,6 +54,10 @@ export default function ProfilePage() {
   const [name, setName] = useState(session?.user?.name ?? "");
   const [pointHistory, setPointHistory] = useState<PointHistory[]>([]);
   
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
   const [activities, setActivities] = useState<ActivityData | null>(null);
   const [loadingActivities, setLoadingActivities] = useState(false);
 
@@ -104,19 +108,31 @@ export default function ProfilePage() {
   const handleSave = async () => {
     if (!session?.user?.id) return;
     setSaving(true);
+    setPasswordError("");
     try {
       const res = await fetch(`/api/members/${session.user.id}/profile`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ position: stringifyPositions(positions), name }),
+        body: JSON.stringify({
+          position: stringifyPositions(positions),
+          name,
+          currentPassword: currentPassword || undefined,
+          newPassword: newPassword || undefined,
+        }),
       });
       if (res.ok) {
         setSaved(true);
+        setCurrentPassword("");
+        setNewPassword("");
         update();
         setTimeout(() => setSaved(false), 2000);
+      } else {
+        const err = await res.json();
+        setPasswordError(err.error || "수정에 실패했습니다.");
       }
     } catch (error) {
       console.error("Failed to save profile:", error);
+      setPasswordError("서버 오류가 발생했습니다.");
     } finally {
       setSaving(false);
     }
@@ -207,6 +223,35 @@ export default function ProfilePage() {
             <div>
               <label className="block text-sm font-medium text-neutral-300 mb-2">희망 포지션 (1~3순위 및 기타)</label>
               <PositionPicker value={positions} onChange={setPositions} />
+            </div>
+
+            <div className="pt-4 border-t border-forest-700/30">
+              <h3 className="text-sm font-bold text-neutral-200 mb-3">비밀번호 변경</h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-400 mb-1">현재 비밀번호</label>
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="비밀번호를 변경하려면 입력하세요"
+                    className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-neutral-400 mb-1">새 비밀번호</label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="새로운 비밀번호"
+                    className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                  />
+                </div>
+                {passwordError && (
+                  <p className="text-sm text-danger-400 mt-1">{passwordError}</p>
+                )}
+              </div>
             </div>
 
             <button
