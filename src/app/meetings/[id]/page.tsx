@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { useSession } from "next-auth/react";
 import Modal from "@/components/Modal";
-import { formatDateTime, getPositionLabel, getPositionBadgeClass } from "@/lib/constants";
+import { formatDateTime, getPositionLabel, getPositionBadgeClass, formatDateForInput } from "@/lib/constants";
 import Link from "next/link";
 
 interface Meeting {
@@ -42,6 +42,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
   const [isAddSongOpen, setIsAddSongOpen] = useState(false);
   const [availableSongs, setAvailableSongs] = useState<Song[]>([]);
   const [selectedSongId, setSelectedSongId] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchMeeting = async () => {
     try {
@@ -78,6 +79,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
       if (res.ok) {
         setIsAddSongOpen(false);
         setSelectedSongId("");
+        setSearchQuery("");
         fetchMeeting();
       } else {
         const data = await res.json();
@@ -127,7 +129,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
     if (meeting) {
       setEditForm({
         title: meeting.title,
-        date: new Date(meeting.date).toISOString().slice(0, 16), // YYYY-MM-DDThh:mm 형식
+        date: formatDateForInput(meeting.date),
         description: meeting.description || "",
         status: meeting.status,
       });
@@ -141,7 +143,10 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
       const res = await fetch(`/api/meetings/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editForm),
+        body: JSON.stringify({
+          ...editForm,
+          date: new Date(editForm.date).toISOString(),
+        }),
       });
       if (res.ok) {
         setIsEditOpen(false);
@@ -343,9 +348,27 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       {/* Add Song Modal */}
-      <Modal isOpen={isAddSongOpen} onClose={() => setIsAddSongOpen(false)} title="세트리스트에 곡 추가">
+      <Modal isOpen={isAddSongOpen} onClose={() => {
+        setIsAddSongOpen(false);
+        setSearchQuery("");
+        setSelectedSongId("");
+      }} title="세트리스트에 곡 추가">
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="곡 제목 또는 아티스트 검색..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-4 py-2 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+          />
+        </div>
         <div className="space-y-3 max-h-[400px] overflow-y-auto mb-4">
-          {availableSongs.map((song) => {
+          {availableSongs
+            .filter(song => 
+              song.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+              song.artist.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            .map((song) => {
             const isAlreadyAdded = meeting.meetingSongs.some((ms) => ms.song.id === song.id);
             return (
               <button
@@ -366,6 +389,12 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
               </button>
             );
           })}
+          {availableSongs.filter(song => 
+            song.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            song.artist.toLowerCase().includes(searchQuery.toLowerCase())
+          ).length === 0 && (
+            <p className="text-center text-sm text-neutral-500 py-4">검색 결과가 없습니다.</p>
+          )}
         </div>
         <div className="flex gap-3">
           <button

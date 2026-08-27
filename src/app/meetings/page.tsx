@@ -54,7 +54,10 @@ export default function MeetingsPage() {
       const res = await fetch("/api/meetings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newMeeting),
+        body: JSON.stringify({
+          ...newMeeting,
+          date: new Date(newMeeting.date).toISOString(),
+        }),
       });
       if (res.ok) {
         setIsCreateOpen(false);

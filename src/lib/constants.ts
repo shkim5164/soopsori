@@ -158,6 +158,13 @@ export function formatDateTime(date: Date | string): string {
   });
 }
 
+// datetime-local input에 넣기 위한 로컬 타임존 기반 yyyy-MM-ddThh:mm 포맷
+export function formatDateForInput(date: Date | string): string {
+  const d = new Date(date);
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 // 상대 시간
 export function timeAgo(date: Date | string): string {
   const now = new Date();

@@ -33,6 +33,7 @@ export default function SongsPage() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"latest" | "popular">("latest");
   const [difficultyFilter, setDifficultyFilter] = useState<number | null>(null);
+  const [positionFilter, setPositionFilter] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newSong, setNewSong] = useState({
     title: "",
@@ -48,7 +49,8 @@ export default function SongsPage() {
       const searchParam = search ? `search=${encodeURIComponent(search)}` : "";
       const sortParam = `sort=${sort}`;
       const diffParam = difficultyFilter ? `difficulty=${difficultyFilter}` : "";
-      const params = [searchParam, sortParam, diffParam].filter(Boolean).join("&");
+      const posParam = positionFilter ? `position=${positionFilter}` : "";
+      const params = [searchParam, sortParam, diffParam, posParam].filter(Boolean).join("&");
       const res = await fetch(`/api/songs?${params}`);
       const data = await res.json();
       setSongs(data);
@@ -57,7 +59,7 @@ export default function SongsPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, sort, difficultyFilter]);
+  }, [search, sort, difficultyFilter, positionFilter]);
 
   useEffect(() => {
     fetchSongs();
@@ -179,6 +181,19 @@ export default function SongsPage() {
           </svg>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 self-start">
+          <select
+            value={positionFilter}
+            onChange={(e) => setPositionFilter(e.target.value)}
+            className="px-4 py-2 rounded-lg bg-forest-900/30 border border-forest-700/30 text-sm text-neutral-200 focus:outline-none focus:border-emerald-500/50"
+          >
+            <option value="">모든 포지션</option>
+            {POSITIONS.map((pos) => (
+              <option key={pos.id} value={pos.id}>
+                {pos.emoji} {pos.label}
+              </option>
+            ))}
+          </select>
+
           <select
             value={difficultyFilter || ""}
             onChange={(e) => setDifficultyFilter(e.target.value ? Number(e.target.value) : null)}

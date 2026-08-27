@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     const sort = searchParams.get("sort") || "latest"; // "latest" | "popular"
     const difficultyParam = searchParams.get("difficulty");
     const difficulty = difficultyParam ? parseInt(difficultyParam) : undefined;
+    const position = searchParams.get("position");
 
     const session = await auth();
     const currentUserId = session?.user?.id;
@@ -28,6 +29,13 @@ export async function GET(request: NextRequest) {
     }
     if (difficulty !== undefined && !isNaN(difficulty)) {
       whereClause.difficulty = difficulty;
+    }
+    if (position) {
+      whereClause.sessions = {
+        some: {
+          position: position,
+        }
+      };
     }
 
     const songs = await prisma.song.findMany({
