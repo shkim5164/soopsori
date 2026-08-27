@@ -11,6 +11,12 @@ const navLinks = [
   { href: "/meetings", label: "모임", icon: "📅" },
   { href: "/members", label: "회원", icon: "👥" },
   { href: "/notices", label: "공지", icon: "📢" },
+  { 
+    href: "https://drive.google.com/drive/folders/1xmAtHn5z-uEfpKFlc5dt23PakDcHMR16?usp=drive_link", 
+    label: "악보 드라이브", 
+    icon: "🎼",
+    external: true
+  },
 ];
 
 export default function Navbar() {
@@ -41,6 +47,8 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  target={link.external ? "_blank" : undefined}
+                  rel={link.external ? "noopener noreferrer" : undefined}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive
                       ? "bg-forest-600/40 text-emerald-300 shadow-lg shadow-emerald-500/10"
@@ -161,7 +169,11 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  onClick={() => setMobileOpen(false)}
+                  target={link.external ? "_blank" : undefined}
+                  rel={link.external ? "noopener noreferrer" : undefined}
+                  onClick={() => {
+                    if (!link.external) setMobileOpen(false);
+                  }}
                   className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive
                       ? "bg-forest-600/40 text-emerald-300"
