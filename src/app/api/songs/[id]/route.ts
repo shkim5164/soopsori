@@ -85,14 +85,20 @@ export async function PATCH(
       return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     }
 
-    const { title, artist, youtubeUrl, description } = await request.json();
+    const { title, artist, youtubeUrl, description, difficulty } = await request.json();
     if (!title || !artist) {
       return NextResponse.json({ error: "제목과 아티스트는 필수입니다" }, { status: 400 });
     }
 
+    const parsedDifficulty = difficulty !== undefined ? parseInt(difficulty, 10) : undefined;
+    const updateData: any = { title, artist, youtubeUrl, description };
+    if (parsedDifficulty !== undefined && !isNaN(parsedDifficulty)) {
+      updateData.difficulty = parsedDifficulty;
+    }
+
     const updatedSong = await prisma.song.update({
       where: { id },
-      data: { title, artist, youtubeUrl, description },
+      data: updateData,
     });
 
     return NextResponse.json(updatedSong);

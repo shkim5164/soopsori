@@ -20,14 +20,26 @@ interface Song {
   youtubeUrl: string | null;
   description: string | null;
   createdAt: string;
+  difficulty: number;
   user: { id: string; name: string; image: string; position: string | null };
   sessions: SongSession[];
+}
+
+interface Comment {
+  id: string;
+  content: string;
+  createdAt: string;
+  user: { id: string; name: string; image: string; role: string };
 }
 
 export default function SongDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data: session } = useSession();
   const [song, setSong] = useState<Song | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState("");
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editingCommentContent, setEditingCommentContent] = useState("");
   const [loading, setLoading] = useState(true);
 
   const fetchSong = async () => {
@@ -44,8 +56,21 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
     }
   };
 
+  const fetchComments = async () => {
+    try {
+      const res = await fetch(`/api/songs/${id}/comments`);
+      if (res.ok) {
+        const data = await res.json();
+        setComments(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch comments:", error);
+    }
+  };
+
   useEffect(() => {
     fetchSong();
+    fetchComments();
   }, [id]);
 
   const handleJoinSession = async (sessionId: string) => {
@@ -85,7 +110,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
   };
 
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ title: "", artist: "", youtubeUrl: "", description: "" });
+  const [editForm, setEditForm] = useState({ title: "", artist: "", youtubeUrl: "", description: "", difficulty: 3 });
 
   const handleEditClick = () => {
     if (song) {
@@ -94,6 +119,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
         artist: song.artist,
         youtubeUrl: song.youtubeUrl || "",
         description: song.description || "",
+        difficulty: song.difficulty,
       });
       setIsEditing(true);
     }
@@ -113,6 +139,55 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
       }
     } catch (error) {
       console.error("Failed to update song:", error);
+    }
+  };
+
+  const handleCreateComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+
+    try {
+      const res = await fetch(`/api/songs/${id}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: newComment }),
+      });
+      if (res.ok) {
+        setNewComment("");
+        fetchComments();
+      }
+    } catch (error) {
+      console.error("Failed to create comment:", error);
+    }
+  };
+
+  const handleUpdateComment = async (commentId: string) => {
+    if (!editingCommentContent.trim()) return;
+    try {
+      const res = await fetch(`/api/songs/${id}/comments?commentId=${commentId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: editingCommentContent }),
+      });
+      if (res.ok) {
+        setEditingCommentId(null);
+        setEditingCommentContent("");
+        fetchComments();
+      }
+    } catch (error) {
+      console.error("Failed to update comment:", error);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!confirm("댓글을 삭제하시겠습니까?")) return;
+    try {
+      const res = await fetch(`/api/songs/${id}/comments?commentId=${commentId}`, { method: "DELETE" });
+      if (res.ok) {
+        fetchComments();
+      }
+    } catch (error) {
+      console.error("Failed to delete comment:", error);
     }
   };
 
@@ -201,6 +276,23 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                     className="w-full bg-forest-900/50 border border-forest-700 rounded-lg px-4 py-2 text-neutral-100"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-1">난이도</label>
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setEditForm({ ...editForm, difficulty: star })}
+                        className={`text-2xl transition-colors ${
+                          star <= editForm.difficulty ? "text-gold-400" : "text-neutral-700"
+                        }`}
+                      >
+                        ★
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <div className="flex justify-end gap-2 pt-2">
                   <button
                     type="button"
@@ -221,7 +313,12 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
               <>
                 <div className="flex items-start justify-between">
                   <div>
-                    <h1 className="text-2xl font-bold text-neutral-100">{song.title}</h1>
+                    <h1 className="text-2xl font-bold text-neutral-100 flex items-center gap-3">
+                      {song.title}
+                      <span className="text-sm px-2 py-0.5 rounded bg-gold-500/10 text-gold-400 border border-gold-500/20 whitespace-nowrap">
+                        {"⭐".repeat(song.difficulty)}
+                      </span>
+                    </h1>
                     <p className="text-lg text-neutral-400 mt-1">{song.artist}</p>
                   </div>
                   {(session?.user?.id === song.user.id || session?.user?.role === "ADMIN") && (
@@ -349,6 +446,134 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Comments Section */}
+      <div className="mt-8 pt-8 border-t border-forest-700/30 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+        <h2 className="text-xl font-bold text-neutral-100 mb-6 flex items-center gap-2">
+          💬 댓글 <span className="text-emerald-400 text-sm">({comments.length})</span>
+        </h2>
+
+        {/* Comment Form */}
+        {session ? (
+          <form onSubmit={handleCreateComment} className="mb-8 flex gap-3">
+            <div className="flex-shrink-0 pt-1">
+              {session.user.image ? (
+                <img src={session.user.image} alt="" className="w-8 h-8 rounded-full border border-forest-700" />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-forest-700 flex items-center justify-center text-sm">
+                  {session.user.name?.[0]}
+                </div>
+              )}
+            </div>
+            <div className="flex-1">
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="댓글을 남겨보세요..."
+                rows={2}
+                className="w-full bg-forest-900/40 border border-forest-700/50 rounded-xl px-4 py-3 text-neutral-200 focus:outline-none focus:border-emerald-500/50 resize-none"
+              />
+              <div className="flex justify-end mt-2">
+                <button
+                  type="submit"
+                  disabled={!newComment.trim()}
+                  className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:hover:bg-emerald-600 text-white text-sm font-medium transition-colors"
+                >
+                  등록
+                </button>
+              </div>
+            </div>
+          </form>
+        ) : (
+          <div className="mb-8 p-4 rounded-xl bg-forest-900/30 border border-forest-700/30 text-center text-neutral-400 text-sm">
+            댓글을 남기려면 <Link href="/login" className="text-emerald-400 hover:underline">로그인</Link>이 필요합니다.
+          </div>
+        )}
+
+        {/* Comments List */}
+        <div className="space-y-4">
+          {comments.map((comment) => (
+            <div key={comment.id} className="flex gap-3 p-4 rounded-xl bg-forest-900/20 border border-forest-700/10">
+              <div className="flex-shrink-0">
+                {comment.user.image ? (
+                  <img src={comment.user.image} alt="" className="w-8 h-8 rounded-full border border-forest-700" />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-forest-700 flex items-center justify-center text-sm">
+                    {comment.user.name?.[0]}
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-neutral-200 text-sm">{comment.user.name}</span>
+                    {comment.user.role === "ADMIN" && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-gold-500/15 text-gold-400 border border-gold-500/20">
+                        관리자
+                      </span>
+                    )}
+                    <span className="text-xs text-neutral-600">{formatDate(comment.createdAt)}</span>
+                  </div>
+                  {(session?.user?.id === comment.user.id || session?.user?.role === "ADMIN") && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingCommentId(comment.id);
+                          setEditingCommentContent(comment.content);
+                        }}
+                        className="text-xs text-neutral-600 hover:text-emerald-400 transition-colors"
+                      >
+                        수정
+                      </button>
+                      <button
+                        onClick={() => handleDeleteComment(comment.id)}
+                        className="text-xs text-neutral-600 hover:text-danger-400 transition-colors"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  )}
+                </div>
+                
+                {editingCommentId === comment.id ? (
+                  <div className="mt-2">
+                    <textarea
+                      value={editingCommentContent}
+                      onChange={(e) => setEditingCommentContent(e.target.value)}
+                      rows={2}
+                      className="w-full bg-forest-900/40 border border-forest-700/50 rounded-xl px-4 py-2 text-neutral-200 focus:outline-none focus:border-emerald-500/50 resize-none text-sm"
+                    />
+                    <div className="flex justify-end gap-2 mt-2">
+                      <button
+                        onClick={() => setEditingCommentId(null)}
+                        className="px-3 py-1.5 rounded-lg text-neutral-400 hover:text-neutral-300 text-xs transition-colors"
+                      >
+                        취소
+                      </button>
+                      <button
+                        onClick={() => handleUpdateComment(comment.id)}
+                        disabled={!editingCommentContent.trim()}
+                        className="px-3 py-1.5 rounded-lg bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 disabled:opacity-50 text-xs transition-colors"
+                      >
+                        저장
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-neutral-300 text-sm whitespace-pre-wrap leading-relaxed mt-1">
+                    {comment.content}
+                  </p>
+                )}
+              </div>
+            </div>
+          ))}
+          {comments.length === 0 && (
+            <div className="text-center py-8 text-neutral-500 text-sm">
+              첫 댓글을 남겨보세요!
+            </div>
+          )}
         </div>
       </div>
     </div>

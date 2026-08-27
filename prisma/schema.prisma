@@ -30,6 +30,8 @@ model User {
 
   songs               Song[]
   songSessions        SongSession[]
+  songLikes           SongLike[]
+  songComments        SongComment[]
   pointHistories      PointHistory[]
   meetingAttendances  MeetingAttendance[]
   meetingParticipants MeetingParticipant[]
@@ -52,6 +54,9 @@ model Song {
 
   sessions    SongSession[]
   meetingSongs MeetingSong[]
+  likes       SongLike[]
+  difficulty  Int           @default(3)
+  comments    SongComment[]
 }
 
 model SongSession {
@@ -143,4 +148,30 @@ model Notice {
 
   authorId String
   author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model SongLike {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  songId    String
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([songId, userId])
+}
+
+model SongComment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  songId    String
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

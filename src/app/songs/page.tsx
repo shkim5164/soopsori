@@ -18,10 +18,12 @@ interface Song {
   title: string;
   artist: string;
   youtubeUrl: string | null;
-  description: string | null;
   createdAt: string;
+  difficulty: number;
   user: { id: string; name: string; image: string };
   sessions: SongSession[];
+  _count: { likes: number };
+  likes: { userId: string }[] | false;
 }
 
 export default function SongsPage() {
@@ -29,19 +31,25 @@ export default function SongsPage() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<"latest" | "popular">("latest");
+  const [difficultyFilter, setDifficultyFilter] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newSong, setNewSong] = useState({
     title: "",
     artist: "",
     youtubeUrl: "",
     description: "",
+    difficulty: 3,
     sessions: [] as string[],
   });
 
   const fetchSongs = useCallback(async () => {
     try {
-      const params = search ? `?search=${encodeURIComponent(search)}` : "";
-      const res = await fetch(`/api/songs${params}`);
+      const searchParam = search ? `search=${encodeURIComponent(search)}` : "";
+      const sortParam = `sort=${sort}`;
+      const diffParam = difficultyFilter ? `difficulty=${difficultyFilter}` : "";
+      const params = [searchParam, sortParam, diffParam].filter(Boolean).join("&");
+      const res = await fetch(`/api/songs?${params}`);
       const data = await res.json();
       setSongs(data);
     } catch (error) {
@@ -49,7 +57,7 @@ export default function SongsPage() {
     } finally {
       setLoading(false);
     }
-  }, [search]);
+  }, [search, sort, difficultyFilter]);
 
   useEffect(() => {
     fetchSongs();
@@ -65,7 +73,7 @@ export default function SongsPage() {
       });
       if (res.ok) {
         setIsModalOpen(false);
-        setNewSong({ title: "", artist: "", youtubeUrl: "", description: "", sessions: [] });
+        setNewSong({ title: "", artist: "", youtubeUrl: "", description: "", difficulty: 3, sessions: [] });
         fetchSongs();
       }
     } catch (error) {
@@ -106,6 +114,38 @@ export default function SongsPage() {
     }
   };
 
+  const handleToggleLike = async (songId: string, currentLiked: boolean) => {
+    if (!session) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+    // 낙관적 업데이트
+    setSongs(prevSongs => prevSongs.map(song => {
+      if (song.id === songId) {
+        return {
+          ...song,
+          likes: currentLiked ? [] : [{ userId: session.user.id }], // 임시 배열
+          _count: {
+            ...song._count,
+            likes: song._count.likes + (currentLiked ? -1 : 1)
+          }
+        };
+      }
+      return song;
+    }));
+
+    try {
+      const res = await fetch(`/api/songs/${songId}/like`, { method: "POST" });
+      if (!res.ok) {
+        // 실패 시 복구
+        fetchSongs();
+      }
+    } catch (error) {
+      console.error("Failed to toggle like:", error);
+      fetchSongs();
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
@@ -124,9 +164,9 @@ export default function SongsPage() {
         )}
       </div>
 
-      {/* Search */}
-      <div className="mb-6 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-        <div className="relative max-w-md">
+      {/* Search and Sort */}
+      <div className="mb-6 animate-fade-in-up flex flex-col sm:flex-row gap-3" style={{ animationDelay: "0.1s" }}>
+        <div className="relative flex-1 max-w-md">
           <input
             type="text"
             placeholder="곡 제목 또는 아티스트 검색..."
@@ -137,6 +177,39 @@ export default function SongsPage() {
           <svg className="absolute left-3 top-3.5 w-4 h-4 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3 self-start">
+          <select
+            value={difficultyFilter || ""}
+            onChange={(e) => setDifficultyFilter(e.target.value ? Number(e.target.value) : null)}
+            className="px-4 py-2 rounded-lg bg-forest-900/30 border border-forest-700/30 text-sm text-neutral-200 focus:outline-none focus:border-emerald-500/50"
+          >
+            <option value="">모든 난이도</option>
+            <option value="1">⭐ 1</option>
+            <option value="2">⭐⭐ 2</option>
+            <option value="3">⭐⭐⭐ 3</option>
+            <option value="4">⭐⭐⭐⭐ 4</option>
+            <option value="5">⭐⭐⭐⭐⭐ 5</option>
+          </select>
+          
+          <div className="flex bg-forest-900/30 rounded-xl p-1 border border-forest-700/30">
+            <button
+              onClick={() => setSort("latest")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                sort === "latest" ? "bg-forest-700 text-neutral-100" : "text-neutral-400 hover:text-neutral-200"
+              }`}
+            >
+              최신순
+            </button>
+            <button
+              onClick={() => setSort("popular")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                sort === "popular" ? "bg-forest-700 text-neutral-100" : "text-neutral-400 hover:text-neutral-200"
+              }`}
+            >
+              인기순
+            </button>
+          </div>
         </div>
       </div>
 
@@ -157,6 +230,7 @@ export default function SongsPage() {
             const thumbnail = song.youtubeUrl ? getYouTubeThumbnail(song.youtubeUrl) : null;
             const openSessions = song.sessions.filter((s) => s.status === "OPEN");
             const filledSessions = song.sessions.filter((s) => s.status === "FILLED");
+            const isLiked = Array.isArray(song.likes) && song.likes.length > 0;
 
             return (
               <div key={song.id} className="glass-card overflow-hidden group">
@@ -183,12 +257,30 @@ export default function SongsPage() {
 
                 <div className="p-4">
                   {/* Song Info */}
-                  <Link href={`/songs/${song.id}`}>
-                    <h3 className="font-semibold text-neutral-100 truncate hover:text-emerald-400 transition-colors">
-                      {song.title}
-                    </h3>
-                    <p className="text-sm text-neutral-500 mt-0.5">{song.artist}</p>
-                  </Link>
+                  <div className="flex items-start justify-between gap-2">
+                    <Link href={`/songs/${song.id}`} className="min-w-0 flex-1">
+                      <h3 className="font-semibold text-neutral-100 truncate hover:text-emerald-400 transition-colors">
+                        {song.title}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <p className="text-sm text-neutral-500">{song.artist}</p>
+                        <span className="text-xs px-1.5 py-0.5 rounded bg-gold-500/10 text-gold-400 border border-gold-500/20">
+                          {"⭐".repeat(song.difficulty)}
+                        </span>
+                      </div>
+                    </Link>
+                    <button
+                      onClick={() => handleToggleLike(song.id, isLiked)}
+                      className={`flex flex-col items-center gap-1 transition-colors ${
+                        isLiked ? "text-danger-500" : "text-neutral-500 hover:text-danger-400"
+                      }`}
+                    >
+                      <svg className="w-5 h-5" fill={isLiked ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isLiked ? 0 : 2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                      <span className="text-xs">{song._count?.likes || 0}</span>
+                    </button>
+                  </div>
 
                   {/* Sessions */}
                   {song.sessions.length > 0 && (
@@ -338,6 +430,26 @@ export default function SongsPage() {
                   }`}
                 >
                   {pos.emoji} {pos.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-neutral-300 mb-2">
+              난이도
+            </label>
+            <div className="flex items-center gap-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setNewSong({ ...newSong, difficulty: star })}
+                  className={`text-2xl transition-colors ${
+                    star <= newSong.difficulty ? "text-gold-400" : "text-neutral-700"
+                  }`}
+                >
+                  ★
                 </button>
               ))}
             </div>

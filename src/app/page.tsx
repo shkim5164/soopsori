@@ -33,6 +33,7 @@ export default async function HomePage() {
 
   // 포인트 랭킹 (상위 5명)
   const topMembers = await prisma.user.findMany({
+    where: { role: { not: "ADMIN" } },
     take: 5,
     orderBy: { points: "desc" },
     select: {
