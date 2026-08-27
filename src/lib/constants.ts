@@ -1,4 +1,3 @@
-// Position constants for the band club
 export const POSITIONS = [
   { id: "vocal", label: "보컬", emoji: "🎤" },
   { id: "acoustic-guitar", label: "어쿠스틱 기타", emoji: "🎸" },
@@ -6,8 +5,8 @@ export const POSITIONS = [
   { id: "bass", label: "베이스", emoji: "🎵" },
   { id: "drum", label: "드럼", emoji: "🥁" },
   { id: "keyboard", label: "키보드", emoji: "🎹" },
+  { id: "other", label: "그 외", emoji: "🎸" },
 ] as const;
-
 export type PositionId = (typeof POSITIONS)[number]["id"];
 
 // 포지션 순위 시스템
@@ -111,6 +110,7 @@ export function getPositionBadgeClass(id: string): string {
     bass: "badge-bass",
     drum: "badge-drum",
     keyboard: "badge-keyboard",
+    other: "badge-acoustic-guitar", // Use a generic styling
   };
   return classMap[id] ?? "badge-vocal";
 }
