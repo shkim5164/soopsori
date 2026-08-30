@@ -68,7 +68,7 @@ export default async function HomePage() {
         </p>
         {!session && (
           <p className="mt-4 text-sm text-neutral-500">
-            구글 계정으로 로그인하여 참여해보세요
+            로그인하여 참여해보세요
           </p>
         )}
       </div>

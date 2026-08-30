@@ -356,7 +356,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
         setSearchQuery("");
         setSelectedSongId("");
       }} title="세트리스트에 곡 추가">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex gap-2 items-center mb-4">
           <input
             type="text"
             placeholder="곡 제목 또는 아티스트 검색..."
@@ -364,6 +364,15 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-1 px-4 py-2 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
           />
+          <button
+            onClick={() => {
+              setIsAddSongOpen(false);
+              setIsCreateSongOpen(true);
+            }}
+            className="px-4 py-2 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 transition-colors text-sm font-medium whitespace-nowrap"
+          >
+            + 새 곡 등록
+          </button>
         </div>
         <div className="space-y-3 max-h-[400px] overflow-y-auto mb-4">
           {availableSongs
@@ -397,16 +406,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             song.artist.toLowerCase().includes(searchQuery.toLowerCase())
           ).length === 0 && (
             <div className="text-center py-6">
-              <p className="text-sm text-neutral-500 mb-3">검색 결과가 없습니다.</p>
-              <button
-                onClick={() => {
-                  setIsAddSongOpen(false);
-                  setIsCreateSongOpen(true);
-                }}
-                className="px-4 py-2 rounded-lg bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors text-sm font-medium"
-              >
-                + 새 곡 등록하기
-              </button>
+              <p className="text-sm text-neutral-500">검색 결과가 없습니다.</p>
             </div>
           )}
         </div>
