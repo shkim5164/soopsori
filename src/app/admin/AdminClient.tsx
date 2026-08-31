@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import PositionBadges from "@/components/PositionBadges";
+import PositionPicker from "@/components/PositionPicker";
+import { parsePositions, stringifyPositions } from "@/lib/constants";
 
 interface Member {
   id: string;
@@ -397,13 +399,10 @@ export default function AdminClient() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-black font-bold mb-1">포지션 (콤마로 구분)</label>
-                  <input
-                    type="text"
-                    placeholder="예: 보컬, 어쿠스틱 기타"
-                    value={formData.position}
-                    onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                    className="w-full bg-white border-2 border-black border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black"
+                  <label className="block text-sm font-medium text-black font-bold mb-1">포지션 (Position)</label>
+                  <PositionPicker 
+                    value={parsePositions(formData.position)} 
+                    onChange={(val) => setFormData({ ...formData, position: stringifyPositions(val) })} 
                   />
                 </div>
 
