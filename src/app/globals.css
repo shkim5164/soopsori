@@ -7,24 +7,65 @@
 
 @theme inline {
   /* Neo-Brutalist Colors */
-  --color-neo-yellow: #FFEB00;
-  --color-neo-pink: #FF0099;
-  --color-neo-blue: #00E5FF;
-  --color-neo-green: #00FF66;
+  --color-neo-yellow: var(--dynamic-neo-yellow);
+  --color-neo-pink: var(--dynamic-neo-pink);
+  --color-neo-blue: var(--dynamic-neo-blue);
+  --color-neo-green: var(--dynamic-neo-green);
   
-  --color-black: #000000;
-  --color-white: #ffffff;
+  --color-black: var(--dynamic-black);
+  --color-white: var(--dynamic-white);
   
-  --color-gray-100: #f3f4f6;
-  --color-gray-200: #e5e7eb;
-  --color-gray-300: #d1d5db;
-  --color-gray-400: #9ca3af;
-  --color-gray-800: #1f2937;
-  --color-gray-900: #111827;
+  --color-gray-50: var(--dynamic-gray-50);
+  --color-gray-100: var(--dynamic-gray-100);
+  --color-gray-200: var(--dynamic-gray-200);
+  --color-gray-300: var(--dynamic-gray-300);
+  --color-gray-400: var(--dynamic-gray-400);
+  --color-gray-800: var(--dynamic-gray-800);
+  --color-gray-900: var(--dynamic-gray-900);
 
   /* Fonts - Pretendard */
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
   --font-mono: "Fira Code", monospace;
+}
+
+/* Base Light Theme */
+:root {
+  /* Softer Neo-Brutalist Palette (눈 피로 감소) */
+  --dynamic-neo-yellow: #F2DF11; /* 기존 #FFEB00 보다 채도/명도 약간 낮춤 */
+  --dynamic-neo-pink: #ED1C8B; /* 기존 #FF0099 보다 부드러운 핫핑크 */
+  --dynamic-neo-blue: #1CC9E8; /* 기존 #00E5FF 보다 차분한 시안 */
+  --dynamic-neo-green: #16DB65; /* 기존 #00FF66 보다 안정적인 그린 */
+
+  --dynamic-black: #000000;
+  --dynamic-white: #ffffff;
+  
+  --dynamic-gray-50: #f9fafb;
+  --dynamic-gray-100: #f3f4f6;
+  --dynamic-gray-200: #e5e7eb;
+  --dynamic-gray-300: #d1d5db;
+  --dynamic-gray-400: #9ca3af;
+  --dynamic-gray-800: #1f2937;
+  --dynamic-gray-900: #111827;
+}
+
+/* Dark Mode Overrides */
+.dark {
+  /* Softer Cyberpunk Palette (눈 피로 감소) */
+  --dynamic-neo-yellow: #A040FF; /* 부드러운 네온 퍼플 */
+  --dynamic-neo-pink: #33D6FF; /* 눈이 편한 일렉트릭 시안 */
+  --dynamic-neo-blue: #40E060; /* 차분해진 톡식 그린 */
+  --dynamic-neo-green: #F04060; /* 자극을 줄인 크림슨 레드 */
+
+  --dynamic-white: #111111;
+  --dynamic-black: #e5e5e5;
+  
+  --dynamic-gray-50: #0a0a0a;
+  --dynamic-gray-100: #1a1a1a;
+  --dynamic-gray-200: #2a2a2a;
+  --dynamic-gray-300: #404040;
+  --dynamic-gray-400: #a3a3a3;
+  --dynamic-gray-800: #d4d4d4;
+  --dynamic-gray-900: #f5f5f5;
 }
 
 /* ==========================================
@@ -181,14 +222,28 @@ h1, h2, h3, h4, h5, h6 {
 .badge-acoustic-guitar { background: var(--color-neo-yellow); color: black; border: 2px solid var(--color-black); font-weight: 800; }
 .badge-electric-guitar { background: var(--color-neo-blue); color: black; border: 2px solid var(--color-black); font-weight: 800; }
 .badge-bass { background: var(--color-neo-green); color: black; border: 2px solid var(--color-black); font-weight: 800; }
-.badge-drum { background: var(--color-gray-900); color: white; border: 2px solid var(--color-black); font-weight: 800; }
-.badge-keyboard { background: var(--color-white); color: black; border: 2px solid var(--color-black); font-weight: 800; }
-.badge-other { background: var(--color-gray-200); color: black; border: 2px solid var(--color-black); font-weight: 800; }
+.badge-drum { background: var(--color-gray-900); color: var(--color-white); border: 2px solid var(--color-black); font-weight: 800; }
+.badge-keyboard { background: var(--color-white); color: var(--color-black); border: 2px solid var(--color-black); font-weight: 800; }
+.badge-other { background: var(--color-gray-200); color: var(--color-black); border: 2px solid var(--color-black); font-weight: 800; }
 
 .skeleton {
   background: var(--color-gray-200);
   border: 3px solid var(--color-black);
   animation: pulse 2s infinite;
+}
+
+/* Neo Shadows */
+.neo-shadow {
+  box-shadow: 4px 4px 0px 0px var(--color-black);
+}
+.neo-shadow-sm {
+  box-shadow: 2px 2px 0px 0px var(--color-black);
+}
+.neo-shadow-lg {
+  box-shadow: 6px 6px 0px 0px var(--color-black);
+}
+.neo-shadow-xl {
+  box-shadow: 8px 8px 0px 0px var(--color-black);
 }
 
 /* Hide scrollbar for elements with .no-scrollbar */

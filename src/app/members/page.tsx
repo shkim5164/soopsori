@@ -99,7 +99,7 @@ export default function MembersPage() {
                     alt={member.name}
                     className={`w-12 h-12 rounded-full border-2 ${
                       i === 0
-                        ? "border-gold-400 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] shadow-gold-500/20"
+                        ? "border-gold-400 neo-shadow-lg shadow-gold-500/20"
                         : "border-2 border-black"
                     }`}
                   />

@@ -84,7 +84,7 @@ export default function MeetingsPage() {
         {session?.user?.role === "ADMIN" && (
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="px-5 py-2.5 rounded-none neo-btn neo-btn-primary font-medium text-sm transition-all duration-200 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5"
+            className="px-5 py-2.5 rounded-none neo-btn neo-btn-primary font-medium text-sm transition-all duration-200 hover:neo-shadow-lg hover:neo-shadow hover:-translate-y-0.5"
           >
             + 모임 만들기
           </button>
@@ -174,7 +174,7 @@ export default function MeetingsPage() {
                   {meeting.meetingSongs.slice(0, 3).map((ms, i) => (
                     <div
                       key={ms.id}
-                      className="flex items-center gap-3 p-2 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                      className="flex items-center gap-3 p-2 rounded-none bg-white border-3 border-black neo-shadow"
                     >
                       <span className="text-xs font-mono text-gray-800 w-5 text-right">
                         {ms.orderNum}.
@@ -222,7 +222,7 @@ export default function MeetingsPage() {
               required
               value={newMeeting.title}
               onChange={(e) => setNewMeeting({ ...newMeeting, title: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
+              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
               placeholder="예: 8월 정기 합주"
             />
           </div>
@@ -233,7 +233,7 @@ export default function MeetingsPage() {
               required
               value={newMeeting.date}
               onChange={(e) => setNewMeeting({ ...newMeeting, date: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
+              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
             />
           </div>
           <div>
@@ -242,7 +242,7 @@ export default function MeetingsPage() {
               value={newMeeting.description}
               onChange={(e) => setNewMeeting({ ...newMeeting, description: e.target.value })}
               rows={3}
-              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors resize-none"
+              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors resize-none"
               placeholder="모임에 대한 설명"
             />
           </div>
@@ -250,7 +250,7 @@ export default function MeetingsPage() {
             <button
               type="button"
               onClick={() => setIsCreateOpen(false)}
-              className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold hover:text-black font-black hover:bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors font-medium text-sm"
+              className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow text-black font-bold hover:text-black font-black hover:bg-white border-3 border-black neo-shadow transition-colors font-medium text-sm"
             >
               취소
             </button>

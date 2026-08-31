@@ -102,7 +102,7 @@ export default function NoticesPage() {
         {session?.user?.role === "ADMIN" && (
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="px-5 py-2.5 rounded-none neo-btn neo-btn-primary font-medium text-sm transition-all duration-200 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5"
+            className="px-5 py-2.5 rounded-none neo-btn neo-btn-primary font-medium text-sm transition-all duration-200 hover:neo-shadow-lg hover:neo-shadow hover:-translate-y-0.5"
           >
             + 공지 작성
           </button>
@@ -215,7 +215,7 @@ export default function NoticesPage() {
               required
               value={newNotice.title}
               onChange={(e) => setNewNotice({ ...newNotice, title: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
+              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
               placeholder="공지 제목"
             />
           </div>
@@ -226,7 +226,7 @@ export default function NoticesPage() {
               value={newNotice.content}
               onChange={(e) => setNewNotice({ ...newNotice, content: e.target.value })}
               rows={6}
-              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors resize-none"
+              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors resize-none"
               placeholder="공지 내용을 입력하세요"
             />
           </div>
@@ -235,7 +235,7 @@ export default function NoticesPage() {
               type="checkbox"
               checked={newNotice.pinned}
               onChange={(e) => setNewNotice({ ...newNotice, pinned: e.target.checked })}
-              className="w-4 h-4 rounded border-2 border-black text-neo-pink font-black focus:bg-neo-yellow focus:ring-0 bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+              className="w-4 h-4 rounded border-2 border-black text-neo-pink font-black focus:bg-neo-yellow focus:ring-0 bg-white border-3 border-black neo-shadow"
             />
             <span className="text-sm text-black font-bold">📌 상단 고정</span>
           </label>
@@ -243,7 +243,7 @@ export default function NoticesPage() {
             <button
               type="button"
               onClick={() => setIsCreateOpen(false)}
-              className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold hover:text-black font-black transition-colors font-medium text-sm"
+              className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow text-black font-bold hover:text-black font-black transition-colors font-medium text-sm"
             >
               취소
             </button>
@@ -268,7 +268,7 @@ export default function NoticesPage() {
                 required
                 value={editingNotice.title}
                 onChange={(e) => setEditingNotice({ ...editingNotice, title: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
+                className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
               />
             </div>
             <div>
@@ -278,7 +278,7 @@ export default function NoticesPage() {
                 value={editingNotice.content}
                 onChange={(e) => setEditingNotice({ ...editingNotice, content: e.target.value })}
                 rows={6}
-                className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors resize-none"
+                className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors resize-none"
               />
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
@@ -286,7 +286,7 @@ export default function NoticesPage() {
                 type="checkbox"
                 checked={editingNotice.pinned}
                 onChange={(e) => setEditingNotice({ ...editingNotice, pinned: e.target.checked })}
-                className="w-4 h-4 rounded border-2 border-black text-neo-pink font-black focus:bg-neo-yellow focus:ring-0 bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                className="w-4 h-4 rounded border-2 border-black text-neo-pink font-black focus:bg-neo-yellow focus:ring-0 bg-white border-3 border-black neo-shadow"
               />
               <span className="text-sm text-black font-bold">📌 상단 고정</span>
             </label>
@@ -294,7 +294,7 @@ export default function NoticesPage() {
               <button
                 type="button"
                 onClick={() => setIsEditOpen(false)}
-                className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold hover:text-black font-black transition-colors font-medium text-sm"
+                className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow text-black font-bold hover:text-black font-black transition-colors font-medium text-sm"
               >
                 취소
               </button>

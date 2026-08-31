@@ -226,11 +226,11 @@ export default function AdminClient() {
         </button>
       </div>
 
-      <div className="bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none overflow-hidden border border-2 border-black">
+      <div className="bg-white border-3 border-black neo-shadow rounded-none overflow-hidden border border-2 border-black">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold text-sm">
+              <tr className="bg-white border-2 border-black neo-shadow text-black font-bold text-sm">
                 <th className="p-4 font-medium">회원</th>
                 <th className="p-4 font-medium">역할</th>
                 <th className="p-4 font-medium">포지션</th>
@@ -254,7 +254,7 @@ export default function AdminClient() {
                 </tr>
               ) : (
                 members.map((member) => (
-                  <tr key={member.id} className="hover:bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors">
+                  <tr key={member.id} className="hover:bg-white border-2 border-black neo-shadow transition-colors">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         {member.image ? (

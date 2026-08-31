@@ -89,8 +89,8 @@ export default function PositionPicker({ value, onChange }: PositionPickerProps)
                 onClick={() => handleClick(pos.id)}
                 className={`relative px-3 py-1.5 text-sm transition-all duration-200 border-2 border-black ${
                   isSelected
-                    ? `${getPositionBadgeClass(pos.id)} shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] -translate-y-0.5`
-                    : "bg-white text-gray-800 font-bold hover:bg-gray-50 hover:text-black hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                    ? `${getPositionBadgeClass(pos.id)} neo-shadow -translate-y-0.5`
+                    : "bg-white text-gray-800 font-bold hover:bg-gray-50 hover:text-black hover:neo-shadow-sm"
                 }`}
               >
                 {pos.emoji} {pos.label}
@@ -112,7 +112,7 @@ export default function PositionPicker({ value, onChange }: PositionPickerProps)
 
       {/* 선택된 포지션 순위 조정 */}
       {value.length > 0 && (
-        <div className="p-4 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black space-y-2">
+        <div className="p-4 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black space-y-2">
           <p className="text-xs font-medium text-black font-bold mb-2">📋 순위 배정 (드롭다운으로 조정)</p>
           
           {rankedPositions.map((rp) => (
@@ -120,7 +120,7 @@ export default function PositionPicker({ value, onChange }: PositionPickerProps)
               <select
                 value={rp.rank}
                 onChange={(e) => handleSetRank(rp.id, Number(e.target.value))}
-                className="w-20 px-2 py-1.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-sm text-black font-black focus:outline-none focus:border-3 border-black"
+                className="w-20 px-2 py-1.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-sm text-black font-black focus:outline-none focus:border-3 border-black"
               >
                 {[1, 2, 3].map((r) => (
                   <option key={r} value={r}>{getRankLabel(r)}</option>
@@ -137,7 +137,7 @@ export default function PositionPicker({ value, onChange }: PositionPickerProps)
                 max={new Date().getFullYear()}
                 value={rp.startYear || ""}
                 onChange={(e) => handleSetYear(rp.id, e.target.value ? Number(e.target.value) : undefined)}
-                className="w-28 px-2 py-1.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-sm text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black"
+                className="w-28 px-2 py-1.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-sm text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black"
               />
               <button
                 type="button"
@@ -155,7 +155,7 @@ export default function PositionPicker({ value, onChange }: PositionPickerProps)
                 <span className="text-xs text-gray-800 font-bold w-20">기타</span>
                 <div className="flex flex-wrap gap-1.5 flex-1">
                   {otherPositions.map((rp) => (
-                    <div key={rp.id} className="flex items-center gap-1.5 p-1.5 rounded-none border border-2 border-black bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <div key={rp.id} className="flex items-center gap-1.5 p-1.5 rounded-none border border-2 border-black bg-white border-3 border-black neo-shadow">
                       <span className={`text-xs px-2 py-0.5 rounded-full ${getPositionBadgeClass(rp.id)}`}>
                         {POSITIONS.find((p) => p.id === rp.id)?.emoji} {getPositionLabel(rp.id)}
                       </span>
@@ -166,7 +166,7 @@ export default function PositionPicker({ value, onChange }: PositionPickerProps)
                         max={new Date().getFullYear()}
                         value={rp.startYear || ""}
                         onChange={(e) => handleSetYear(rp.id, e.target.value ? Number(e.target.value) : undefined)}
-                        className="w-16 px-1.5 py-0.5 rounded bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-xs text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black"
+                        className="w-16 px-1.5 py-0.5 rounded bg-white border-3 border-black neo-shadow border border-2 border-black text-xs text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black"
                       />
                       <button
                         type="button"

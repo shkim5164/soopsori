@@ -297,7 +297,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                     value={editForm.youtubeUrl}
                     onChange={(e) => setEditForm({ ...editForm, youtubeUrl: e.target.value })}
                     onBlur={(e) => fetchYoutubeMeta(e.target.value)}
-                    className="w-full bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black rounded-none px-4 py-2 text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black"
+                    className="w-full bg-white border-3 border-black neo-shadow border border-2 border-black rounded-none px-4 py-2 text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black"
                     placeholder="입력 시 자동 정보 추출"
                   />
                 </div>
@@ -308,7 +308,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                     required
                     value={editForm.title}
                     onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                    className="w-full bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black rounded-none px-4 py-2 text-black font-black"
+                    className="w-full bg-white border-3 border-black neo-shadow border border-2 border-black rounded-none px-4 py-2 text-black font-black"
                   />
                 </div>
                 <div>
@@ -318,7 +318,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                     required
                     value={editForm.artist}
                     onChange={(e) => setEditForm({ ...editForm, artist: e.target.value })}
-                    className="w-full bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black rounded-none px-4 py-2 text-black font-black"
+                    className="w-full bg-white border-3 border-black neo-shadow border border-2 border-black rounded-none px-4 py-2 text-black font-black"
                   />
                 </div>
                 <div>
@@ -327,7 +327,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                     rows={4}
                     value={editForm.description}
                     onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                    className="w-full bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black rounded-none px-4 py-2 text-black font-black"
+                    className="w-full bg-white border-3 border-black neo-shadow border border-2 border-black rounded-none px-4 py-2 text-black font-black"
                   />
                 </div>
                 <div>
@@ -370,7 +370,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                         key={pos.id}
                         type="button"
                         onClick={() => addSession(pos.id)}
-                        className="px-3 py-1.5 rounded-none text-sm font-medium bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold hover:text-black font-black border border-2 border-black hover:border-2 border-black transition-colors"
+                        className="px-3 py-1.5 rounded-none text-sm font-medium bg-white border-3 border-black neo-shadow text-black font-bold hover:text-black font-black border border-2 border-black hover:border-2 border-black transition-colors"
                       >
                         + {pos.label}
                       </button>
@@ -383,7 +383,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                       value={customSession} 
                       onChange={e => setCustomSession(e.target.value)}
                       placeholder="직접 입력 (예: 플루트)" 
-                      className="flex-1 max-w-[200px] px-3 py-1.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-sm text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
+                      className="flex-1 max-w-[200px] px-3 py-1.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-sm text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
@@ -497,7 +497,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                   return (
                     <div
                       key={s.id}
-                      className={`p-4 transition-all duration-200 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-3 ${
+                      className={`p-4 transition-all duration-200 border-3 border-black neo-shadow flex flex-col gap-3 ${
                         s.status === "FILLED"
                           ? "bg-gray-100"
                           : "bg-white"
@@ -610,7 +610,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
             </div>
           </form>
         ) : (
-          <div className="mb-8 p-4 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-center text-black font-bold text-sm">
+          <div className="mb-8 p-4 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-center text-black font-bold text-sm">
             댓글을 남기려면 <Link href="/login" className="text-neo-pink font-black hover:underline">로그인</Link>이 필요합니다.
           </div>
         )}
@@ -666,7 +666,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                       value={editingCommentContent}
                       onChange={(e) => setEditingCommentContent(e.target.value)}
                       rows={2}
-                      className="w-full bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black resize-none text-sm"
+                      className="w-full bg-white border-3 border-black neo-shadow border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black resize-none text-sm"
                     />
                     <div className="flex justify-end gap-2 mt-2">
                       <button

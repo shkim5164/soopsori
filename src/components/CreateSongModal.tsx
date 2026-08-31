@@ -111,7 +111,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
               setNewSong({ ...newSong, youtubeUrl: e.target.value });
             }}
             onBlur={(e) => fetchYoutubeMeta(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
+            className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
             placeholder="https://www.youtube.com/watch?v=... (입력 시 자동 정보 추출)"
           />
         </div>
@@ -125,7 +125,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
             required
             value={newSong.title}
             onChange={(e) => setNewSong({ ...newSong, title: e.target.value })}
-            className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
+            className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
             placeholder="곡 제목을 입력하세요"
           />
         </div>
@@ -139,7 +139,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
             required
             value={newSong.artist}
             onChange={(e) => setNewSong({ ...newSong, artist: e.target.value })}
-            className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
+            className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
             placeholder="아티스트명을 입력하세요"
           />
         </div>
@@ -152,7 +152,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
             value={newSong.description}
             onChange={(e) => setNewSong({ ...newSong, description: e.target.value })}
             rows={3}
-            className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors resize-none"
+            className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors resize-none"
             placeholder="곡에 대한 설명이나 메모를 입력하세요"
           />
         </div>
@@ -182,7 +182,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
                 key={pos.id}
                 type="button"
                 onClick={() => addSession(pos.id)}
-                className="px-3 py-1.5 rounded-none text-sm font-medium bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold hover:text-black font-black border border-2 border-black hover:border-2 border-black transition-colors"
+                className="px-3 py-1.5 rounded-none text-sm font-medium bg-white border-3 border-black neo-shadow text-black font-bold hover:text-black font-black border border-2 border-black hover:border-2 border-black transition-colors"
               >
                 + {pos.label}
               </button>
@@ -195,7 +195,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
               value={customSession} 
               onChange={e => setCustomSession(e.target.value)}
               placeholder="직접 입력 (예: 플루트)" 
-              className="flex-1 max-w-[200px] px-3 py-1.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-sm text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
+              className="flex-1 max-w-[200px] px-3 py-1.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-sm text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
@@ -247,14 +247,14 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold hover:text-black font-black hover:bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors font-medium text-sm disabled:opacity-50"
+            className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow text-black font-bold hover:text-black font-black hover:bg-white border-3 border-black neo-shadow transition-colors font-medium text-sm disabled:opacity-50"
           >
             취소
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 px-4 py-2.5 rounded-none neo-btn neo-btn-primary font-medium text-sm transition-all duration-200 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50"
+            className="flex-1 px-4 py-2.5 rounded-none neo-btn neo-btn-primary font-medium text-sm transition-all duration-200 hover:neo-shadow-lg hover:neo-shadow disabled:opacity-50"
           >
             {loading ? "등록 중..." : "등록하기"}
           </button>

@@ -192,10 +192,10 @@ export default function ProfilePage() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as TabType)}
-            className={`flex items-center gap-2 px-4 py-2.5 font-black text-sm transition-all whitespace-nowrap border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${
+            className={`flex items-center gap-2 px-4 py-2.5 font-black text-sm transition-all whitespace-nowrap border-3 border-black neo-shadow ${
               activeTab === tab.id
-                ? "bg-neo-yellow text-black translate-x-[2px] translate-y-[2px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                : "bg-white text-black hover:bg-neo-yellow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                ? "bg-neo-yellow text-black translate-x-[2px] translate-y-[2px] neo-shadow-sm"
+                : "bg-white text-black hover:bg-neo-yellow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm"
             }`}
           >
             <span>{tab.icon}</span>
@@ -216,7 +216,7 @@ export default function ProfilePage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
+                className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
               />
             </div>
 
@@ -235,7 +235,7 @@ export default function ProfilePage() {
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                     placeholder="비밀번호를 변경하려면 입력하세요"
-                    className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
+                    className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
                   />
                 </div>
                 <div>
@@ -245,7 +245,7 @@ export default function ProfilePage() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="새로운 비밀번호"
-                    className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
+                    className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
                   />
                 </div>
                 {passwordError && (
@@ -260,7 +260,7 @@ export default function ProfilePage() {
               className={`w-full py-2.5 mt-2 rounded-none font-medium text-sm transition-all duration-200 ${
                 saved
                   ? "neo-btn neo-btn-primary/20 text-neo-pink font-black border border-3 border-black"
-                  : "neo-btn neo-btn-primary hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+                  : "neo-btn neo-btn-primary hover:neo-shadow-lg"
               }`}
             >
               {saving ? "저장 중..." : saved ? "✓ 저장 완료!" : "프로필 저장"}
@@ -284,7 +284,7 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {activities.appliedSessions.map(session => (
                         <Link href={`/songs/${session.song.id}`} key={session.id} className="block group">
-                          <div className="p-3 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black hover:border-3 border-black transition-colors">
+                          <div className="p-3 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black hover:border-3 border-black transition-colors">
                             <div className="flex justify-between items-start mb-2">
                               <span className={`text-xs px-2 py-0.5 rounded-full ${getPositionBadgeClass(session.position)}`}>
                                 {getPositionLabel(session.position)}
@@ -313,7 +313,7 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {activities.registeredSongs.map(song => (
                         <Link href={`/songs/${song.id}`} key={song.id} className="block group">
-                          <div className="p-3 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black hover:border-3 border-black transition-colors">
+                          <div className="p-3 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black hover:border-3 border-black transition-colors">
                             <div className="flex justify-between items-start mb-1">
                               <h4 className="font-semibold text-black font-black group-hover:text-neo-pink font-black truncate pr-2">{song.title}</h4>
                               <span className="text-xs text-black font-black bg-neo-yellow px-1 whitespace-nowrap">{"⭐".repeat(song.difficulty)}</span>
@@ -340,7 +340,7 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {activities.participatedMeetings.map(attendance => (
                         <Link href={`/meetings/${attendance.meeting.id}`} key={attendance.id} className="block group">
-                          <div className="p-3 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black hover:border-3 border-black transition-colors">
+                          <div className="p-3 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black hover:border-3 border-black transition-colors">
                             <div className="flex justify-between items-start mb-1">
                               <h4 className="font-semibold text-black font-black group-hover:text-neo-pink font-black truncate">{attendance.meeting.title}</h4>
                               <span className={`text-[10px] px-1.5 py-0.5 rounded ${attendance.attended ? 'neo-btn neo-btn-primary/15 text-neo-pink font-black' : 'bg-neutral-500/15 text-black font-bold'}`}>

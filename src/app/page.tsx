@@ -59,7 +59,7 @@ export default async function HomePage() {
       {/* Hero Section */}
       <div className="text-center mb-16 mt-8 animate-fade-in-up">
         <h1 className="text-6xl sm:text-8xl font-black mb-6 uppercase tracking-tighter">
-          <span className="bg-neo-yellow border-4 border-black px-6 py-2 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] inline-block transform -rotate-2">
+          <span className="bg-neo-yellow border-4 border-black px-6 py-2 neo-shadow-xl inline-block transform -rotate-2">
             soopsori
           </span>
         </h1>
@@ -114,7 +114,7 @@ export default async function HomePage() {
                   {nextMeeting.meetingSongs.map((ms, i) => (
                     <div
                       key={ms.id}
-                      className="flex items-center gap-3 p-2 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors"
+                      className="flex items-center gap-3 p-2 rounded-none bg-white border-3 border-black neo-shadow hover:bg-white border-3 border-black neo-shadow transition-colors"
                     >
                       <span className="text-sm font-mono text-gray-800 w-6 text-right">
                         {i + 1}.
@@ -170,7 +170,7 @@ export default async function HomePage() {
             {topMembers.map((member, i) => (
               <div
                 key={member.id}
-                className="flex items-center gap-3 p-2 rounded-none hover:bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors"
+                className="flex items-center gap-3 p-2 rounded-none hover:bg-white border-3 border-black neo-shadow transition-colors"
               >
                 <span
                   className={`text-lg w-7 text-center ${
@@ -238,7 +238,7 @@ export default async function HomePage() {
                   <Link
                     key={song.id}
                     href={`/songs/${song.id}`}
-                    className="flex items-start gap-3 p-3 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black hover:border-2 border-black transition-all duration-200"
+                    className="flex items-start gap-3 p-3 rounded-none bg-white border-3 border-black neo-shadow hover:bg-white border-3 border-black neo-shadow border border-2 border-black hover:border-2 border-black transition-all duration-200"
                   >
                     {song.youtubeUrl && (
                       <img
@@ -299,7 +299,7 @@ export default async function HomePage() {
             {recentNotices.map((notice) => (
               <div
                 key={notice.id}
-                className="p-3 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors cursor-pointer"
+                className="p-3 rounded-none bg-white border-3 border-black neo-shadow hover:bg-white border-3 border-black neo-shadow transition-colors cursor-pointer"
               >
                 <div className="flex items-start gap-2">
                   {notice.pinned && <span className="text-xs">📌</span>}

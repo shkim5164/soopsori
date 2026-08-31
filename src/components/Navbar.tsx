@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 
 const navLinks = [
   { href: "/", label: "홈", icon: "🏠" },
@@ -23,6 +24,10 @@ export default function Navbar() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   return (
     <nav className="sticky top-0 z-50 bg-white neo-divider">
@@ -30,7 +35,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="font-black text-3xl tracking-tighter lowercase px-3 py-1 bg-neo-yellow border-2 border-black shadow-[4px_4px_0px_0px_#000000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000000] transition-all text-black">
+            <div className="font-black text-3xl tracking-tighter lowercase px-3 py-1 bg-neo-yellow border-2 border-black neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm transition-all text-black">
               soopsori
             </div>
           </Link>
@@ -48,8 +53,8 @@ export default function Navbar() {
                   rel={link.external ? "noopener noreferrer" : undefined}
                   className={`px-4 py-2 font-bold text-sm lowercase border-2 border-black rounded-full transition-all ${
                     isActive
-                      ? "bg-neo-pink text-white shadow-[2px_2px_0px_0px_#000000] translate-x-[2px] translate-y-[2px]"
-                      : "bg-white text-black shadow-[4px_4px_0px_0px_#000000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000000] hover:bg-neo-yellow"
+                      ? "bg-neo-pink text-white neo-shadow-sm translate-x-[2px] translate-y-[2px]"
+                      : "bg-white text-black neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm hover:bg-neo-yellow hover:text-black"
                   }`}
                 >
                   <span className="mr-1.5">{link.icon}</span>
@@ -65,8 +70,17 @@ export default function Navbar() {
               <div className="w-10 h-10 rounded-full skeleton" />
             ) : session?.user ? (
               <div className="flex items-center gap-3">
+                {/* Theme Toggle */}
+                <button
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-black bg-white neo-shadow-sm hover:bg-neo-yellow hover:text-black transition-all"
+                  aria-label="Toggle Dark Mode"
+                >
+                  {mounted ? (theme === "dark" ? "☀️" : "🌙") : "🌙"}
+                </button>
+
                 {/* Points Badge */}
-                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-neo-yellow border-2 border-black shadow-[2px_2px_0px_0px_#000000]">
+                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-neo-yellow border-2 border-black neo-shadow-sm">
                   <span className="text-sm">⭐</span>
                   <span className="text-sm font-black text-black">
                     {session.user.points ?? 0}P
@@ -75,7 +89,7 @@ export default function Navbar() {
 
                 {/* Profile Dropdown */}
                 <div className="relative group">
-                  <button className="flex items-center gap-2 p-0.5 rounded-full hover:scale-105 transition-transform duration-200 shadow-[2px_2px_0px_0px_#000000] border-2 border-black bg-white">
+                  <button className="flex items-center gap-2 p-0.5 rounded-full hover:scale-105 transition-transform duration-200 neo-shadow-sm border-2 border-black bg-white">
                     {session.user.image ? (
                       <img
                         src={session.user.image}
@@ -89,7 +103,7 @@ export default function Navbar() {
                     )}
                   </button>
                   {/* Dropdown */}
-                  <div className="absolute right-0 mt-2 w-48 bg-white border-2 border-black shadow-[6px_6px_0px_0px_#000000] p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0">
+                  <div className="absolute right-0 mt-2 w-48 bg-white border-2 border-black neo-shadow-lg p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0">
                     <div className="px-3 py-2 border-b-2 border-black mb-2 bg-neo-yellow">
                       <p className="text-sm font-black text-black truncate">
                         {session.user.name}
@@ -123,15 +137,23 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="flex items-center gap-2">
+                {/* Theme Toggle */}
+                <button
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-black bg-white neo-shadow-sm hover:bg-neo-yellow hover:text-black transition-all"
+                  aria-label="Toggle Dark Mode"
+                >
+                  {mounted ? (theme === "dark" ? "☀️" : "🌙") : "🌙"}
+                </button>
                 <Link
                   href="/login"
-                  className="px-4 py-2 font-bold text-sm lowercase border-2 border-black rounded-full bg-white text-black shadow-[4px_4px_0px_0px_#000000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000000] hover:bg-neo-yellow transition-all"
+                  className="px-4 py-2 font-bold text-sm lowercase border-2 border-black rounded-full bg-white text-black neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm hover:bg-neo-yellow hover:text-black transition-all"
                 >
                   로그인
                 </Link>
                 <Link
                   href="/register"
-                  className="px-4 py-2 font-bold text-sm lowercase border-2 border-black rounded-full bg-neo-pink text-white shadow-[4px_4px_0px_0px_#000000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000000] hover:bg-black hover:text-neo-yellow transition-all"
+                  className="px-4 py-2 font-bold text-sm lowercase border-2 border-black rounded-full bg-neo-pink text-white neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm hover:bg-black hover:text-neo-yellow transition-all"
                 >
                   회원가입
                 </Link>
@@ -141,7 +163,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 bg-neo-yellow border-2 border-black shadow-[4px_4px_0px_0px_#000000] rounded-none hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000000] transition-all"
+              className="md:hidden p-2 bg-neo-yellow border-2 border-black neo-shadow rounded-none hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm transition-all text-black"
             >
               <svg className="w-6 h-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {mobileOpen ? (
@@ -173,8 +195,8 @@ export default function Navbar() {
                   }}
                   className={`block px-4 py-3 border-2 border-black font-bold lowercase transition-all ${
                     isActive
-                      ? "bg-neo-pink text-white shadow-[4px_4px_0px_0px_#000000]"
-                      : "bg-white text-black shadow-[4px_4px_0px_0px_#000000] hover:bg-neo-yellow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000000]"
+                      ? "bg-neo-pink text-white neo-shadow"
+                      : "bg-white text-black neo-shadow hover:bg-neo-yellow hover:text-black hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm"
                   }`}
                 >
                   <span className="mr-2">{link.icon}</span>

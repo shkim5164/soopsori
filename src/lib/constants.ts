@@ -44,7 +44,7 @@ const RANK_COLORS: Record<number, string> = {
   1: "text-black font-black bg-neo-yellow px-1 bg-gold-500/15 border-gold-500/25",
   2: "text-black font-bold bg-neutral-500/15 border-neutral-500/25",
   3: "text-amber-600 bg-amber-700/15 border-amber-700/25",
-  0: "text-gray-800 font-bold bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black",
+  0: "text-gray-800 font-bold bg-white border-3 border-black neo-shadow border-2 border-black",
 };
 
 export function getRankLabel(rank: number): string {

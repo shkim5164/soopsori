@@ -225,7 +225,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                 className={`px-4 py-2 rounded-none text-sm font-medium transition-all duration-200 ${
                   myAttendance?.attended
                     ? "neo-btn neo-btn-primary/20 text-neo-pink font-black border border-3 border-black"
-                    : "bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold border border-2 border-black hover:border-3 border-black"
+                    : "bg-white border-3 border-black neo-shadow text-black font-bold border border-2 border-black hover:border-3 border-black"
                 }`}
               >
                 {myAttendance?.attended ? "✅ 참석 예정" : "참석하기"}
@@ -286,7 +286,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
           {meeting.meetingSongs.length > 0 ? (
             <div className="space-y-3">
               {meeting.meetingSongs.map((ms, i) => (
-                <div key={ms.id} className="p-4 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black hover:border-2 border-black transition-all">
+                <div key={ms.id} className="p-4 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black hover:border-2 border-black transition-all">
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-lg font-bold text-gray-800 w-8 text-right">{ms.orderNum}.</span>
                     <div className="flex-1">
@@ -331,7 +331,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
           </h2>
           <div className="space-y-2">
             {meeting.attendances.filter((a) => a.attended).map((a) => (
-              <div key={a.id} className="flex items-center gap-2 p-2 rounded-none hover:bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors">
+              <div key={a.id} className="flex items-center gap-2 p-2 rounded-none hover:bg-white border-3 border-black neo-shadow transition-colors">
                 {a.user.image ? (
                   <img src={a.user.image} alt="" className="w-7 h-7 rounded-full border border-2 border-black" />
                 ) : (
@@ -362,7 +362,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             placeholder="곡 제목 또는 아티스트 검색..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 px-4 py-2 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
+            className="flex-1 px-4 py-2 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
           />
           <button
             onClick={() => {
@@ -389,10 +389,10 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                 disabled={isAlreadyAdded}
                 className={`w-full text-left p-3 rounded-none border transition-all duration-200 ${
                   isAlreadyAdded
-                    ? "border-2 border-black bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] opacity-50 cursor-not-allowed"
+                    ? "border-2 border-black bg-white border-3 border-black neo-shadow opacity-50 cursor-not-allowed"
                     : selectedSongId === song.id
                     ? "border-3 border-black neo-btn neo-btn-primary/10"
-                    : "border-2 border-black bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:border-2 border-black"
+                    : "border-2 border-black bg-white border-3 border-black neo-shadow hover:border-2 border-black"
                 }`}
               >
                 <p className="text-sm font-medium text-black font-black">{song.title}</p>
@@ -413,7 +413,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
         <div className="flex gap-3">
           <button
             onClick={() => setIsAddSongOpen(false)}
-            className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold hover:text-black font-black transition-colors text-sm font-medium"
+            className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow text-black font-bold hover:text-black font-black transition-colors text-sm font-medium"
           >
             취소
           </button>
@@ -447,7 +447,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
               required
               value={editForm.title}
               onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
+              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
             />
           </div>
           <div>
@@ -457,7 +457,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
               required
               value={editForm.date}
               onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors [&::-webkit-calendar-picker-indicator]:invert-[0.8]"
+              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors [&::-webkit-calendar-picker-indicator]:invert-[0.8]"
             />
           </div>
           <div>
@@ -465,7 +465,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             <select
               value={editForm.status}
               onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
+              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
             >
               <option value="UPCOMING">예정</option>
               <option value="COMPLETED">완료</option>
@@ -478,14 +478,14 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
               value={editForm.description}
               onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
               rows={3}
-              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors resize-none"
+              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors resize-none"
             />
           </div>
           <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={() => setIsEditOpen(false)}
-              className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold hover:text-black font-black transition-colors text-sm font-medium"
+              className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow text-black font-bold hover:text-black font-black transition-colors text-sm font-medium"
             >
               취소
             </button>
