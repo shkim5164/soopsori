@@ -25,7 +25,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -73,11 +73,11 @@ export default function Navbar() {
               <div className="flex items-center gap-3">
                 {/* Theme Toggle */}
                 <button
-                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
                   className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-black bg-white neo-shadow-sm hover:bg-neo-yellow hover:text-black transition-all"
                   aria-label="Toggle Dark Mode"
                 >
-                  {mounted ? (theme === "dark" ? "☀️" : "🌙") : "🌙"}
+                  {mounted ? (resolvedTheme === "dark" ? "☀️" : "🌙") : "🌙"}
                 </button>
 
                 {/* Points Badge */}
@@ -137,24 +137,24 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 {/* Theme Toggle */}
                 <button
-                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                  className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-black bg-white neo-shadow-sm hover:bg-neo-yellow hover:text-black transition-all"
+                  onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+                  className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full border-2 border-black bg-white neo-shadow-sm hover:bg-neo-yellow hover:text-black transition-all text-xs sm:text-base"
                   aria-label="Toggle Dark Mode"
                 >
-                  {mounted ? (theme === "dark" ? "☀️" : "🌙") : "🌙"}
+                  {mounted ? (resolvedTheme === "dark" ? "☀️" : "🌙") : "🌙"}
                 </button>
                 <Link
                   href="/login"
-                  className={getButtonClasses({ variant: "default", size: "sm" })}
+                  className={getButtonClasses({ variant: "default", size: "sm", className: "h-8 px-2.5 text-xs sm:h-9 sm:px-3 sm:text-sm" })}
                 >
                   로그인
                 </Link>
                 <Link
                   href="/register"
-                  className={getButtonClasses({ variant: "primary", size: "sm" })}
+                  className={getButtonClasses({ variant: "primary", size: "sm", className: "h-8 px-2.5 text-xs sm:h-9 sm:px-3 sm:text-sm" })}
                 >
                   회원가입
                 </Link>
