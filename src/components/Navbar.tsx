@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
+import { getButtonClasses } from "@/components/ui/Button";
 
 const navLinks = [
   { href: "/", label: "홈", icon: "🏠" },
@@ -147,13 +148,13 @@ export default function Navbar() {
                 </button>
                 <Link
                   href="/login"
-                  className="whitespace-nowrap px-3 py-1.5 sm:px-4 sm:py-2 font-bold text-xs sm:text-sm lowercase border-2 border-black rounded-full bg-white text-black neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm hover:bg-neo-yellow hover:text-black transition-all"
+                  className={getButtonClasses({ variant: "default", size: "sm" })}
                 >
                   로그인
                 </Link>
                 <Link
                   href="/register"
-                  className="whitespace-nowrap px-3 py-1.5 sm:px-4 sm:py-2 font-bold text-xs sm:text-sm lowercase border-2 border-black rounded-full bg-neo-pink text-white neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm hover:bg-black hover:text-neo-yellow transition-all"
+                  className={getButtonClasses({ variant: "primary", size: "sm" })}
                 >
                   회원가입
                 </Link>
@@ -163,7 +164,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden p-2 bg-neo-yellow border-2 border-black neo-shadow rounded-none hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm transition-all text-black"
+              className={getButtonClasses({ variant: "secondary", size: "icon", className: "lg:hidden rounded-none" })}
             >
               <svg className="w-6 h-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {mobileOpen ? (

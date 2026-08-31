@@ -6,6 +6,27 @@ import Navbar from "@/components/Navbar";
 export const metadata: Metadata = {
   title: "soopsori | band crew",
   description: "soopsori band crew - get ready to rock",
+  icons: {
+    icon: "/icon.jpg",
+  },
+  openGraph: {
+    title: "soopsori | band crew",
+    description: "soopsori band crew - get ready to rock",
+    images: [
+      {
+        url: "/opengraph-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "soopsori band crew",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "soopsori | band crew",
+    description: "soopsori band crew - get ready to rock",
+    images: ["/opengraph-image.jpg"],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
