@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { useSession } from "next-auth/react";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
-import { getPositionLabel, getPositionBadgeClass, getPositionEmoji, formatDate } from "@/lib/constants";
+import { getPositionLabel, getPositionBadgeClass, getPositionEmoji, formatDate, POSITIONS } from "@/lib/constants";
 import Link from "next/link";
 
 interface SongSession {
@@ -110,7 +110,51 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
   };
 
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ title: "", artist: "", youtubeUrl: "", description: "", difficulty: 3 });
+  const [editForm, setEditForm] = useState({ title: "", artist: "", youtubeUrl: "", description: "", difficulty: 3, sessions: [] as string[] });
+  const [customSession, setCustomSession] = useState("");
+  const [isFetchingMeta, setIsFetchingMeta] = useState(false);
+
+  const fetchYoutubeMeta = async (url: string) => {
+    if (!url || !url.includes("youtu")) return;
+    setIsFetchingMeta(true);
+    try {
+      const res = await fetch(`/api/youtube?url=${encodeURIComponent(url)}`);
+      if (res.ok) {
+        const data = await res.json();
+        let fetchedTitle = data.title || "";
+        let fetchedArtist = data.artist ? data.artist.replace(/ - Topic$/i, "") : "";
+        
+        if (fetchedTitle.includes(" - ")) {
+          const parts = fetchedTitle.split(" - ");
+          if (parts.length >= 2 && !fetchedArtist) {
+            fetchedArtist = parts[0].trim();
+            fetchedTitle = parts.slice(1).join(" - ").trim();
+          }
+        }
+
+        setEditForm(prev => ({
+          ...prev,
+          title: prev.title || fetchedTitle,
+          artist: prev.artist || fetchedArtist
+        }));
+      }
+    } catch (error) {
+      console.error("Failed to fetch youtube meta", error);
+    } finally {
+      setIsFetchingMeta(false);
+    }
+  };
+
+  const addSession = (position: string) => {
+    setEditForm((prev) => ({ ...prev, sessions: [...prev.sessions, position] }));
+  };
+
+  const removeSession = (index: number) => {
+    setEditForm((prev) => ({
+      ...prev,
+      sessions: prev.sessions.filter((_, i) => i !== index),
+    }));
+  };
 
   const handleEditClick = () => {
     if (song) {
@@ -120,6 +164,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
         youtubeUrl: song.youtubeUrl || "",
         description: song.description || "",
         difficulty: song.difficulty,
+        sessions: song.sessions.map((s) => s.position),
       });
       setIsEditing(true);
     }
@@ -217,6 +262,10 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
   const openSessions = song.sessions.filter((s) => s.status === "OPEN");
   const filledSessions = song.sessions.filter((s) => s.status === "FILLED");
 
+  const positionCounts: Record<string, number> = {};
+  song.sessions.forEach(s => positionCounts[s.position] = (positionCounts[s.position] || 0) + 1);
+  const positionRunningCounts: Record<string, number> = {};
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Breadcrumb */}
@@ -239,6 +288,20 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
             {isEditing ? (
               <form onSubmit={handleUpdateSong} className="space-y-4">
                 <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-sm text-neutral-400">유튜브 URL (선택)</label>
+                    {isFetchingMeta && <span className="text-xs text-emerald-400 animate-pulse">정보 불러오는 중...</span>}
+                  </div>
+                  <input
+                    type="url"
+                    value={editForm.youtubeUrl}
+                    onChange={(e) => setEditForm({ ...editForm, youtubeUrl: e.target.value })}
+                    onBlur={(e) => fetchYoutubeMeta(e.target.value)}
+                    className="w-full bg-forest-900/50 border border-forest-700 rounded-lg px-4 py-2 text-neutral-100 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50"
+                    placeholder="입력 시 자동 정보 추출"
+                  />
+                </div>
+                <div>
                   <label className="block text-sm text-neutral-400 mb-1">제목</label>
                   <input
                     type="text"
@@ -255,15 +318,6 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                     required
                     value={editForm.artist}
                     onChange={(e) => setEditForm({ ...editForm, artist: e.target.value })}
-                    className="w-full bg-forest-900/50 border border-forest-700 rounded-lg px-4 py-2 text-neutral-100"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-neutral-400 mb-1">유튜브 URL (선택)</label>
-                  <input
-                    type="url"
-                    value={editForm.youtubeUrl}
-                    onChange={(e) => setEditForm({ ...editForm, youtubeUrl: e.target.value })}
                     className="w-full bg-forest-900/50 border border-forest-700 rounded-lg px-4 py-2 text-neutral-100"
                   />
                 </div>
@@ -291,6 +345,68 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                         ★
                       </button>
                     ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-2">필요한 세션</label>
+                  
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {editForm.sessions.map((pos, index) => (
+                      <div key={index} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg ${getPositionBadgeClass(pos)}`}>
+                        <span className="text-sm">
+                          {getPositionEmoji(pos)} {getPositionLabel(pos)}
+                        </span>
+                        <button type="button" onClick={() => removeSession(index)} className="opacity-70 hover:opacity-100 ml-1 transition-opacity">
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    {editForm.sessions.length === 0 && <span className="text-neutral-500 text-sm py-1.5">선택된 세션이 없습니다</span>}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {POSITIONS.filter(p => p.id !== "other").map((pos) => (
+                      <button
+                        key={pos.id}
+                        type="button"
+                        onClick={() => addSession(pos.id)}
+                        className="px-3 py-1.5 rounded-lg text-sm font-medium bg-forest-900/20 text-neutral-400 hover:text-neutral-200 border border-forest-700/20 hover:border-forest-700/40 transition-colors"
+                      >
+                        + {pos.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-2">
+                    <input 
+                      type="text" 
+                      value={customSession} 
+                      onChange={e => setCustomSession(e.target.value)}
+                      placeholder="직접 입력 (예: 플루트)" 
+                      className="flex-1 max-w-[200px] px-3 py-1.5 rounded-lg bg-forest-900/20 border border-forest-700/30 text-sm text-neutral-200 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (e.nativeEvent.isComposing) return;
+                          if (customSession.trim()) {
+                            addSession(customSession.trim());
+                            setCustomSession("");
+                          }
+                        }
+                      }}
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        if (customSession.trim()) {
+                          addSession(customSession.trim());
+                          setCustomSession("");
+                        }
+                      }}
+                      className="px-3 py-1.5 rounded-lg text-sm font-medium bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors"
+                    >
+                      추가
+                    </button>
                   </div>
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
@@ -372,53 +488,60 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
 
             {song.sessions.length > 0 ? (
               <div className="space-y-3">
-                {song.sessions.map((s) => (
-                  <div
-                    key={s.id}
-                    className={`p-3 rounded-xl border transition-all duration-200 ${
-                      s.status === "FILLED"
-                        ? "bg-forest-900/20 border-forest-700/20"
-                        : "bg-emerald-500/5 border-emerald-500/20"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className={`text-sm px-2.5 py-0.5 rounded-full font-medium ${getPositionBadgeClass(s.position)}`}>
-                        {getPositionEmoji(s.position)} {getPositionLabel(s.position)}
-                      </span>
-                      <span className={`text-xs ${s.status === "OPEN" ? "text-emerald-400" : "text-neutral-500"}`}>
-                        {s.status === "OPEN" ? "모집 중" : "완료"}
-                      </span>
-                    </div>
-
-                    {s.status === "FILLED" && s.user ? (
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          {s.user.image && (
-                            <img src={s.user.image} alt="" className="w-6 h-6 rounded-full" />
-                          )}
-                          <span className="text-sm text-neutral-300">{s.user.name}</span>
-                        </div>
-                        {session?.user?.id === s.user.id && (
-                          <button
-                            onClick={() => handleLeaveSession(s.id)}
-                            className="text-xs px-3 py-1 rounded-lg bg-danger-500/10 text-danger-400 hover:bg-danger-500/20 transition-colors"
-                          >
-                            참여 취소
-                          </button>
-                        )}
+                {song.sessions.map((s) => {
+                  positionRunningCounts[s.position] = (positionRunningCounts[s.position] || 0) + 1;
+                  const displayLabel = positionCounts[s.position] > 1 
+                    ? `${getPositionLabel(s.position)} ${positionRunningCounts[s.position]}`
+                    : getPositionLabel(s.position);
+                  
+                  return (
+                    <div
+                      key={s.id}
+                      className={`p-3 rounded-xl border transition-all duration-200 ${
+                        s.status === "FILLED"
+                          ? "bg-forest-900/20 border-forest-700/20"
+                          : "bg-emerald-500/5 border-emerald-500/20"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className={`text-sm px-2.5 py-0.5 rounded-full font-medium ${getPositionBadgeClass(s.position)}`}>
+                          {getPositionEmoji(s.position)} {displayLabel}
+                        </span>
+                        <span className={`text-xs ${s.status === "OPEN" ? "text-emerald-400" : "text-neutral-500"}`}>
+                          {s.status === "OPEN" ? "모집 중" : "완료"}
+                        </span>
                       </div>
-                    ) : (
-                      session?.user?.id && (
-                        <button
-                          onClick={() => handleJoinSession(s.id)}
-                          className="w-full py-2 rounded-lg bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 text-sm font-medium transition-colors"
-                        >
-                          참여하기
-                        </button>
-                      )
-                    )}
-                  </div>
-                ))}
+
+                      {s.status === "FILLED" && s.user ? (
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            {s.user.image && (
+                              <img src={s.user.image} alt="" className="w-6 h-6 rounded-full" />
+                            )}
+                            <span className="text-sm text-neutral-300">{s.user.name}</span>
+                          </div>
+                          {session?.user?.id === s.user.id && (
+                            <button
+                              onClick={() => handleLeaveSession(s.id)}
+                              className="text-xs px-3 py-1 rounded-lg bg-danger-500/10 text-danger-400 hover:bg-danger-500/20 transition-colors"
+                            >
+                              참여 취소
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        session?.user?.id && (
+                          <button
+                            onClick={() => handleJoinSession(s.id)}
+                            className="w-full py-2 rounded-lg bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 text-sm font-medium transition-colors"
+                          >
+                            참여하기
+                          </button>
+                        )
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <p className="text-neutral-500 text-sm text-center py-4">

@@ -110,9 +110,9 @@ export function getPositionBadgeClass(id: string): string {
     bass: "badge-bass",
     drum: "badge-drum",
     keyboard: "badge-keyboard",
-    other: "badge-acoustic-guitar", // Use a generic styling
+    other: "badge-other",
   };
-  return classMap[id] ?? "badge-vocal";
+  return classMap[id] ?? "badge-other";
 }
 
 // YouTube URL을 embed URL로 변환
