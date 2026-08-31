@@ -13,14 +13,14 @@ export default function YouTubeEmbed({ url, title, className = "" }: YouTubeEmbe
 
   if (!embedUrl) {
     return (
-      <div className={`flex items-center justify-center bg-forest-900/50 rounded-xl border border-forest-700/30 aspect-video ${className}`}>
-        <p className="text-neutral-500 text-sm">유효하지 않은 YouTube URL입니다</p>
+      <div className={`flex items-center justify-center bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none border border-2 border-black aspect-video ${className}`}>
+        <p className="text-gray-800 font-bold text-sm">유효하지 않은 YouTube URL입니다</p>
       </div>
     );
   }
 
   return (
-    <div className={`relative aspect-video rounded-xl overflow-hidden border border-forest-700/30 ${className}`}>
+    <div className={`relative aspect-video rounded-none overflow-hidden border border-2 border-black ${className}`}>
       <iframe
         src={embedUrl}
         title={title ?? "YouTube video"}

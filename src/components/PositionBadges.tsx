@@ -30,7 +30,7 @@ export default function PositionBadges({ positionStr, mode = "compact" }: Positi
           {badge && <span className="opacity-80 text-[10px] ml-0.5" title={`${badge.label} 연차`}>{badge.emoji}</span>}
         </span>
         {otherCount > 0 && (
-          <span className="text-xs text-neutral-500">+{otherCount}</span>
+          <span className="text-xs text-gray-800 font-bold">+{otherCount}</span>
         )}
       </div>
     );

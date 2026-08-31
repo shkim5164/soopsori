@@ -46,14 +46,14 @@ export default function LoginPage() {
           <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-forest-300 bg-clip-text text-transparent">
             숲소리 로그인
           </h1>
-          <p className="text-neutral-500 text-sm mt-1">밴드 동호회에 오신 것을 환영합니다</p>
+          <p className="text-gray-800 font-bold text-sm mt-1">밴드 동호회에 오신 것을 환영합니다</p>
         </div>
 
         {/* Form */}
-        <div className="glass-card-static p-6">
+        <div className="neo-card p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-neutral-300 mb-1.5">
+              <label className="block text-sm font-medium text-black font-bold mb-1.5">
                 아이디
               </label>
               <input
@@ -61,14 +61,14 @@ export default function LoginPage() {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
+                className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black focus:ring-1 focus:bg-neo-yellow focus:ring-0 transition-all"
                 placeholder="아이디를 입력하세요"
                 autoComplete="username"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-neutral-300 mb-1.5">
+              <label className="block text-sm font-medium text-black font-bold mb-1.5">
                 비밀번호
               </label>
               <input
@@ -76,14 +76,14 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
+                className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black focus:ring-1 focus:bg-neo-yellow focus:ring-0 transition-all"
                 placeholder="비밀번호를 입력하세요"
                 autoComplete="current-password"
               />
             </div>
 
             {error && (
-              <div className="p-3 rounded-lg bg-danger-500/10 border border-danger-500/20">
+              <div className="p-3 rounded-none bg-danger-500/10 border border-danger-500/20">
                 <p className="text-sm text-danger-400">{error}</p>
               </div>
             )}
@@ -91,18 +91,18 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-forest-500 hover:from-emerald-400 hover:to-forest-400 text-white font-medium text-sm transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-2.5 rounded-none neo-btn neo-btn-primary font-medium text-sm transition-all duration-200 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "로그인 중..." : "로그인"}
             </button>
           </form>
 
-          <div className="mt-4 pt-4 border-t border-forest-700/20 text-center">
-            <p className="text-sm text-neutral-500">
+          <div className="mt-4 pt-4 text-center">
+            <p className="text-sm text-gray-800 font-bold">
               아직 계정이 없으신가요?{" "}
               <Link
                 href="/register"
-                className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
+                className="text-neo-pink font-black hover:text-neo-pink font-black font-medium transition-colors"
               >
                 회원가입
               </Link>

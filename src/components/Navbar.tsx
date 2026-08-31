@@ -25,21 +25,18 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 glass-card-static border-b border-forest-700/30 rounded-none">
+    <nav className="sticky top-0 z-50 bg-white neo-divider">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <span className="text-2xl group-hover:scale-110 transition-transform duration-300">
-              🌲
-            </span>
-            <span className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-forest-300 bg-clip-text text-transparent">
-              숲소리
-            </span>
+            <div className="font-black text-3xl tracking-tighter lowercase px-3 py-1 bg-neo-yellow border-2 border-black shadow-[4px_4px_0px_0px_#000000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000000] transition-all text-black">
+              soopsori
+            </div>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-3">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || 
                 (link.href !== "/" && pathname.startsWith(link.href));
@@ -49,10 +46,10 @@ export default function Navbar() {
                   href={link.href}
                   target={link.external ? "_blank" : undefined}
                   rel={link.external ? "noopener noreferrer" : undefined}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  className={`px-4 py-2 font-bold text-sm lowercase border-2 border-black rounded-full transition-all ${
                     isActive
-                      ? "bg-forest-600/40 text-emerald-300 shadow-lg shadow-emerald-500/10"
-                      : "text-neutral-400 hover:text-neutral-200 hover:bg-forest-800/40"
+                      ? "bg-neo-pink text-white shadow-[2px_2px_0px_0px_#000000] translate-x-[2px] translate-y-[2px]"
+                      : "bg-white text-black shadow-[4px_4px_0px_0px_#000000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000000] hover:bg-neo-yellow"
                   }`}
                 >
                   <span className="mr-1.5">{link.icon}</span>
@@ -65,59 +62,59 @@ export default function Navbar() {
           {/* User Area */}
           <div className="flex items-center gap-3">
             {status === "loading" ? (
-              <div className="w-8 h-8 rounded-full skeleton" />
+              <div className="w-10 h-10 rounded-full skeleton" />
             ) : session?.user ? (
               <div className="flex items-center gap-3">
                 {/* Points Badge */}
-                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20">
+                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-neo-yellow border-2 border-black shadow-[2px_2px_0px_0px_#000000]">
                   <span className="text-sm">⭐</span>
-                  <span className="text-sm font-semibold text-gold-400">
+                  <span className="text-sm font-black text-black">
                     {session.user.points ?? 0}P
                   </span>
                 </div>
 
                 {/* Profile Dropdown */}
                 <div className="relative group">
-                  <button className="flex items-center gap-2 p-1 rounded-full hover:ring-2 ring-emerald-500/30 transition-all duration-200">
+                  <button className="flex items-center gap-2 p-0.5 rounded-full hover:scale-105 transition-transform duration-200 shadow-[2px_2px_0px_0px_#000000] border-2 border-black bg-white">
                     {session.user.image ? (
                       <img
                         src={session.user.image}
                         alt={session.user.name ?? ""}
-                        className="w-8 h-8 rounded-full border border-forest-600"
+                        className="w-9 h-9 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-forest-700 flex items-center justify-center text-sm">
+                      <div className="w-9 h-9 rounded-full bg-neo-blue flex items-center justify-center font-black text-black text-sm border-2 border-black">
                         {session.user.name?.[0] ?? "?"}
                       </div>
                     )}
                   </button>
                   {/* Dropdown */}
-                  <div className="absolute right-0 mt-2 w-48 glass-card-static p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0">
-                    <div className="px-3 py-2 border-b border-forest-700/30 mb-1">
-                      <p className="text-sm font-medium text-neutral-200 truncate">
+                  <div className="absolute right-0 mt-2 w-48 bg-white border-2 border-black shadow-[6px_6px_0px_0px_#000000] p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0">
+                    <div className="px-3 py-2 border-b-2 border-black mb-2 bg-neo-yellow">
+                      <p className="text-sm font-black text-black truncate">
                         {session.user.name}
                       </p>
-                      <p className="text-xs text-neutral-500 truncate">
+                      <p className="text-xs font-bold text-gray-700 truncate">
                         {session.user.email}
                       </p>
                     </div>
                     <Link
                       href="/profile"
-                      className="block px-3 py-2 text-sm text-neutral-400 hover:text-neutral-200 hover:bg-forest-800/40 rounded-lg transition-colors"
+                      className="block px-3 py-2 text-sm font-bold text-black hover:bg-neo-pink hover:text-white rounded-none border-2 border-transparent hover:border-black transition-colors mb-1"
                     >
                       👤 프로필
                     </Link>
                     {session.user.role === "ADMIN" && (
                       <Link
                         href="/admin"
-                        className="block px-3 py-2 text-sm text-neutral-400 hover:text-neutral-200 hover:bg-forest-800/40 rounded-lg transition-colors"
+                        className="block px-3 py-2 text-sm font-bold text-black hover:bg-neo-blue hover:text-black rounded-none border-2 border-transparent hover:border-black transition-colors mb-1"
                       >
                         ⚙️ 관리자
                       </Link>
                     )}
                     <button
                       onClick={() => signOut()}
-                      className="w-full text-left px-3 py-2 text-sm text-danger-400 hover:bg-danger-500/10 rounded-lg transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm font-bold text-black hover:bg-red-500 hover:text-white rounded-none border-2 border-transparent hover:border-black transition-colors"
                     >
                       🚪 로그아웃
                     </button>
@@ -128,13 +125,13 @@ export default function Navbar() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/login"
-                  className="px-4 py-2 rounded-lg text-neutral-400 hover:text-neutral-200 hover:bg-forest-800/40 text-sm font-medium transition-all duration-200"
+                  className="px-4 py-2 font-bold text-sm lowercase border-2 border-black rounded-full bg-white text-black shadow-[4px_4px_0px_0px_#000000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000000] hover:bg-neo-yellow transition-all"
                 >
                   로그인
                 </Link>
                 <Link
                   href="/register"
-                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-forest-500 hover:from-emerald-400 hover:to-forest-400 text-white text-sm font-medium transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/10"
+                  className="px-4 py-2 font-bold text-sm lowercase border-2 border-black rounded-full bg-neo-pink text-white shadow-[4px_4px_0px_0px_#000000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000000] hover:bg-black hover:text-neo-yellow transition-all"
                 >
                   회원가입
                 </Link>
@@ -144,13 +141,13 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 rounded-lg text-neutral-400 hover:text-neutral-200 hover:bg-forest-800/40 transition-colors"
+              className="md:hidden p-2 bg-neo-yellow border-2 border-black shadow-[4px_4px_0px_0px_#000000] rounded-none hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000000] transition-all"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-6 h-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {mobileOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M4 6h16M4 12h16M4 18h16" />
                 )}
               </svg>
             </button>
@@ -160,8 +157,8 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-forest-700/30 animate-fade-in-up">
-          <div className="px-4 py-3 space-y-1">
+        <div className="md:hidden border-t-4 border-black bg-white animate-fade-in-up">
+          <div className="px-4 py-4 flex flex-col gap-2">
             {navLinks.map((link) => {
               const isActive = pathname === link.href ||
                 (link.href !== "/" && pathname.startsWith(link.href));
@@ -174,10 +171,10 @@ export default function Navbar() {
                   onClick={() => {
                     if (!link.external) setMobileOpen(false);
                   }}
-                  className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  className={`block px-4 py-3 border-2 border-black font-bold lowercase transition-all ${
                     isActive
-                      ? "bg-forest-600/40 text-emerald-300"
-                      : "text-neutral-400 hover:text-neutral-200 hover:bg-forest-800/40"
+                      ? "bg-neo-pink text-white shadow-[4px_4px_0px_0px_#000000]"
+                      : "bg-white text-black shadow-[4px_4px_0px_0px_#000000] hover:bg-neo-yellow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000000]"
                   }`}
                 >
                   <span className="mr-2">{link.icon}</span>

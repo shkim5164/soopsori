@@ -99,10 +99,10 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
       <form onSubmit={handleCreateSong} className="space-y-4">
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-sm font-medium text-neutral-300">
+            <label className="block text-sm font-medium text-black font-bold">
               YouTube URL
             </label>
-            {isFetchingMeta && <span className="text-xs text-emerald-400 animate-pulse">정보 불러오는 중...</span>}
+            {isFetchingMeta && <span className="text-xs text-neo-pink font-black animate-pulse">정보 불러오는 중...</span>}
           </div>
           <input
             type="url"
@@ -111,13 +111,13 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
               setNewSong({ ...newSong, youtubeUrl: e.target.value });
             }}
             onBlur={(e) => fetchYoutubeMeta(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+            className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
             placeholder="https://www.youtube.com/watch?v=... (입력 시 자동 정보 추출)"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-neutral-300 mb-1.5">
+          <label className="block text-sm font-medium text-black font-bold mb-1.5">
             곡 제목 *
           </label>
           <input
@@ -125,13 +125,13 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
             required
             value={newSong.title}
             onChange={(e) => setNewSong({ ...newSong, title: e.target.value })}
-            className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+            className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
             placeholder="곡 제목을 입력하세요"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-neutral-300 mb-1.5">
+          <label className="block text-sm font-medium text-black font-bold mb-1.5">
             아티스트 *
           </label>
           <input
@@ -139,32 +139,32 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
             required
             value={newSong.artist}
             onChange={(e) => setNewSong({ ...newSong, artist: e.target.value })}
-            className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+            className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
             placeholder="아티스트명을 입력하세요"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-neutral-300 mb-1.5">
+          <label className="block text-sm font-medium text-black font-bold mb-1.5">
             설명
           </label>
           <textarea
             value={newSong.description}
             onChange={(e) => setNewSong({ ...newSong, description: e.target.value })}
             rows={3}
-            className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors resize-none"
+            className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors resize-none"
             placeholder="곡에 대한 설명이나 메모를 입력하세요"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-neutral-300 mb-2">
+          <label className="block text-sm font-medium text-black font-bold mb-2">
             필요한 세션
           </label>
           
           <div className="flex flex-wrap gap-2 mb-3">
             {newSong.sessions.map((pos, index) => (
-              <div key={index} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg ${getPositionBadgeClass(pos)}`}>
+              <div key={index} className={`flex items-center gap-1 px-3 py-1.5 rounded-none ${getPositionBadgeClass(pos)}`}>
                 <span className="text-sm">
                   {getPositionEmoji(pos)} {getPositionLabel(pos)}
                 </span>
@@ -173,7 +173,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
                 </button>
               </div>
             ))}
-            {newSong.sessions.length === 0 && <span className="text-neutral-500 text-sm py-1.5">선택된 세션이 없습니다</span>}
+            {newSong.sessions.length === 0 && <span className="text-gray-800 font-bold text-sm py-1.5">선택된 세션이 없습니다</span>}
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -182,7 +182,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
                 key={pos.id}
                 type="button"
                 onClick={() => addSession(pos.id)}
-                className="px-3 py-1.5 rounded-lg text-sm font-medium bg-forest-900/20 text-neutral-400 hover:text-neutral-200 border border-forest-700/20 hover:border-forest-700/40 transition-colors"
+                className="px-3 py-1.5 rounded-none text-sm font-medium bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold hover:text-black font-black border border-2 border-black hover:border-2 border-black transition-colors"
               >
                 + {pos.label}
               </button>
@@ -195,7 +195,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
               value={customSession} 
               onChange={e => setCustomSession(e.target.value)}
               placeholder="직접 입력 (예: 플루트)" 
-              className="flex-1 max-w-[200px] px-3 py-1.5 rounded-lg bg-forest-900/20 border border-forest-700/30 text-sm text-neutral-200 focus:outline-none focus:border-emerald-500/50 transition-colors"
+              className="flex-1 max-w-[200px] px-3 py-1.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-sm text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
@@ -215,7 +215,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
                   setCustomSession("");
                 }
               }}
-              className="px-3 py-1.5 rounded-lg text-sm font-medium bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors"
+              className="px-3 py-1.5 rounded-none text-sm font-medium neo-btn neo-btn-primary/15 text-neo-pink font-black hover:neo-btn neo-btn-primary/25 transition-colors"
             >
               추가
             </button>
@@ -223,7 +223,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-neutral-300 mb-2">
+          <label className="block text-sm font-medium text-black font-bold mb-2">
             난이도
           </label>
           <div className="flex items-center gap-1">
@@ -233,7 +233,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
                 type="button"
                 onClick={() => setNewSong({ ...newSong, difficulty: star })}
                 className={`text-2xl transition-colors ${
-                  star <= newSong.difficulty ? "text-gold-400" : "text-neutral-700"
+                  star <= newSong.difficulty ? "text-black font-black bg-neo-yellow px-1" : "text-gray-900"
                 }`}
               >
                 ★
@@ -247,14 +247,14 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="flex-1 px-4 py-2.5 rounded-xl bg-forest-900/40 text-neutral-400 hover:text-neutral-200 hover:bg-forest-900/60 transition-colors font-medium text-sm disabled:opacity-50"
+            className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold hover:text-black font-black hover:bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors font-medium text-sm disabled:opacity-50"
           >
             취소
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-forest-500 hover:from-emerald-400 hover:to-forest-400 text-white font-medium text-sm transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/20 disabled:opacity-50"
+            className="flex-1 px-4 py-2.5 rounded-none neo-btn neo-btn-primary font-medium text-sm transition-all duration-200 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50"
           >
             {loading ? "등록 중..." : "등록하기"}
           </button>

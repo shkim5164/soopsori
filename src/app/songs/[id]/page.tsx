@@ -240,7 +240,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="skeleton h-8 w-48 mb-6" />
-        <div className="skeleton aspect-video mb-6 rounded-xl" />
+        <div className="skeleton aspect-video mb-6 rounded-none" />
         <div className="skeleton h-6 w-full mb-3" />
         <div className="skeleton h-6 w-2/3" />
       </div>
@@ -251,8 +251,8 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
         <span className="text-5xl block mb-4">😢</span>
-        <h1 className="text-xl font-bold text-neutral-300">곡을 찾을 수 없습니다</h1>
-        <Link href="/songs" className="text-emerald-400 hover:text-emerald-300 text-sm mt-2 inline-block">
+        <h1 className="text-xl font-bold text-black font-bold">곡을 찾을 수 없습니다</h1>
+        <Link href="/songs" className="text-neo-pink font-black hover:text-neo-pink font-black text-sm mt-2 inline-block">
           ← 곡 목록으로
         </Link>
       </div>
@@ -270,7 +270,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Breadcrumb */}
       <div className="mb-6 animate-fade-in-up">
-        <Link href="/songs" className="text-sm text-neutral-500 hover:text-emerald-400 transition-colors">
+        <Link href="/songs" className="text-sm text-gray-800 font-bold hover:text-neo-pink font-black transition-colors">
           ← 곡 목록
         </Link>
       </div>
@@ -284,54 +284,54 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
           )}
 
           {/* Song Info */}
-          <div className="glass-card-static p-6">
+          <div className="neo-card p-6">
             {isEditing ? (
               <form onSubmit={handleUpdateSong} className="space-y-4">
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-sm text-neutral-400">유튜브 URL (선택)</label>
-                    {isFetchingMeta && <span className="text-xs text-emerald-400 animate-pulse">정보 불러오는 중...</span>}
+                    <label className="block text-sm text-black font-bold">유튜브 URL (선택)</label>
+                    {isFetchingMeta && <span className="text-xs text-neo-pink font-black animate-pulse">정보 불러오는 중...</span>}
                   </div>
                   <input
                     type="url"
                     value={editForm.youtubeUrl}
                     onChange={(e) => setEditForm({ ...editForm, youtubeUrl: e.target.value })}
                     onBlur={(e) => fetchYoutubeMeta(e.target.value)}
-                    className="w-full bg-forest-900/50 border border-forest-700 rounded-lg px-4 py-2 text-neutral-100 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50"
+                    className="w-full bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black rounded-none px-4 py-2 text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black"
                     placeholder="입력 시 자동 정보 추출"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-neutral-400 mb-1">제목</label>
+                  <label className="block text-sm text-black font-bold mb-1">제목</label>
                   <input
                     type="text"
                     required
                     value={editForm.title}
                     onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                    className="w-full bg-forest-900/50 border border-forest-700 rounded-lg px-4 py-2 text-neutral-100"
+                    className="w-full bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black rounded-none px-4 py-2 text-black font-black"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-neutral-400 mb-1">아티스트</label>
+                  <label className="block text-sm text-black font-bold mb-1">아티스트</label>
                   <input
                     type="text"
                     required
                     value={editForm.artist}
                     onChange={(e) => setEditForm({ ...editForm, artist: e.target.value })}
-                    className="w-full bg-forest-900/50 border border-forest-700 rounded-lg px-4 py-2 text-neutral-100"
+                    className="w-full bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black rounded-none px-4 py-2 text-black font-black"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-neutral-400 mb-1">설명 (선택)</label>
+                  <label className="block text-sm text-black font-bold mb-1">설명 (선택)</label>
                   <textarea
                     rows={4}
                     value={editForm.description}
                     onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                    className="w-full bg-forest-900/50 border border-forest-700 rounded-lg px-4 py-2 text-neutral-100"
+                    className="w-full bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black rounded-none px-4 py-2 text-black font-black"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-neutral-400 mb-1">난이도</label>
+                  <label className="block text-sm text-black font-bold mb-1">난이도</label>
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
@@ -339,7 +339,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                         type="button"
                         onClick={() => setEditForm({ ...editForm, difficulty: star })}
                         className={`text-2xl transition-colors ${
-                          star <= editForm.difficulty ? "text-gold-400" : "text-neutral-700"
+                          star <= editForm.difficulty ? "text-black font-black bg-neo-yellow px-1" : "text-gray-900"
                         }`}
                       >
                         ★
@@ -348,11 +348,11 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm text-neutral-400 mb-2">필요한 세션</label>
+                  <label className="block text-sm text-black font-bold mb-2">필요한 세션</label>
                   
                   <div className="flex flex-wrap gap-2 mb-3">
                     {editForm.sessions.map((pos, index) => (
-                      <div key={index} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg ${getPositionBadgeClass(pos)}`}>
+                      <div key={index} className={`flex items-center gap-1 px-3 py-1.5 rounded-none ${getPositionBadgeClass(pos)}`}>
                         <span className="text-sm">
                           {getPositionEmoji(pos)} {getPositionLabel(pos)}
                         </span>
@@ -361,7 +361,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                         </button>
                       </div>
                     ))}
-                    {editForm.sessions.length === 0 && <span className="text-neutral-500 text-sm py-1.5">선택된 세션이 없습니다</span>}
+                    {editForm.sessions.length === 0 && <span className="text-gray-800 font-bold text-sm py-1.5">선택된 세션이 없습니다</span>}
                   </div>
 
                   <div className="flex flex-wrap gap-2">
@@ -370,7 +370,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                         key={pos.id}
                         type="button"
                         onClick={() => addSession(pos.id)}
-                        className="px-3 py-1.5 rounded-lg text-sm font-medium bg-forest-900/20 text-neutral-400 hover:text-neutral-200 border border-forest-700/20 hover:border-forest-700/40 transition-colors"
+                        className="px-3 py-1.5 rounded-none text-sm font-medium bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold hover:text-black font-black border border-2 border-black hover:border-2 border-black transition-colors"
                       >
                         + {pos.label}
                       </button>
@@ -383,7 +383,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                       value={customSession} 
                       onChange={e => setCustomSession(e.target.value)}
                       placeholder="직접 입력 (예: 플루트)" 
-                      className="flex-1 max-w-[200px] px-3 py-1.5 rounded-lg bg-forest-900/20 border border-forest-700/30 text-sm text-neutral-200 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                      className="flex-1 max-w-[200px] px-3 py-1.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-sm text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
@@ -403,7 +403,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                           setCustomSession("");
                         }
                       }}
-                      className="px-3 py-1.5 rounded-lg text-sm font-medium bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors"
+                      className="px-3 py-1.5 rounded-none text-sm font-medium neo-btn neo-btn-primary/15 text-neo-pink font-black hover:neo-btn neo-btn-primary/25 transition-colors"
                     >
                       추가
                     </button>
@@ -413,13 +413,13 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                   <button
                     type="button"
                     onClick={() => setIsEditing(false)}
-                    className="px-4 py-2 rounded-lg text-neutral-400 hover:text-neutral-300"
+                    className="px-4 py-2 rounded-none text-black font-bold hover:text-black font-bold"
                   >
                     취소
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded-lg bg-emerald-500 text-neutral-950 font-medium hover:bg-emerald-400"
+                    className="px-4 py-2 rounded-none neo-btn neo-btn-primary font-medium hover:bg-emerald-400"
                   >
                     저장
                   </button>
@@ -429,19 +429,19 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
               <>
                 <div className="flex items-start justify-between">
                   <div>
-                    <h1 className="text-2xl font-bold text-neutral-100 flex items-center gap-3">
+                    <h1 className="text-2xl font-bold text-black font-black flex items-center gap-3">
                       {song.title}
-                      <span className="text-sm px-2 py-0.5 rounded bg-gold-500/10 text-gold-400 border border-gold-500/20 whitespace-nowrap">
+                      <span className="text-sm px-2 py-0.5 rounded bg-gold-500/10 text-black font-black bg-neo-yellow px-1 border border-gold-500/20 whitespace-nowrap">
                         {"⭐".repeat(song.difficulty)}
                       </span>
                     </h1>
-                    <p className="text-lg text-neutral-400 mt-1">{song.artist}</p>
+                    <p className="text-lg text-black font-bold mt-1">{song.artist}</p>
                   </div>
                   {(session?.user?.id === song.user.id || session?.user?.role === "ADMIN") && (
                     <div className="flex items-center gap-1">
                       <button
                         onClick={handleEditClick}
-                        className="p-2 rounded-lg text-neutral-600 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                        className="p-2 rounded-none text-gray-800 hover:text-neo-pink font-black hover:neo-btn neo-btn-primary/10 transition-colors"
                         title="곡 수정"
                       >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -450,7 +450,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                       </button>
                       <button
                         onClick={handleDeleteSong}
-                        className="p-2 rounded-lg text-neutral-600 hover:text-danger-400 hover:bg-danger-500/10 transition-colors"
+                        className="p-2 rounded-none text-gray-800 hover:text-danger-400 hover:bg-danger-500/10 transition-colors"
                         title="곡 삭제"
                       >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -462,18 +462,18 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                 </div>
 
                 {song.description && (
-                  <p className="mt-4 text-neutral-400 text-sm leading-relaxed whitespace-pre-wrap">
+                  <p className="mt-4 text-black font-bold text-sm leading-relaxed whitespace-pre-wrap">
                     {song.description}
                   </p>
                 )}
 
-                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-forest-700/20">
+                <div className="flex items-center gap-3 mt-4 pt-4">
                   {song.user.image && (
-                    <img src={song.user.image} alt="" className="w-8 h-8 rounded-full border border-forest-700" />
+                    <img src={song.user.image} alt="" className="w-8 h-8 rounded-full border border-2 border-black" />
                   )}
                   <div>
-                    <p className="text-sm text-neutral-300">{song.user.name}</p>
-                    <p className="text-xs text-neutral-600">{formatDate(song.createdAt)}</p>
+                    <p className="text-sm text-black font-bold">{song.user.name}</p>
+                    <p className="text-xs text-gray-800">{formatDate(song.createdAt)}</p>
                   </div>
                 </div>
               </>
@@ -483,8 +483,8 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
 
         {/* Session Panel */}
         <div className="space-y-4 animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
-          <div className="glass-card-static p-6">
-            <h2 className="text-lg font-bold text-neutral-100 mb-4">🎸 세션 현황</h2>
+          <div className="neo-card p-6">
+            <h2 className="text-lg font-bold text-black font-black mb-4">🎸 세션 현황</h2>
 
             {song.sessions.length > 0 ? (
               <div className="space-y-3">
@@ -497,33 +497,33 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                   return (
                     <div
                       key={s.id}
-                      className={`p-3 rounded-xl border transition-all duration-200 ${
+                      className={`p-4 transition-all duration-200 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-3 ${
                         s.status === "FILLED"
-                          ? "bg-forest-900/20 border-forest-700/20"
-                          : "bg-emerald-500/5 border-emerald-500/20"
+                          ? "bg-gray-100"
+                          : "bg-white"
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between">
                         <span className={`text-sm px-2.5 py-0.5 rounded-full font-medium ${getPositionBadgeClass(s.position)}`}>
                           {getPositionEmoji(s.position)} {displayLabel}
                         </span>
-                        <span className={`text-xs ${s.status === "OPEN" ? "text-emerald-400" : "text-neutral-500"}`}>
+                        <span className={`text-xs ${s.status === "OPEN" ? "text-neo-pink font-black" : "text-gray-800 font-bold"}`}>
                           {s.status === "OPEN" ? "모집 중" : "완료"}
                         </span>
                       </div>
 
                       {s.status === "FILLED" && s.user ? (
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between pt-2 border-t-2 border-gray-200 mt-1">
                           <div className="flex items-center gap-2">
                             {s.user.image && (
-                              <img src={s.user.image} alt="" className="w-6 h-6 rounded-full" />
+                              <img src={s.user.image} alt="" className="w-6 h-6 rounded-full border-2 border-black" />
                             )}
-                            <span className="text-sm text-neutral-300">{s.user.name}</span>
+                            <span className="text-sm text-black font-black">{s.user.name}</span>
                           </div>
                           {session?.user?.id === s.user.id && (
                             <button
                               onClick={() => handleLeaveSession(s.id)}
-                              className="text-xs px-3 py-1 rounded-lg bg-danger-500/10 text-danger-400 hover:bg-danger-500/20 transition-colors"
+                              className="text-xs px-3 py-1 font-black bg-danger-500/10 text-danger-400 hover:bg-danger-500/20 transition-colors border-2 border-black"
                             >
                               참여 취소
                             </button>
@@ -533,7 +533,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                         session?.user?.id && (
                           <button
                             onClick={() => handleJoinSession(s.id)}
-                            className="w-full py-2 rounded-lg bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 text-sm font-medium transition-colors"
+                            className="w-full py-2 bg-neo-yellow text-black font-black border-2 border-black hover:translate-x-[2px] hover:translate-y-[2px] transition-transform text-sm"
                           >
                             참여하기
                           </button>
@@ -544,23 +544,23 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                 })}
               </div>
             ) : (
-              <p className="text-neutral-500 text-sm text-center py-4">
+              <p className="text-gray-800 font-bold text-sm text-center py-4">
                 등록된 세션이 없습니다
               </p>
             )}
 
             {/* Summary */}
             {song.sessions.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-forest-700/20">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-neutral-500">충원</span>
-                  <span className="text-neutral-300">
+              <div className="mt-6 pt-4 border-t-2 border-black">
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <span className="text-black font-black">진행률 (충원)</span>
+                  <span className="text-black font-black">
                     {filledSessions.length} / {song.sessions.length}
                   </span>
                 </div>
-                <div className="mt-2 h-2 rounded-full bg-forest-900/50 overflow-hidden">
+                <div className="h-4 rounded-full bg-gray-200 border-2 border-black overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-forest-400 transition-all duration-500"
+                    className="h-full bg-neo-pink transition-all duration-500"
                     style={{
                       width: `${(filledSessions.length / song.sessions.length) * 100}%`,
                     }}
@@ -573,9 +573,9 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
       </div>
 
       {/* Comments Section */}
-      <div className="mt-8 pt-8 border-t border-forest-700/30 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-        <h2 className="text-xl font-bold text-neutral-100 mb-6 flex items-center gap-2">
-          💬 댓글 <span className="text-emerald-400 text-sm">({comments.length})</span>
+      <div className="mt-8 pt-8 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+        <h2 className="text-xl font-bold text-black font-black mb-6 flex items-center gap-2">
+          💬 댓글 <span className="text-neo-pink font-black text-sm">({comments.length})</span>
         </h2>
 
         {/* Comment Form */}
@@ -583,9 +583,9 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
           <form onSubmit={handleCreateComment} className="mb-8 flex gap-3">
             <div className="flex-shrink-0 pt-1">
               {session.user.image ? (
-                <img src={session.user.image} alt="" className="w-8 h-8 rounded-full border border-forest-700" />
+                <img src={session.user.image} alt="" className="w-8 h-8 rounded-full border border-2 border-black" />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-forest-700 flex items-center justify-center text-sm">
+                <div className="w-8 h-8 rounded-full bg-neo-yellow border-2 border-black text-black flex items-center justify-center text-sm">
                   {session.user.name?.[0]}
                 </div>
               )}
@@ -596,13 +596,13 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="댓글을 남겨보세요..."
                 rows={2}
-                className="w-full bg-forest-900/40 border border-forest-700/50 rounded-xl px-4 py-3 text-neutral-200 focus:outline-none focus:border-emerald-500/50 resize-none"
+                className="neo-input resize-none"
               />
               <div className="flex justify-end mt-2">
                 <button
                   type="submit"
                   disabled={!newComment.trim()}
-                  className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:hover:bg-emerald-600 text-white text-sm font-medium transition-colors"
+                  className="px-4 py-2 rounded-none bg-emerald-600 hover:neo-btn neo-btn-primary disabled:opacity-50 disabled:hover:bg-emerald-600 text-black text-sm font-medium transition-colors"
                 >
                   등록
                 </button>
@@ -610,20 +610,20 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
             </div>
           </form>
         ) : (
-          <div className="mb-8 p-4 rounded-xl bg-forest-900/30 border border-forest-700/30 text-center text-neutral-400 text-sm">
-            댓글을 남기려면 <Link href="/login" className="text-emerald-400 hover:underline">로그인</Link>이 필요합니다.
+          <div className="mb-8 p-4 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-center text-black font-bold text-sm">
+            댓글을 남기려면 <Link href="/login" className="text-neo-pink font-black hover:underline">로그인</Link>이 필요합니다.
           </div>
         )}
 
         {/* Comments List */}
-        <div className="space-y-4">
+        <div className="space-y-4 mt-8">
           {comments.map((comment) => (
-            <div key={comment.id} className="flex gap-3 p-4 rounded-xl bg-forest-900/20 border border-forest-700/10">
+            <div key={comment.id} className="flex gap-3 py-4 border-b-2 border-gray-200">
               <div className="flex-shrink-0">
                 {comment.user.image ? (
-                  <img src={comment.user.image} alt="" className="w-8 h-8 rounded-full border border-forest-700" />
+                  <img src={comment.user.image} alt="" className="w-8 h-8 rounded-full border border-2 border-black" />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-forest-700 flex items-center justify-center text-sm">
+                  <div className="w-8 h-8 rounded-full bg-neo-yellow border-2 border-black text-black flex items-center justify-center text-sm">
                     {comment.user.name?.[0]}
                   </div>
                 )}
@@ -631,13 +631,13 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-neutral-200 text-sm">{comment.user.name}</span>
+                    <span className="font-medium text-black font-black text-sm">{comment.user.name}</span>
                     {comment.user.role === "ADMIN" && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-gold-500/15 text-gold-400 border border-gold-500/20">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-gold-500/15 text-black font-black bg-neo-yellow px-1 border border-gold-500/20">
                         관리자
                       </span>
                     )}
-                    <span className="text-xs text-neutral-600">{formatDate(comment.createdAt)}</span>
+                    <span className="text-xs text-gray-800">{formatDate(comment.createdAt)}</span>
                   </div>
                   {(session?.user?.id === comment.user.id || session?.user?.role === "ADMIN") && (
                     <div className="flex gap-2">
@@ -646,13 +646,13 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                           setEditingCommentId(comment.id);
                           setEditingCommentContent(comment.content);
                         }}
-                        className="text-xs text-neutral-600 hover:text-emerald-400 transition-colors"
+                        className="text-xs text-gray-800 hover:text-neo-pink font-black transition-colors"
                       >
                         수정
                       </button>
                       <button
                         onClick={() => handleDeleteComment(comment.id)}
-                        className="text-xs text-neutral-600 hover:text-danger-400 transition-colors"
+                        className="text-xs text-gray-800 hover:text-danger-400 transition-colors"
                       >
                         삭제
                       </button>
@@ -666,26 +666,26 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                       value={editingCommentContent}
                       onChange={(e) => setEditingCommentContent(e.target.value)}
                       rows={2}
-                      className="w-full bg-forest-900/40 border border-forest-700/50 rounded-xl px-4 py-2 text-neutral-200 focus:outline-none focus:border-emerald-500/50 resize-none text-sm"
+                      className="w-full bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black resize-none text-sm"
                     />
                     <div className="flex justify-end gap-2 mt-2">
                       <button
                         onClick={() => setEditingCommentId(null)}
-                        className="px-3 py-1.5 rounded-lg text-neutral-400 hover:text-neutral-300 text-xs transition-colors"
+                        className="px-3 py-1.5 rounded-none text-black font-bold hover:text-black font-bold text-xs transition-colors"
                       >
                         취소
                       </button>
                       <button
                         onClick={() => handleUpdateComment(comment.id)}
                         disabled={!editingCommentContent.trim()}
-                        className="px-3 py-1.5 rounded-lg bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 disabled:opacity-50 text-xs transition-colors"
+                        className="px-3 py-1.5 rounded-none bg-emerald-600/20 text-neo-pink font-black hover:bg-emerald-600/30 disabled:opacity-50 text-xs transition-colors"
                       >
                         저장
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-neutral-300 text-sm whitespace-pre-wrap leading-relaxed mt-1">
+                  <p className="text-black font-bold text-sm whitespace-pre-wrap leading-relaxed mt-1">
                     {comment.content}
                   </p>
                 )}
@@ -693,7 +693,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
             </div>
           ))}
           {comments.length === 0 && (
-            <div className="text-center py-8 text-neutral-500 text-sm">
+            <div className="text-center py-8 text-gray-800 font-bold text-sm">
               첫 댓글을 남겨보세요!
             </div>
           )}

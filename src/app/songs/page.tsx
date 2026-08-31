@@ -119,13 +119,13 @@ export default function SongsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 animate-fade-in-up">
         <div>
-          <h1 className="text-3xl font-bold text-neutral-100">🎵 곡 목록</h1>
-          <p className="text-neutral-500 mt-1">하고 싶은 곡을 등록하고 세션에 참여하세요</p>
+          <h1 className="text-3xl font-bold text-black font-black">🎵 곡 목록</h1>
+          <p className="text-gray-800 font-bold mt-1">하고 싶은 곡을 등록하고 세션에 참여하세요</p>
         </div>
         {session && (
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-forest-500 hover:from-emerald-400 hover:to-forest-400 text-white font-medium text-sm transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/20 hover:-translate-y-0.5"
+            className="px-5 py-2.5 rounded-none neo-btn neo-btn-primary font-medium text-sm transition-all duration-200 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5"
           >
             + 곡 등록하기
           </button>
@@ -140,9 +140,9 @@ export default function SongsPage() {
             placeholder="곡 제목 또는 아티스트 검색..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-xl bg-forest-900/30 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
+            className="w-full pl-10 pr-4 py-3 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black focus:ring-1 focus:bg-neo-yellow focus:ring-0 transition-all"
           />
-          <svg className="absolute left-3 top-3.5 w-4 h-4 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="absolute left-3 top-3.5 w-4 h-4 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
@@ -150,7 +150,7 @@ export default function SongsPage() {
           <select
             value={positionFilter}
             onChange={(e) => setPositionFilter(e.target.value)}
-            className="px-4 py-2 rounded-lg bg-forest-900/30 border border-forest-700/30 text-sm text-neutral-200 focus:outline-none focus:border-emerald-500/50"
+            className="px-4 py-2 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-sm text-black font-black focus:outline-none focus:border-3 border-black"
           >
             <option value="">모든 포지션</option>
             {POSITIONS.map((pos) => (
@@ -163,7 +163,7 @@ export default function SongsPage() {
           <select
             value={difficultyFilter || ""}
             onChange={(e) => setDifficultyFilter(e.target.value ? Number(e.target.value) : null)}
-            className="px-4 py-2 rounded-lg bg-forest-900/30 border border-forest-700/30 text-sm text-neutral-200 focus:outline-none focus:border-emerald-500/50"
+            className="px-4 py-2 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-sm text-black font-black focus:outline-none focus:border-3 border-black"
           >
             <option value="">모든 난이도</option>
             <option value="1">⭐ 1</option>
@@ -173,19 +173,19 @@ export default function SongsPage() {
             <option value="5">⭐⭐⭐⭐⭐ 5</option>
           </select>
           
-          <div className="flex bg-forest-900/30 rounded-xl p-1 border border-forest-700/30">
+          <div className="flex bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none p-1 border border-2 border-black">
             <button
               onClick={() => setSort("latest")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                sort === "latest" ? "bg-forest-700 text-neutral-100" : "text-neutral-400 hover:text-neutral-200"
+              className={`px-4 py-2 rounded-none text-sm font-medium transition-colors ${
+                sort === "latest" ? "bg-neo-yellow border-2 border-black text-black text-black font-black" : "text-black font-bold hover:text-black font-black"
               }`}
             >
               최신순
             </button>
             <button
               onClick={() => setSort("popular")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                sort === "popular" ? "bg-forest-700 text-neutral-100" : "text-neutral-400 hover:text-neutral-200"
+              className={`px-4 py-2 rounded-none text-sm font-medium transition-colors ${
+                sort === "popular" ? "bg-neo-yellow border-2 border-black text-black text-black font-black" : "text-black font-bold hover:text-black font-black"
               }`}
             >
               인기순
@@ -198,7 +198,7 @@ export default function SongsPage() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="glass-card-static p-4">
+            <div key={i} className="neo-card p-4">
               <div className="skeleton h-36 mb-3" />
               <div className="skeleton h-5 w-3/4 mb-2" />
               <div className="skeleton h-4 w-1/2" />
@@ -214,7 +214,7 @@ export default function SongsPage() {
             const isLiked = Array.isArray(song.likes) && song.likes.length > 0;
 
             return (
-              <div key={song.id} className="glass-card overflow-hidden group">
+              <div key={song.id} className="neo-card overflow-hidden group">
                 {/* Thumbnail */}
                 <Link href={`/songs/${song.id}`}>
                   {thumbnail ? (
@@ -225,12 +225,12 @@ export default function SongsPage() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-forest-950/80 to-transparent" />
-                      <div className="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/60 text-xs text-neutral-300">
+                      <div className="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/60 text-xs text-black font-bold">
                         ▶ YouTube
                       </div>
                     </div>
                   ) : (
-                    <div className="aspect-video bg-forest-900/50 flex items-center justify-center">
+                    <div className="aspect-video bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center">
                       <span className="text-4xl opacity-30">🎵</span>
                     </div>
                   )}
@@ -240,12 +240,12 @@ export default function SongsPage() {
                   {/* Song Info */}
                   <div className="flex items-start justify-between gap-2">
                     <Link href={`/songs/${song.id}`} className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-neutral-100 truncate hover:text-emerald-400 transition-colors">
+                      <h3 className="font-semibold text-black font-black truncate hover:text-neo-pink font-black transition-colors">
                         {song.title}
                       </h3>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <p className="text-sm text-neutral-500">{song.artist}</p>
-                        <span className="text-xs px-1.5 py-0.5 rounded bg-gold-500/10 text-gold-400 border border-gold-500/20">
+                        <p className="text-sm text-gray-800 font-bold">{song.artist}</p>
+                        <span className="text-xs px-1.5 py-0.5 rounded bg-gold-500/10 text-black font-black bg-neo-yellow px-1 border border-gold-500/20">
                           {"⭐".repeat(song.difficulty)}
                         </span>
                       </div>
@@ -253,7 +253,7 @@ export default function SongsPage() {
                     <button
                       onClick={() => handleToggleLike(song.id, isLiked)}
                       className={`flex flex-col items-center gap-1 transition-colors ${
-                        isLiked ? "text-danger-500" : "text-neutral-500 hover:text-danger-400"
+                        isLiked ? "text-danger-500" : "text-gray-800 font-bold hover:text-danger-400"
                       }`}
                     >
                       <svg className="w-5 h-5" fill={isLiked ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
@@ -281,7 +281,7 @@ export default function SongsPage() {
                               {s.user.image && (
                                 <img src={s.user.image} alt="" className="w-4 h-4 rounded-full" />
                               )}
-                              <span className="text-xs text-neutral-400">{s.user.name}</span>
+                              <span className="text-xs text-black font-bold">{s.user.name}</span>
                               {session?.user?.id === s.user.id && (
                                 <button
                                   onClick={() => handleLeaveSession(song.id, s.id)}
@@ -295,7 +295,7 @@ export default function SongsPage() {
                             session?.user?.id && (
                               <button
                                 onClick={() => handleJoinSession(song.id, s.id)}
-                                className="text-xs px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors"
+                                className="text-xs px-2 py-0.5 rounded neo-btn neo-btn-primary/15 text-neo-pink font-black hover:neo-btn neo-btn-primary/25 transition-colors"
                               >
                                 참여
                               </button>
@@ -307,16 +307,16 @@ export default function SongsPage() {
                   )}
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-forest-700/20">
+                  <div className="flex items-center justify-between mt-3 pt-3">
                     <div className="flex items-center gap-1.5">
                       {song.user.image && (
                         <img src={song.user.image} alt="" className="w-4 h-4 rounded-full" />
                       )}
-                      <span className="text-xs text-neutral-500">{song.user.name}</span>
+                      <span className="text-xs text-gray-800 font-bold">{song.user.name}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       {openSessions.length > 0 && (
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400">
+                        <span className="text-xs px-2 py-0.5 rounded-full neo-btn neo-btn-primary/15 text-neo-pink font-black">
                           {openSessions.length}자리 남음
                         </span>
                       )}
@@ -328,10 +328,10 @@ export default function SongsPage() {
           })}
         </div>
       ) : (
-        <div className="text-center py-16 glass-card-static">
+        <div className="text-center py-16 neo-card">
           <span className="text-5xl mb-4 block">🎸</span>
-          <p className="text-neutral-400 text-lg">등록된 곡이 없습니다</p>
-          <p className="text-neutral-600 text-sm mt-1">
+          <p className="text-black font-bold text-lg">등록된 곡이 없습니다</p>
+          <p className="text-gray-800 text-sm mt-1">
             첫 번째 곡을 등록해보세요!
           </p>
         </div>

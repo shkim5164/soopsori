@@ -213,24 +213,24 @@ export default function AdminClient() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8 flex justify-between items-center animate-fade-in-up">
         <div>
-          <h1 className="text-3xl font-bold text-neutral-100">⚙️ 회원 관리 (Admin)</h1>
-          <p className="text-neutral-500 mt-1">
+          <h1 className="text-3xl font-bold text-black font-black">⚙️ 회원 관리 (Admin)</h1>
+          <p className="text-gray-800 font-bold mt-1">
             전체 회원 목록을 확인하고, 회원을 추가/수정/삭제 및 포인트를 관리할 수 있습니다.
           </p>
         </div>
         <button
           onClick={openAddModal}
-          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition-colors"
+          className="px-4 py-2 bg-emerald-600 hover:neo-btn neo-btn-primary rounded-none font-medium transition-colors"
         >
           + 회원 추가
         </button>
       </div>
 
-      <div className="bg-forest-900/40 rounded-xl overflow-hidden border border-forest-700/50">
+      <div className="bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none overflow-hidden border border-2 border-black">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-forest-800/50 text-neutral-300 text-sm border-b border-forest-700/50">
+              <tr className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold text-sm">
                 <th className="p-4 font-medium">회원</th>
                 <th className="p-4 font-medium">역할</th>
                 <th className="p-4 font-medium">포지션</th>
@@ -242,51 +242,51 @@ export default function AdminClient() {
             <tbody className="divide-y divide-forest-700/30">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-neutral-500">
+                  <td colSpan={6} className="p-8 text-center text-gray-800 font-bold">
                     로딩 중...
                   </td>
                 </tr>
               ) : members.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-neutral-500">
+                  <td colSpan={6} className="p-8 text-center text-gray-800 font-bold">
                     회원이 없습니다.
                   </td>
                 </tr>
               ) : (
                 members.map((member) => (
-                  <tr key={member.id} className="hover:bg-forest-800/20 transition-colors">
+                  <tr key={member.id} className="hover:bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         {member.image ? (
                           <img
                             src={member.image}
                             alt={member.name}
-                            className="w-10 h-10 rounded-full border border-forest-600"
+                            className="w-10 h-10 rounded-full border border-2 border-black"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-forest-700 flex items-center justify-center text-sm border border-forest-600 text-emerald-400 font-bold">
+                          <div className="w-10 h-10 rounded-full bg-neo-yellow border-2 border-black text-black flex items-center justify-center text-sm border border-2 border-black text-neo-pink font-black font-bold">
                             {member.name?.[0]}
                           </div>
                         )}
                         <div>
-                          <p className="text-neutral-200 font-medium">
-                            {member.name} <span className="text-neutral-500 text-xs">({member.username})</span>
+                          <p className="text-black font-black font-medium">
+                            {member.name} <span className="text-gray-800 font-bold text-xs">({member.username})</span>
                           </p>
-                          <p className="text-xs text-neutral-500">{member.email || "이메일 없음"}</p>
+                          <p className="text-xs text-gray-800 font-bold">{member.email || "이메일 없음"}</p>
                         </div>
                       </div>
                     </td>
                     <td className="p-4">
                       <span className={`text-xs px-2 py-1 rounded ${
-                        member.role === 'ADMIN' ? 'bg-gold-500/20 text-gold-400' : 'bg-neutral-500/20 text-neutral-400'
+                        member.role === 'ADMIN' ? 'bg-gold-500/20 text-black font-black bg-neo-yellow px-1' : 'bg-neutral-500/20 text-black font-bold'
                       }`}>
                         {member.role}
                       </span>
                     </td>
                     <td className="p-4">
-                      {member.position ? <PositionBadges positionStr={member.position} /> : <span className="text-xs text-neutral-500">-</span>}
+                      {member.position ? <PositionBadges positionStr={member.position} /> : <span className="text-xs text-gray-800 font-bold">-</span>}
                     </td>
-                    <td className="p-4 text-center font-bold text-gold-400">
+                    <td className="p-4 text-center font-bold text-black font-black bg-neo-yellow px-1">
                       {member.points}P
                     </td>
                     <td className="p-4">
@@ -295,14 +295,14 @@ export default function AdminClient() {
                           type="number"
                           value={editingPoints[member.id] !== undefined ? editingPoints[member.id] : member.points}
                           onChange={(e) => handlePointChange(member.id, e.target.value)}
-                          className="w-full bg-forest-800 border border-forest-600 rounded px-3 py-1.5 text-sm text-neutral-200 focus:outline-none focus:border-emerald-500"
+                          className="w-full bg-white border-2 border-black border border-2 border-black rounded px-3 py-1.5 text-sm text-black font-black focus:outline-none focus:border-3 border-black"
                           placeholder="수정할 포인트"
                         />
                         <input
                           type="text"
                           value={editReason[member.id] || ""}
                           onChange={(e) => handleReasonChange(member.id, e.target.value)}
-                          className="w-full bg-forest-800 border border-forest-600 rounded px-3 py-1 text-xs text-neutral-200 focus:outline-none focus:border-emerald-500"
+                          className="w-full bg-white border-2 border-black border border-2 border-black rounded px-3 py-1 text-xs text-black font-black focus:outline-none focus:border-3 border-black"
                           placeholder="수정 사유 (선택)"
                         />
                       </div>
@@ -312,14 +312,14 @@ export default function AdminClient() {
                         <button
                           onClick={() => handleUpdatePoints(member.id, member.points)}
                           disabled={editingPoints[member.id] === undefined || editingPoints[member.id] === member.points}
-                          className="px-3 py-1.5 w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-forest-700 disabled:text-neutral-500 text-white text-xs font-medium rounded transition-colors"
+                          className="px-3 py-1.5 w-full bg-emerald-600 hover:neo-btn neo-btn-primary disabled:bg-neo-yellow border-2 border-black text-black disabled:text-gray-800 font-bold text-black text-xs font-medium rounded transition-colors"
                         >
                           포인트 저장
                         </button>
                         <div className="flex gap-2 w-full">
                           <button
                             onClick={() => openEditModal(member)}
-                            className="flex-1 px-2 py-1.5 bg-neutral-700 hover:bg-neutral-600 text-white text-xs font-medium rounded transition-colors"
+                            className="flex-1 px-2 py-1.5 bg-neutral-700 hover:bg-neutral-600 text-black text-xs font-medium rounded transition-colors"
                           >
                             정보 수정
                           </button>
@@ -343,28 +343,28 @@ export default function AdminClient() {
       {/* 회원 추가/수정 모달 */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-forest-900 border border-forest-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+          <div className="bg-white border-3 border-black border border-2 border-black rounded-none w-full max-w-md overflow-hidden shadow-2xl">
             <div className="p-6">
-              <h2 className="text-xl font-bold text-neutral-100 mb-4">
+              <h2 className="text-xl font-bold text-black font-black mb-4">
                 {modalMode === "ADD" ? "새 회원 추가" : "회원 정보 수정"}
               </h2>
               
               <form onSubmit={handleFormSubmit} className="space-y-4">
                 {modalMode === "ADD" && (
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">아이디 (Username) *</label>
+                    <label className="block text-sm font-medium text-black font-bold mb-1">아이디 (Username) *</label>
                     <input
                       type="text"
                       required
                       value={formData.username}
                       onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                      className="w-full bg-forest-800 border border-forest-600 rounded-lg px-4 py-2 text-neutral-100 focus:outline-none focus:border-emerald-500"
+                      className="w-full bg-white border-2 border-black border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black"
                     />
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-black font-bold mb-1">
                     비밀번호 {modalMode === "ADD" ? "*" : "(변경 시에만 입력)"}
                   </label>
                   <input
@@ -372,47 +372,47 @@ export default function AdminClient() {
                     required={modalMode === "ADD"}
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full bg-forest-800 border border-forest-600 rounded-lg px-4 py-2 text-neutral-100 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-white border-2 border-black border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">닉네임 / 이름</label>
+                  <label className="block text-sm font-medium text-black font-bold mb-1">닉네임 / 이름</label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-forest-800 border border-forest-600 rounded-lg px-4 py-2 text-neutral-100 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-white border-2 border-black border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">이메일</label>
+                  <label className="block text-sm font-medium text-black font-bold mb-1">이메일</label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-forest-800 border border-forest-600 rounded-lg px-4 py-2 text-neutral-100 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-white border-2 border-black border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">포지션 (콤마로 구분)</label>
+                  <label className="block text-sm font-medium text-black font-bold mb-1">포지션 (콤마로 구분)</label>
                   <input
                     type="text"
                     placeholder="예: 보컬, 어쿠스틱 기타"
                     value={formData.position}
                     onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                    className="w-full bg-forest-800 border border-forest-600 rounded-lg px-4 py-2 text-neutral-100 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-white border-2 border-black border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">역할 (Role)</label>
+                  <label className="block text-sm font-medium text-black font-bold mb-1">역할 (Role)</label>
                   <select
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                    className="w-full bg-forest-800 border border-forest-600 rounded-lg px-4 py-2 text-neutral-100 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-white border-2 border-black border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black"
                   >
                     <option value="MEMBER">일반 회원 (MEMBER)</option>
                     <option value="ADMIN">관리자 (ADMIN)</option>
@@ -423,14 +423,14 @@ export default function AdminClient() {
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="flex-1 px-4 py-2 bg-forest-800 hover:bg-forest-700 text-neutral-300 rounded-lg font-medium transition-colors border border-forest-600"
+                    className="flex-1 px-4 py-2 bg-white border-2 border-black hover:bg-neo-yellow border-2 border-black text-black text-black font-bold rounded-none font-medium transition-colors border border-2 border-black"
                   >
                     취소
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 text-white rounded-lg font-medium transition-colors"
+                    className="flex-1 px-4 py-2 bg-emerald-600 hover:neo-btn neo-btn-primary disabled:bg-emerald-800 text-black rounded-none font-medium transition-colors"
                   >
                     {submitting ? "저장 중..." : "저장"}
                   </button>

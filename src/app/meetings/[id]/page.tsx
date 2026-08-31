@@ -176,7 +176,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
     return (
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="skeleton h-8 w-48 mb-4" />
-        <div className="skeleton h-64 w-full rounded-xl" />
+        <div className="skeleton h-64 w-full rounded-none" />
       </div>
     );
   }
@@ -185,8 +185,8 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
     return (
       <div className="max-w-5xl mx-auto px-4 py-16 text-center">
         <span className="text-5xl block mb-4">😢</span>
-        <h1 className="text-xl font-bold text-neutral-300">모임을 찾을 수 없습니다</h1>
-        <Link href="/meetings" className="text-emerald-400 hover:text-emerald-300 text-sm mt-2 inline-block">
+        <h1 className="text-xl font-bold text-black font-bold">모임을 찾을 수 없습니다</h1>
+        <Link href="/meetings" className="text-neo-pink font-black hover:text-neo-pink font-black text-sm mt-2 inline-block">
           ← 모임 목록으로
         </Link>
       </div>
@@ -198,34 +198,34 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <Link href="/meetings" className="text-sm text-neutral-500 hover:text-emerald-400 transition-colors mb-6 inline-block">
+      <Link href="/meetings" className="text-sm text-gray-800 font-bold hover:text-neo-pink font-black transition-colors mb-6 inline-block">
         ← 모임 목록
       </Link>
 
       {/* Header */}
-      <div className="glass-card-static p-6 mb-6 animate-fade-in-up">
+      <div className="neo-card p-6 mb-6 animate-fade-in-up">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-neutral-100">{meeting.title}</h1>
+              <h1 className="text-2xl font-bold text-black font-black">{meeting.title}</h1>
               <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-                isUpcoming ? "bg-emerald-500/15 text-emerald-400" : "bg-forest-700/30 text-neutral-500"
+                isUpcoming ? "neo-btn neo-btn-primary/15 text-neo-pink font-black" : "bg-neo-yellow border-2 border-black text-black text-gray-800 font-bold"
               }`}>
                 {isUpcoming ? "예정" : meeting.status === "COMPLETED" ? "완료" : "취소"}
               </span>
             </div>
-            <p className="text-neutral-400 mt-1">{formatDateTime(meeting.date)}</p>
-            {meeting.description && <p className="text-neutral-500 text-sm mt-2">{meeting.description}</p>}
+            <p className="text-black font-bold mt-1">{formatDateTime(meeting.date)}</p>
+            {meeting.description && <p className="text-gray-800 font-bold text-sm mt-2">{meeting.description}</p>}
           </div>
 
           <div className="flex gap-2">
             {isUpcoming && session?.user && (
               <button
                 onClick={() => handleToggleAttendance()}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-none text-sm font-medium transition-all duration-200 ${
                   myAttendance?.attended
-                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                    : "bg-forest-900/40 text-neutral-400 border border-forest-700/30 hover:border-emerald-500/30"
+                    ? "neo-btn neo-btn-primary/20 text-neo-pink font-black border border-3 border-black"
+                    : "bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold border border-2 border-black hover:border-3 border-black"
                 }`}
               >
                 {myAttendance?.attended ? "✅ 참석 예정" : "참석하기"}
@@ -234,7 +234,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             {isUpcoming && session?.user?.role === "ADMIN" && (
               <button
                 onClick={handleCompleteMeeting}
-                className="px-4 py-2 rounded-xl bg-gold-500/15 text-gold-400 border border-gold-500/20 hover:bg-gold-500/25 text-sm font-medium transition-all"
+                className="px-4 py-2 rounded-none bg-gold-500/15 text-black font-black bg-neo-yellow px-1 border border-gold-500/20 hover:bg-gold-500/25 text-sm font-medium transition-all"
               >
                 모임 완료 처리
               </button>
@@ -243,7 +243,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
               <div className="flex gap-1 ml-2">
                 <button
                   onClick={handleEditClick}
-                  className="p-2 rounded-xl text-neutral-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                  className="p-2 rounded-none text-gray-800 font-bold hover:text-neo-pink font-black hover:neo-btn neo-btn-primary/10 transition-colors"
                   title="모임 수정"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -252,7 +252,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                 </button>
                 <button
                   onClick={handleDeleteMeeting}
-                  className="p-2 rounded-xl text-neutral-500 hover:text-danger-400 hover:bg-danger-500/10 transition-colors"
+                  className="p-2 rounded-none text-gray-800 font-bold hover:text-danger-400 hover:bg-danger-500/10 transition-colors"
                   title="모임 삭제"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -267,16 +267,16 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Setlist */}
-        <div className="lg:col-span-2 glass-card-static p-6 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+        <div className="lg:col-span-2 neo-card p-6 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-neutral-100">🎵 세트리스트</h2>
+            <h2 className="text-lg font-bold text-black font-black">🎵 세트리스트</h2>
             {isUpcoming && session?.user && (
               <button
                 onClick={() => {
                   fetchSongs();
                   setIsAddSongOpen(true);
                 }}
-                className="text-sm px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors"
+                className="text-sm px-3 py-1.5 rounded-none neo-btn neo-btn-primary/15 text-neo-pink font-black hover:neo-btn neo-btn-primary/25 transition-colors"
               >
                 + 곡 추가
               </button>
@@ -286,20 +286,20 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
           {meeting.meetingSongs.length > 0 ? (
             <div className="space-y-3">
               {meeting.meetingSongs.map((ms, i) => (
-                <div key={ms.id} className="p-4 rounded-xl bg-forest-900/20 border border-forest-700/10 hover:border-forest-700/30 transition-all">
+                <div key={ms.id} className="p-4 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black hover:border-2 border-black transition-all">
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="text-lg font-bold text-neutral-600 w-8 text-right">{ms.orderNum}.</span>
+                    <span className="text-lg font-bold text-gray-800 w-8 text-right">{ms.orderNum}.</span>
                     <div className="flex-1">
-                      <Link href={`/songs/${ms.song.id}`} className="text-neutral-100 font-semibold hover:text-emerald-400 transition-colors">
+                      <Link href={`/songs/${ms.song.id}`} className="text-black font-black font-semibold hover:text-neo-pink font-black transition-colors">
                         {ms.song.title}
                       </Link>
-                      <p className="text-sm text-neutral-500">{ms.song.artist}</p>
+                      <p className="text-sm text-gray-800 font-bold">{ms.song.artist}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {ms.picker.image && <img src={ms.picker.image} alt="" className="w-6 h-6 rounded-full" />}
                       <div className="text-right">
-                        <p className="text-xs text-neutral-400">{ms.picker.name}</p>
-                        <p className="text-xs text-gold-400">{ms.picker.points}P</p>
+                        <p className="text-xs text-black font-bold">{ms.picker.name}</p>
+                        <p className="text-xs text-black font-black bg-neo-yellow px-1">{ms.picker.points}P</p>
                       </div>
                     </div>
                   </div>
@@ -319,32 +319,32 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             </div>
           ) : (
             <div className="text-center py-8">
-              <p className="text-neutral-500">아직 등록된 곡이 없습니다</p>
+              <p className="text-gray-800 font-bold">아직 등록된 곡이 없습니다</p>
             </div>
           )}
         </div>
 
         {/* Attendance */}
-        <div className="glass-card-static p-6 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-          <h2 className="text-lg font-bold text-neutral-100 mb-4">
+        <div className="neo-card p-6 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+          <h2 className="text-lg font-bold text-black font-black mb-4">
             👥 참석자 ({meeting.attendances.filter((a) => a.attended).length}명)
           </h2>
           <div className="space-y-2">
             {meeting.attendances.filter((a) => a.attended).map((a) => (
-              <div key={a.id} className="flex items-center gap-2 p-2 rounded-lg hover:bg-forest-900/30 transition-colors">
+              <div key={a.id} className="flex items-center gap-2 p-2 rounded-none hover:bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors">
                 {a.user.image ? (
-                  <img src={a.user.image} alt="" className="w-7 h-7 rounded-full border border-forest-700" />
+                  <img src={a.user.image} alt="" className="w-7 h-7 rounded-full border border-2 border-black" />
                 ) : (
-                  <div className="w-7 h-7 rounded-full bg-forest-700 flex items-center justify-center text-xs">
+                  <div className="w-7 h-7 rounded-full bg-neo-yellow border-2 border-black text-black flex items-center justify-center text-xs">
                     {a.user.name?.[0]}
                   </div>
                 )}
-                <span className="text-sm text-neutral-300">{a.user.name}</span>
-                <span className="text-xs text-emerald-400 ml-auto">✓</span>
+                <span className="text-sm text-black font-bold">{a.user.name}</span>
+                <span className="text-xs text-neo-pink font-black ml-auto">✓</span>
               </div>
             ))}
             {meeting.attendances.filter((a) => a.attended).length === 0 && (
-              <p className="text-neutral-500 text-sm text-center py-4">아직 참석자가 없습니다</p>
+              <p className="text-gray-800 font-bold text-sm text-center py-4">아직 참석자가 없습니다</p>
             )}
           </div>
         </div>
@@ -362,14 +362,14 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             placeholder="곡 제목 또는 아티스트 검색..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 px-4 py-2 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+            className="flex-1 px-4 py-2 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
           />
           <button
             onClick={() => {
               setIsAddSongOpen(false);
               setIsCreateSongOpen(true);
             }}
-            className="px-4 py-2 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 transition-colors text-sm font-medium whitespace-nowrap"
+            className="px-4 py-2 rounded-none neo-btn neo-btn-primary/15 text-neo-pink font-black border border-3 border-black hover:neo-btn neo-btn-primary/25 transition-colors text-sm font-medium whitespace-nowrap"
           >
             + 새 곡 등록
           </button>
@@ -387,17 +387,17 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                 key={song.id}
                 onClick={() => !isAlreadyAdded && setSelectedSongId(song.id)}
                 disabled={isAlreadyAdded}
-                className={`w-full text-left p-3 rounded-xl border transition-all duration-200 ${
+                className={`w-full text-left p-3 rounded-none border transition-all duration-200 ${
                   isAlreadyAdded
-                    ? "border-forest-700/10 bg-forest-900/10 opacity-50 cursor-not-allowed"
+                    ? "border-2 border-black bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] opacity-50 cursor-not-allowed"
                     : selectedSongId === song.id
-                    ? "border-emerald-500/30 bg-emerald-500/10"
-                    : "border-forest-700/20 bg-forest-900/20 hover:border-forest-700/40"
+                    ? "border-3 border-black neo-btn neo-btn-primary/10"
+                    : "border-2 border-black bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:border-2 border-black"
                 }`}
               >
-                <p className="text-sm font-medium text-neutral-200">{song.title}</p>
-                <p className="text-xs text-neutral-500">{song.artist}</p>
-                {isAlreadyAdded && <span className="text-xs text-neutral-600">이미 추가됨</span>}
+                <p className="text-sm font-medium text-black font-black">{song.title}</p>
+                <p className="text-xs text-gray-800 font-bold">{song.artist}</p>
+                {isAlreadyAdded && <span className="text-xs text-gray-800">이미 추가됨</span>}
               </button>
             );
           })}
@@ -406,21 +406,21 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             song.artist.toLowerCase().includes(searchQuery.toLowerCase())
           ).length === 0 && (
             <div className="text-center py-6">
-              <p className="text-sm text-neutral-500">검색 결과가 없습니다.</p>
+              <p className="text-sm text-gray-800 font-bold">검색 결과가 없습니다.</p>
             </div>
           )}
         </div>
         <div className="flex gap-3">
           <button
             onClick={() => setIsAddSongOpen(false)}
-            className="flex-1 px-4 py-2.5 rounded-xl bg-forest-900/40 text-neutral-400 hover:text-neutral-200 transition-colors text-sm font-medium"
+            className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold hover:text-black font-black transition-colors text-sm font-medium"
           >
             취소
           </button>
           <button
             onClick={handleAddSong}
             disabled={!selectedSongId}
-            className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-forest-500 text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="flex-1 px-4 py-2.5 rounded-none neo-btn neo-btn-primary text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             선택한 곡 추가하기
           </button>
@@ -441,31 +441,31 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
       <Modal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} title="모임 수정">
         <form onSubmit={handleUpdateMeeting} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-1.5">제목 *</label>
+            <label className="block text-sm font-medium text-black font-bold mb-1.5">제목 *</label>
             <input
               type="text"
               required
               value={editForm.title}
               onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-1.5">날짜 및 시간 *</label>
+            <label className="block text-sm font-medium text-black font-bold mb-1.5">날짜 및 시간 *</label>
             <input
               type="datetime-local"
               required
               value={editForm.date}
               onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 focus:outline-none focus:border-emerald-500/50 transition-colors [&::-webkit-calendar-picker-indicator]:invert-[0.8]"
+              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors [&::-webkit-calendar-picker-indicator]:invert-[0.8]"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-1.5">상태</label>
+            <label className="block text-sm font-medium text-black font-bold mb-1.5">상태</label>
             <select
               value={editForm.status}
               onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 focus:outline-none focus:border-emerald-500/50 transition-colors"
+              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
             >
               <option value="UPCOMING">예정</option>
               <option value="COMPLETED">완료</option>
@@ -473,25 +473,25 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-1.5">설명 (선택)</label>
+            <label className="block text-sm font-medium text-black font-bold mb-1.5">설명 (선택)</label>
             <textarea
               value={editForm.description}
               onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
               rows={3}
-              className="w-full px-4 py-2.5 rounded-xl bg-forest-900/40 border border-forest-700/30 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors resize-none"
+              className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black transition-colors resize-none"
             />
           </div>
           <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={() => setIsEditOpen(false)}
-              className="flex-1 px-4 py-2.5 rounded-xl bg-forest-900/40 text-neutral-400 hover:text-neutral-200 transition-colors text-sm font-medium"
+              className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold hover:text-black font-black transition-colors text-sm font-medium"
             >
               취소
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-forest-500 text-white text-sm font-medium transition-all"
+              className="flex-1 px-4 py-2.5 rounded-none neo-btn neo-btn-primary text-sm font-medium transition-all"
             >
               저장하기
             </button>
