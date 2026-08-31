@@ -34,14 +34,14 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="font-black text-3xl tracking-tighter lowercase px-3 py-1 bg-neo-yellow border-2 border-black neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm transition-all text-black">
+          <Link href="/" className="flex items-center gap-2 group shrink-0">
+            <div className="font-black text-2xl sm:text-3xl tracking-tighter lowercase px-2 sm:px-3 py-1 bg-neo-yellow border-2 border-black neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm transition-all text-black">
               soopsori
             </div>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || 
                 (link.href !== "/" && pathname.startsWith(link.href));
@@ -147,13 +147,13 @@ export default function Navbar() {
                 </button>
                 <Link
                   href="/login"
-                  className="px-4 py-2 font-bold text-sm lowercase border-2 border-black rounded-full bg-white text-black neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm hover:bg-neo-yellow hover:text-black transition-all"
+                  className="whitespace-nowrap px-3 py-1.5 sm:px-4 sm:py-2 font-bold text-xs sm:text-sm lowercase border-2 border-black rounded-full bg-white text-black neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm hover:bg-neo-yellow hover:text-black transition-all"
                 >
                   로그인
                 </Link>
                 <Link
                   href="/register"
-                  className="px-4 py-2 font-bold text-sm lowercase border-2 border-black rounded-full bg-neo-pink text-white neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm hover:bg-black hover:text-neo-yellow transition-all"
+                  className="whitespace-nowrap px-3 py-1.5 sm:px-4 sm:py-2 font-bold text-xs sm:text-sm lowercase border-2 border-black rounded-full bg-neo-pink text-white neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm hover:bg-black hover:text-neo-yellow transition-all"
                 >
                   회원가입
                 </Link>
@@ -163,7 +163,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 bg-neo-yellow border-2 border-black neo-shadow rounded-none hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm transition-all text-black"
+              className="lg:hidden p-2 bg-neo-yellow border-2 border-black neo-shadow rounded-none hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm transition-all text-black"
             >
               <svg className="w-6 h-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {mobileOpen ? (
@@ -179,7 +179,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t-4 border-black bg-white animate-fade-in-up">
+        <div className="lg:hidden border-t-4 border-black bg-white animate-fade-in-up">
           <div className="px-4 py-4 flex flex-col gap-2">
             {navLinks.map((link) => {
               const isActive = pathname === link.href ||
