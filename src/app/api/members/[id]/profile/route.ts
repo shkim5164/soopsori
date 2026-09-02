@@ -20,7 +20,7 @@ export async function PATCH(
       return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     }
 
-    const { position, name, currentPassword, newPassword } = await request.json();
+    const { position, name, currentPassword, newPassword, image } = await request.json();
 
     let passwordHash: string | undefined = undefined;
 
@@ -52,6 +52,7 @@ export async function PATCH(
       data: {
         ...(position !== undefined && { position }),
         ...(name !== undefined && { name }),
+        ...(image !== undefined && { image }),
         ...(passwordHash !== undefined && { password: passwordHash }),
       },
       select: {
@@ -60,6 +61,7 @@ export async function PATCH(
         position: true,
         points: true,
         role: true,
+        image: true,
       },
     });
 

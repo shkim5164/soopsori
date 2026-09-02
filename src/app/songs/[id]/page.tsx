@@ -468,8 +468,12 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                 )}
 
                 <div className="flex items-center gap-3 mt-4 pt-4">
-                  {song.user.image && (
-                    <img src={song.user.image} alt="" className="w-8 h-8 rounded-full border border-2 border-black" />
+                  {song.user.image ? (
+                    <img src={song.user.image} alt="" className="w-8 h-8 rounded-full border border-2 border-black object-cover" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-neo-yellow border-2 border-black text-black flex items-center justify-center text-sm font-bold">
+                      {song.user.name?.[0]}
+                    </div>
                   )}
                   <div>
                     <p className="text-sm text-black font-bold">{song.user.name}</p>
@@ -515,8 +519,12 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                       {s.status === "FILLED" && s.user ? (
                         <div className="flex items-center justify-between pt-2 border-t-2 border-gray-200 mt-1">
                           <div className="flex items-center gap-2">
-                            {s.user.image && (
-                              <img src={s.user.image} alt="" className="w-6 h-6 rounded-full border-2 border-black" />
+                            {s.user.image ? (
+                              <img src={s.user.image} alt="" className="w-6 h-6 rounded-full border-2 border-black object-cover" />
+                            ) : (
+                              <div className="w-6 h-6 rounded-full bg-neo-yellow border-2 border-black text-black flex items-center justify-center text-xs font-bold">
+                                {s.user.name?.[0]}
+                              </div>
                             )}
                             <span className="text-sm text-black font-black">{s.user.name}</span>
                           </div>
@@ -583,7 +591,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
           <form onSubmit={handleCreateComment} className="mb-8 flex gap-3">
             <div className="flex-shrink-0 pt-1">
               {session.user.image ? (
-                <img src={session.user.image} alt="" className="w-8 h-8 rounded-full border border-2 border-black" />
+                <img src={session.user.image} alt="" className="w-8 h-8 rounded-full border border-2 border-black object-cover" />
               ) : (
                 <div className="w-8 h-8 rounded-full bg-neo-yellow border-2 border-black text-black flex items-center justify-center text-sm">
                   {session.user.name?.[0]}
@@ -621,7 +629,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
             <div key={comment.id} className="flex gap-3 py-4 border-b-2 border-gray-200">
               <div className="flex-shrink-0">
                 {comment.user.image ? (
-                  <img src={comment.user.image} alt="" className="w-8 h-8 rounded-full border border-2 border-black" />
+                  <img src={comment.user.image} alt="" className="w-8 h-8 rounded-full border border-2 border-black object-cover" />
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-neo-yellow border-2 border-black text-black flex items-center justify-center text-sm">
                     {comment.user.name?.[0]}

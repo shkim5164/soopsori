@@ -61,6 +61,9 @@ export default function ProfilePage() {
   const [activities, setActivities] = useState<ActivityData | null>(null);
   const [loadingActivities, setLoadingActivities] = useState(false);
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -68,6 +71,7 @@ export default function ProfilePage() {
     if (session?.user) {
       setPositions(parsePositions(session.user.position));
       setName(session.user.name ?? "");
+      if (!imagePreview && session.user.image) setImagePreview(session.user.image);
     }
   }, [session]);
 
@@ -109,6 +113,32 @@ export default function ProfilePage() {
     if (!session?.user?.id) return;
     setSaving(true);
     setPasswordError("");
+
+    let uploadedImageUrl = undefined;
+    if (imageFile) {
+      try {
+        const formData = new FormData();
+        formData.append("image", imageFile);
+        const uploadRes = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+        if (uploadRes.ok) {
+          const data = await uploadRes.json();
+          uploadedImageUrl = data.url;
+        } else {
+          setPasswordError("이미지 업로드에 실패했습니다.");
+          setSaving(false);
+          return;
+        }
+      } catch (error) {
+        console.error("Failed to upload image:", error);
+        setPasswordError("이미지 업로드 중 오류가 발생했습니다.");
+        setSaving(false);
+        return;
+      }
+    }
+
     try {
       const res = await fetch(`/api/members/${session.user.id}/profile`, {
         method: "PATCH",
@@ -118,12 +148,14 @@ export default function ProfilePage() {
           name,
           currentPassword: currentPassword || undefined,
           newPassword: newPassword || undefined,
+          image: uploadedImageUrl,
         }),
       });
       if (res.ok) {
         setSaved(true);
         setCurrentPassword("");
         setNewPassword("");
+        setImageFile(null);
         update();
         setTimeout(() => setSaved(false), 2000);
       } else {
@@ -154,11 +186,11 @@ export default function ProfilePage() {
       {/* Profile Card Summary */}
       <div className="neo-card p-6 mb-8 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
         <div className="flex flex-col sm:flex-row items-center gap-4">
-          {session.user.image ? (
+          {imagePreview || session.user.image ? (
             <img
-              src={session.user.image}
+              src={imagePreview || session.user.image || ""}
               alt={session.user.name ?? ""}
-              className="w-20 h-20 rounded-full border-2 border-2 border-black"
+              className="w-20 h-20 rounded-full border-2 border-2 border-black object-cover"
             />
           ) : (
             <div className="w-20 h-20 rounded-full bg-neo-yellow border-2 border-black text-black flex items-center justify-center text-3xl border-2 border-2 border-black shadow-inner">
@@ -210,6 +242,22 @@ export default function ProfilePage() {
         {/* Profile Settings */}
         {activeTab === "PROFILE" && (
           <div className="neo-card p-6 space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-black font-bold mb-1.5">프로필 사진</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setImageFile(file);
+                    setImagePreview(URL.createObjectURL(file));
+                  }
+                }}
+                className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-neo-yellow file:text-black hover:file:bg-neo-pink hover:file:text-white file:transition-colors cursor-pointer mb-4"
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-black font-bold mb-1.5">이름 (닉네임)</label>
               <input

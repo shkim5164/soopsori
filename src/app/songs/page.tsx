@@ -225,7 +225,7 @@ export default function SongsPage() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-forest-950/80 to-transparent" />
-                      <div className="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/60 text-xs text-black font-bold">
+                      <div className="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/60 text-xs text-white font-bold">
                         ▶ YouTube
                       </div>
                     </div>
