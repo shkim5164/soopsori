@@ -58,8 +58,8 @@ export default async function HomePage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Hero Section */}
       <div className="text-center mb-16 mt-8 animate-fade-in-up">
-        <h1 className="text-6xl sm:text-8xl font-black mb-6 uppercase tracking-tighter">
-          <span className="bg-neo-yellow border-4 border-black px-6 py-2 neo-shadow-xl inline-block transform -rotate-2">
+        <h1 className="text-5xl sm:text-6xl md:text-8xl font-black mb-6 uppercase tracking-tighter">
+          <span className="bg-neo-yellow border-4 border-black px-4 sm:px-6 py-2 neo-shadow-xl inline-block transform -rotate-2">
             soopsori
           </span>
         </h1>
