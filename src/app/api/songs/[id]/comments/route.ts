@@ -41,6 +41,11 @@ export async function POST(
       return NextResponse.json({ error: "내용을 입력하세요" }, { status: 400 });
     }
 
+    const song = await prisma.song.findUnique({ where: { id: songId } });
+    if (!song) {
+      return NextResponse.json({ error: "곡을 찾을 수 없습니다" }, { status: 404 });
+    }
+
     const comment = await prisma.songComment.create({
       data: {
         content: content.trim(),
@@ -51,6 +56,17 @@ export async function POST(
         user: { select: { id: true, name: true, image: true, role: true } },
       },
     });
+
+    if (song.userId !== session.user.id) {
+      await prisma.notification.create({
+        data: {
+          userId: song.userId,
+          type: "COMMENT",
+          message: `${session.user.name || "누군가"}님이 회원님의 곡 '${song.title}'에 댓글을 남겼습니다.`,
+          linkUrl: `/songs/${songId}`,
+        }
+      });
+    }
 
     return NextResponse.json(comment, { status: 201 });
   } catch (error) {

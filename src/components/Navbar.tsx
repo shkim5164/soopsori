@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import useSWR from "swr";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
@@ -23,10 +24,20 @@ const navLinks = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { data: session, status } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+
+  // Notifications
+  const { data: notifications, mutate: mutateNotifications } = useSWR(
+    session?.user ? "/api/notifications" : null,
+    (url: string) => fetch(url).then((res) => res.json()),
+    { refreshInterval: 60000 }
+  );
+
+  const unreadCount = notifications?.filter((n: any) => !n.isRead).length || 0;
 
   useEffect(() => setMounted(true), []);
 
@@ -86,6 +97,67 @@ export default function Navbar() {
                   <span className="text-sm font-black text-black">
                     {session.user.points ?? 0}P
                   </span>
+                </div>
+
+                {/* Notification Bell */}
+                <div className="relative group">
+                  <button className="relative w-10 h-10 flex items-center justify-center rounded-full border-2 border-black bg-white neo-shadow-sm hover:bg-neo-yellow hover:text-black transition-all">
+                    🔔
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center border-2 border-black">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </button>
+                  {/* Notification Dropdown */}
+                  <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white border-2 border-black neo-shadow-lg p-0 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0 max-h-96 overflow-y-auto z-50">
+                    <div className="px-3 py-2 border-b-2 border-black bg-neo-yellow flex justify-between items-center sticky top-0 z-10">
+                      <p className="text-sm font-black text-black">알림</p>
+                      {unreadCount > 0 && (
+                        <button
+                          onClick={async () => {
+                            await fetch("/api/notifications/read-all", { method: "POST" });
+                            mutateNotifications();
+                          }}
+                          className="text-xs font-bold text-black hover:underline"
+                        >
+                          모두 읽기
+                        </button>
+                      )}
+                    </div>
+                    {notifications && notifications.length > 0 ? (
+                      <div className="flex flex-col">
+                        {notifications.map((notif: any) => (
+                          <div
+                            key={notif.id}
+                            onClick={async () => {
+                              if (!notif.isRead) {
+                                await fetch(`/api/notifications/${notif.id}/read`, { method: "PATCH" });
+                                mutateNotifications();
+                              }
+                              if (notif.linkUrl) {
+                                router.push(notif.linkUrl);
+                              }
+                            }}
+                            className={`p-3 border-b-2 border-black last:border-b-0 cursor-pointer hover:bg-neo-pink hover:text-white transition-colors ${
+                              notif.isRead ? "opacity-50 text-gray-500" : "bg-white text-black"
+                            }`}
+                          >
+                            <p className="text-sm font-medium line-clamp-2">
+                              {notif.message}
+                            </p>
+                            <span className="text-xs opacity-70 mt-1 block">
+                              {new Date(notif.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-4 text-center text-sm font-bold text-gray-500">
+                        알림이 없습니다
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Profile Dropdown */}

@@ -49,6 +49,19 @@ export async function POST(
           userId,
         },
       });
+
+      // 알림 생성
+      if (song.userId !== userId) {
+        await prisma.notification.create({
+          data: {
+            userId: song.userId,
+            type: "LIKE",
+            message: `${session.user.name || "누군가"}님이 회원님의 곡 '${song.title}'을(를) 좋아합니다.`,
+            linkUrl: `/songs/${songId}`,
+          }
+        });
+      }
+
       return NextResponse.json({ message: "좋아요 완료", liked: true });
     }
   } catch (error) {

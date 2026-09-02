@@ -22,6 +22,7 @@ export async function POST(
 
     const songSession = await prisma.songSession.findUnique({
       where: { id: sessionId },
+      include: { song: true }
     });
 
     if (!songSession || songSession.songId !== songId) {
@@ -42,6 +43,17 @@ export async function POST(
         user: { select: { id: true, name: true, image: true } },
       },
     });
+
+    if (songSession.song.userId !== session.user.id) {
+      await prisma.notification.create({
+        data: {
+          userId: songSession.song.userId,
+          type: "SESSION_JOIN",
+          message: `${session.user.name || "누군가"}님이 곡 '${songSession.song.title}'의 ${songSession.position} 세션에 참여했습니다.`,
+          linkUrl: `/songs/${songId}`,
+        }
+      });
+    }
 
     return NextResponse.json(updated);
   } catch (error) {

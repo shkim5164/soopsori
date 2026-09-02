@@ -38,6 +38,7 @@ model User {
   pickedMeetingSongs  MeetingSong[]
   notices             Notice[]
   createdMeetings     Meeting[] @relation("MeetingCreator")
+  notifications       Notification[]
 }
 
 model Song {
@@ -174,4 +175,16 @@ model SongComment {
 
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id         String   @id @default(cuid())
+  type       String   // "LIKE", "COMMENT", "SESSION_JOIN", "NOTICE" 등
+  message    String   // 알림 메세지
+  isRead     Boolean  @default(false)
+  linkUrl    String?  // 연관된 링크
+  createdAt  DateTime @default(now())
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
