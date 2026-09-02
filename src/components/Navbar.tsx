@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useSession, signOut } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import { getButtonClasses } from "@/components/ui/Button";
 
@@ -29,6 +29,28 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setNotifOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, []);
 
   // Notifications
   const { data: notifications, mutate: mutateNotifications } = useSWR(
@@ -100,8 +122,14 @@ export default function Navbar() {
                 </div>
 
                 {/* Notification Bell */}
-                <div className="relative group">
-                  <button className="relative w-10 h-10 flex items-center justify-center rounded-full border-2 border-black bg-white neo-shadow-sm hover:bg-neo-yellow hover:text-black transition-all">
+                <div className="relative" ref={notifRef}>
+                  <button 
+                    onClick={() => {
+                      setNotifOpen(!notifOpen);
+                      setProfileOpen(false);
+                    }}
+                    className="relative w-10 h-10 flex items-center justify-center rounded-full border-2 border-black bg-white neo-shadow-sm hover:bg-neo-yellow hover:text-black transition-all"
+                  >
                     🔔
                     {unreadCount > 0 && (
                       <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center border-2 border-black">
@@ -110,7 +138,9 @@ export default function Navbar() {
                     )}
                   </button>
                   {/* Notification Dropdown */}
-                  <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white border-2 border-black neo-shadow-lg p-0 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0 max-h-96 overflow-y-auto z-50">
+                  <div className={`absolute right-0 mt-2 w-72 sm:w-80 bg-white border-2 border-black neo-shadow-lg p-0 transition-all duration-200 transform max-h-96 overflow-y-auto z-50 ${
+                    notifOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible translate-y-1"
+                  }`}>
                     <div className="px-3 py-2 border-b-2 border-black bg-neo-yellow flex justify-between items-center sticky top-0 z-10">
                       <p className="text-sm font-black text-black">알림</p>
                       {unreadCount > 0 && (
@@ -138,6 +168,7 @@ export default function Navbar() {
                               if (notif.linkUrl) {
                                 router.push(notif.linkUrl);
                               }
+                              setNotifOpen(false);
                             }}
                             className={`p-3 border-b-2 border-black last:border-b-0 cursor-pointer hover:bg-neo-pink hover:text-white transition-colors ${
                               notif.isRead ? "opacity-50 text-gray-500" : "bg-white text-black"
@@ -161,8 +192,14 @@ export default function Navbar() {
                 </div>
 
                 {/* Profile Dropdown */}
-                <div className="relative group">
-                  <button className="flex items-center gap-2 p-0.5 rounded-full hover:scale-105 transition-transform duration-200 neo-shadow-sm border-2 border-black bg-white">
+                <div className="relative" ref={profileRef}>
+                  <button 
+                    onClick={() => {
+                      setProfileOpen(!profileOpen);
+                      setNotifOpen(false);
+                    }}
+                    className="flex items-center gap-2 p-0.5 rounded-full hover:scale-105 transition-transform duration-200 neo-shadow-sm border-2 border-black bg-white"
+                  >
                     {session.user.image ? (
                       <img
                         src={session.user.image}
@@ -176,7 +213,9 @@ export default function Navbar() {
                     )}
                   </button>
                   {/* Dropdown */}
-                  <div className="absolute right-0 mt-2 w-48 bg-white border-2 border-black neo-shadow-lg p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0">
+                  <div className={`absolute right-0 mt-2 w-48 bg-white border-2 border-black neo-shadow-lg p-2 transition-all duration-200 transform ${
+                    profileOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible translate-y-1"
+                  }`}>
                     <div className="px-3 py-2 border-b-2 border-black mb-2 bg-neo-yellow">
                       <p className="text-sm font-black text-black truncate">
                         {session.user.name}
@@ -187,6 +226,7 @@ export default function Navbar() {
                     </div>
                     <Link
                       href="/profile"
+                      onClick={() => setProfileOpen(false)}
                       className="block px-3 py-2 text-sm font-bold text-black hover:bg-neo-pink hover:text-white rounded-none border-2 border-transparent hover:border-black transition-colors mb-1"
                     >
                       👤 프로필
@@ -194,6 +234,7 @@ export default function Navbar() {
                     {session.user.role === "ADMIN" && (
                       <Link
                         href="/admin"
+                        onClick={() => setProfileOpen(false)}
                         className="block px-3 py-2 text-sm font-bold text-black hover:bg-neo-blue hover:text-black rounded-none border-2 border-transparent hover:border-black transition-colors mb-1"
                       >
                         ⚙️ 관리자
