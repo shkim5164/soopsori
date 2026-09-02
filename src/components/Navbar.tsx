@@ -138,7 +138,7 @@ export default function Navbar() {
                     )}
                   </button>
                   {/* Notification Dropdown */}
-                  <div className={`absolute -right-12 sm:right-0 mt-2 w-[calc(100vw-2rem)] max-w-[320px] sm:w-80 bg-white border-2 border-black neo-shadow-lg p-0 transition-all duration-200 transform max-h-96 overflow-y-auto z-50 ${
+                  <div className={`absolute -right-4 sm:right-0 mt-2 w-[260px] sm:w-80 bg-white border-2 border-black neo-shadow-lg p-0 transition-all duration-200 transform max-h-96 overflow-y-auto z-50 ${
                     notifOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible translate-y-1"
                   }`}>
                     <div className="px-3 py-2 border-b-2 border-black bg-neo-yellow flex justify-between items-center sticky top-0 z-10">
