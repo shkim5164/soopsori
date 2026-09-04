@@ -45,6 +45,21 @@ export async function POST(
       },
     });
 
+    // Notify the user if an admin added them to the meeting
+    if (targetUserId !== session.user.id && (attended ?? true)) {
+      const meeting = await prisma.meeting.findUnique({ where: { id: meetingId } });
+      if (meeting) {
+        await prisma.notification.create({
+          data: {
+            userId: targetUserId,
+            type: "NOTICE",
+            message: `${session.user.name || "관리자"}님이 회원님을 '${meeting.title}' 모임의 참석자로 추가했습니다.`,
+            linkUrl: `/meetings/${meetingId}`,
+          }
+        });
+      }
+    }
+
     return NextResponse.json(attendance);
   } catch (error) {
     console.error("Failed to update attendance:", error);

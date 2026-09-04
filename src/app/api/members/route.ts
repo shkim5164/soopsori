@@ -3,12 +3,24 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
 // GET /api/members - 회원 목록 (포인트 랭킹)
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const q = searchParams.get("q");
+
+    const whereClause: any = {
+      role: { not: "ADMIN" },
+    };
+
+    if (q) {
+      whereClause.OR = [
+        { username: { contains: q, mode: "insensitive" } },
+        { name: { contains: q, mode: "insensitive" } },
+      ];
+    }
+
     const members = await prisma.user.findMany({
-      where: {
-        role: { not: "ADMIN" },
-      },
+      where: whereClause,
       select: {
         id: true,
         name: true,

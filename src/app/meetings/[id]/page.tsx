@@ -45,6 +45,8 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
   const [availableSongs, setAvailableSongs] = useState<Song[]>([]);
   const [selectedSongId, setSelectedSongId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [allMembers, setAllMembers] = useState<{id: string, name: string}[]>([]);
+  const [adminSelectedUserId, setAdminSelectedUserId] = useState("");
 
   const fetchMeeting = async () => {
     try {
@@ -68,7 +70,10 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
 
   useEffect(() => {
     fetchMeeting();
-  }, [id]);
+    if (session?.user?.role === "ADMIN") {
+      fetch("/api/members").then(res => res.ok && res.json()).then(data => setAllMembers(data || []));
+    }
+  }, [id, session?.user?.role]);
 
   const handleAddSong = async (songIdToAdd?: string | React.FormEvent) => {
     const idToAdd = typeof songIdToAdd === "string" ? songIdToAdd : selectedSongId;
@@ -341,12 +346,55 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                 )}
                 <span className="text-sm text-black font-bold">{a.user.name}</span>
                 <span className="text-xs text-neo-pink font-black ml-auto">✓</span>
+                {session?.user?.role === "ADMIN" && (
+                  <button 
+                    onClick={() => handleToggleAttendance(a.user.id)}
+                    className="ml-2 text-danger-400 font-bold hover:text-red-700"
+                    title="참석 취소"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
             ))}
             {meeting.attendances.filter((a) => a.attended).length === 0 && (
               <p className="text-gray-800 font-bold text-sm text-center py-4">아직 참석자가 없습니다</p>
             )}
           </div>
+          
+          {session?.user?.role === "ADMIN" && (
+            <div className="mt-6 border-t-2 border-black pt-4">
+              <h3 className="text-sm font-bold text-black mb-2 flex items-center gap-1">
+                <span className="text-neo-pink">⚙️</span> 관리자 메뉴: 참석자 추가
+              </h3>
+              <div className="flex gap-2">
+                <select 
+                  className="neo-input flex-1 p-2 text-sm"
+                  value={adminSelectedUserId}
+                  onChange={(e) => setAdminSelectedUserId(e.target.value)}
+                >
+                  <option value="">참석자를 선택하세요</option>
+                  {allMembers
+                    .filter(member => !meeting.attendances.some(a => a.user.id === member.id && a.attended))
+                    .map(member => (
+                      <option key={member.id} value={member.id}>{member.name}</option>
+                  ))}
+                </select>
+                <button 
+                  onClick={() => {
+                    if (adminSelectedUserId) {
+                      handleToggleAttendance(adminSelectedUserId);
+                      setAdminSelectedUserId("");
+                    }
+                  }}
+                  disabled={!adminSelectedUserId}
+                  className="neo-btn neo-btn-primary px-4 py-2 text-sm disabled:opacity-50 whitespace-nowrap"
+                >
+                  추가
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

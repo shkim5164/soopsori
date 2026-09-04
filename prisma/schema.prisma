@@ -175,6 +175,10 @@ model SongComment {
 
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  parentId  String?
+  parent    SongComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   SongComment[] @relation("CommentReplies")
 }
 
 model Notification {

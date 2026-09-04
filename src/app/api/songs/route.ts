@@ -18,7 +18,9 @@ export async function GET(request: NextRequest) {
     // 정렬 기준 설정
     const orderBy = sort === "popular" 
       ? { likes: { _count: "desc" as const } } 
-      : { createdAt: "desc" as const };
+      : sort === "comments"
+        ? { comments: { _count: "desc" as const } }
+        : { createdAt: "desc" as const };
 
     const whereClause: any = {};
     if (search) {
@@ -48,7 +50,7 @@ export async function GET(request: NextRequest) {
           },
         },
         _count: {
-          select: { likes: true },
+          select: { likes: true, comments: true },
         },
         // 현재 유저가 좋아요 했는지 여부를 위해 likes 포함 (userId가 있을 때만 필터링)
         likes: currentUserId ? {

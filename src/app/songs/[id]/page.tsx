@@ -5,6 +5,26 @@ import { useSession } from "next-auth/react";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { getPositionLabel, getPositionBadgeClass, getPositionEmoji, formatDate, POSITIONS } from "@/lib/constants";
 import Link from "next/link";
+import MentionInput from "@/components/MentionInput";
+import React from "react";
+
+const renderCommentContent = (content: string) => {
+  const parts = content.split(/(@[a-zA-Z0-9_가-힣]+)/g);
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (part.startsWith("@")) {
+          return (
+            <span key={index} className="text-neo-pink font-bold bg-neo-pink/10 px-1 py-0.5 rounded">
+              {part}
+            </span>
+          );
+        }
+        return <React.Fragment key={index}>{part}</React.Fragment>;
+      })}
+    </>
+  );
+};
 
 interface SongSession {
   id: string;
@@ -30,6 +50,7 @@ interface Comment {
   content: string;
   createdAt: string;
   user: { id: string; name: string; image: string; role: string };
+  replies?: Comment[];
 }
 
 export default function SongDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -38,6 +59,8 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
   const [song, setSong] = useState<Song | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
+  const [replyingToId, setReplyingToId] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState("");
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editingCommentContent, setEditingCommentContent] = useState("");
   const [loading, setLoading] = useState(true);
@@ -203,6 +226,24 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
       }
     } catch (error) {
       console.error("Failed to create comment:", error);
+    }
+  };
+
+  const handleCreateReply = async (parentId: string) => {
+    if (!replyContent.trim()) return;
+    try {
+      const res = await fetch(`/api/songs/${id}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: replyContent, parentId }),
+      });
+      if (res.ok) {
+        setReplyContent("");
+        setReplyingToId(null);
+        fetchComments();
+      }
+    } catch (error) {
+      console.error("Failed to create reply:", error);
     }
   };
 
@@ -599,12 +640,11 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
               )}
             </div>
             <div className="flex-1">
-              <textarea
+              <MentionInput
                 value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
+                onChange={(val) => setNewComment(val)}
                 placeholder="댓글을 남겨보세요..."
-                rows={2}
-                className="neo-input resize-none"
+                className="neo-input"
               />
               <div className="flex justify-end mt-2">
                 <button
@@ -670,11 +710,10 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                 
                 {editingCommentId === comment.id ? (
                   <div className="mt-2">
-                    <textarea
+                    <MentionInput
                       value={editingCommentContent}
-                      onChange={(e) => setEditingCommentContent(e.target.value)}
-                      rows={2}
-                      className="w-full bg-white border-3 border-black neo-shadow border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black resize-none text-sm"
+                      onChange={(val) => setEditingCommentContent(val)}
+                      className="w-full bg-white border-3 border-black neo-shadow border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black text-sm"
                     />
                     <div className="flex justify-end gap-2 mt-2">
                       <button
@@ -693,9 +732,134 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                     </div>
                   </div>
                 ) : (
-                  <p className="text-black font-bold text-sm whitespace-pre-wrap leading-relaxed mt-1">
-                    {comment.content}
-                  </p>
+                  <>
+                    <p className="text-black font-bold text-sm whitespace-pre-wrap leading-relaxed mt-1">
+                      {renderCommentContent(comment.content)}
+                    </p>
+                    <div className="mt-2 flex">
+                      <button
+                        onClick={() => {
+                          setReplyingToId(replyingToId === comment.id ? null : comment.id);
+                          setReplyContent("");
+                        }}
+                        className="text-xs text-gray-800 hover:text-neo-pink font-black transition-colors"
+                      >
+                        답글 달기
+                      </button>
+                    </div>
+                  </>
+                )}
+
+                {/* Reply Form */}
+                {replyingToId === comment.id && (
+                  <div className="mt-3 flex gap-2 pl-4 border-l-2 border-gray-200">
+                    <div className="flex-1">
+                      <MentionInput
+                        value={replyContent}
+                        onChange={(val) => setReplyContent(val)}
+                        placeholder="답글을 남겨보세요..."
+                        className="neo-input text-sm"
+                      />
+                      <div className="flex justify-end gap-2 mt-2">
+                        <button
+                          onClick={() => {
+                            setReplyingToId(null);
+                            setReplyContent("");
+                          }}
+                          className="px-3 py-1.5 rounded-none text-black font-bold hover:text-black font-bold text-xs transition-colors"
+                        >
+                          취소
+                        </button>
+                        <button
+                          onClick={() => handleCreateReply(comment.id)}
+                          disabled={!replyContent.trim()}
+                          className="px-3 py-1.5 rounded-none bg-emerald-600/20 text-neo-pink font-black hover:bg-emerald-600/30 disabled:opacity-50 text-xs transition-colors"
+                        >
+                          답글 등록
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Replies List */}
+                {comment.replies && comment.replies.length > 0 && (
+                  <div className="mt-3 space-y-3 pl-4 border-l-2 border-gray-200">
+                    {comment.replies.map(reply => (
+                      <div key={reply.id} className="flex gap-2">
+                        <div className="flex-shrink-0">
+                          {reply.user.image ? (
+                            <img src={reply.user.image} alt="" className="w-6 h-6 rounded-full border border-2 border-black object-cover" />
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-neo-yellow border-2 border-black text-black flex items-center justify-center text-xs">
+                              {reply.user.name?.[0]}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-0.5">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-medium text-black font-black text-xs">{reply.user.name}</span>
+                              {reply.user.role === "ADMIN" && (
+                                <span className="text-[9px] px-1 py-0.5 rounded bg-gold-500/15 text-black font-black bg-neo-yellow border border-gold-500/20">
+                                  관리자
+                                </span>
+                              )}
+                              <span className="text-[10px] text-gray-800">{formatDate(reply.createdAt)}</span>
+                            </div>
+                            {(session?.user?.id === reply.user.id || session?.user?.role === "ADMIN") && (
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => {
+                                    setEditingCommentId(reply.id);
+                                    setEditingCommentContent(reply.content);
+                                  }}
+                                  className="text-[10px] text-gray-800 hover:text-neo-pink font-black transition-colors"
+                                >
+                                  수정
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteComment(reply.id)}
+                                  className="text-[10px] text-gray-800 hover:text-danger-400 transition-colors"
+                                >
+                                  삭제
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {editingCommentId === reply.id ? (
+                            <div className="mt-1">
+                              <MentionInput
+                                value={editingCommentContent}
+                                onChange={(val) => setEditingCommentContent(val)}
+                                className="w-full bg-white border-3 border-black neo-shadow border border-2 border-black rounded-none px-3 py-1.5 text-black font-black focus:outline-none focus:border-3 border-black text-xs"
+                              />
+                              <div className="flex justify-end gap-2 mt-1.5">
+                                <button
+                                  onClick={() => setEditingCommentId(null)}
+                                  className="px-2 py-1 rounded-none text-black font-bold hover:text-black font-bold text-[10px] transition-colors"
+                                >
+                                  취소
+                                </button>
+                                <button
+                                  onClick={() => handleUpdateComment(reply.id)}
+                                  disabled={!editingCommentContent.trim()}
+                                  className="px-2 py-1 rounded-none bg-emerald-600/20 text-neo-pink font-black hover:bg-emerald-600/30 disabled:opacity-50 text-[10px] transition-colors"
+                                >
+                                  저장
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-black font-bold text-xs whitespace-pre-wrap leading-relaxed">
+                              {renderCommentContent(reply.content)}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
