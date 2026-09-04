@@ -103,7 +103,10 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
   useEffect(() => {
     fetchSong();
     fetchComments();
-  }, [id]);
+    if (session?.user?.role === "ADMIN") {
+      fetch("/api/members").then(res => res.ok && res.json()).then(data => setAllMembers(data || []));
+    }
+  }, [id, session?.user?.role]);
 
   const handleJoinSession = async (sessionId: string) => {
     try {
@@ -142,9 +145,10 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
   };
 
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ title: "", artist: "", youtubeUrl: "", description: "", difficulty: 3, sessions: [] as string[] });
+  const [editForm, setEditForm] = useState({ title: "", artist: "", youtubeUrl: "", description: "", difficulty: 3, sessions: [] as string[], userId: "" });
   const [customSession, setCustomSession] = useState("");
   const [isFetchingMeta, setIsFetchingMeta] = useState(false);
+  const [allMembers, setAllMembers] = useState<{id: string, name: string}[]>([]);
 
   const fetchYoutubeMeta = async (url: string) => {
     if (!url || !url.includes("youtu")) return;
@@ -197,6 +201,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
         description: song.description || "",
         difficulty: song.difficulty,
         sessions: song.sessions.map((s) => s.position),
+        userId: song.user.id,
       });
       setIsEditing(true);
     }
@@ -469,6 +474,20 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                     className="w-full bg-white border-3 border-black neo-shadow border border-2 border-black rounded-none px-4 py-2 text-black font-black"
                   />
                 </div>
+                {session?.user?.role === "ADMIN" && (
+                  <div>
+                    <label className="block text-sm text-black font-bold mb-1">곡 등록자 변경 (관리자 전용)</label>
+                    <select
+                      value={editForm.userId}
+                      onChange={(e) => setEditForm({ ...editForm, userId: e.target.value })}
+                      className="w-full bg-white border-3 border-black neo-shadow border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black"
+                    >
+                      {allMembers.map((m) => (
+                        <option key={m.id} value={m.id}>{m.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm text-black font-bold mb-1">난이도</label>
                   <div className="flex items-center gap-1">

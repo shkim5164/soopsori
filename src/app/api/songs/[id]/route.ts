@@ -88,7 +88,7 @@ export async function PATCH(
       return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     }
 
-    const { title, artist, youtubeUrl, description, difficulty, sessions: newSessions } = await request.json();
+    const { title, artist, youtubeUrl, description, difficulty, sessions: newSessions, userId } = await request.json();
     if (!title || !artist) {
       return NextResponse.json({ error: "제목과 아티스트는 필수입니다" }, { status: 400 });
     }
@@ -97,6 +97,9 @@ export async function PATCH(
     const updateData: any = { title, artist, youtubeUrl, description };
     if (parsedDifficulty !== undefined && !isNaN(parsedDifficulty)) {
       updateData.difficulty = parsedDifficulty;
+    }
+    if (userId && session.user.role === "ADMIN") {
+      updateData.userId = userId;
     }
 
     if (newSessions && Array.isArray(newSessions)) {
