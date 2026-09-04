@@ -360,22 +360,6 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
     );
   };
 
-  const handleToggleReaction = async (commentId: string, emoji: string) => {
-    if (!session) return alert("로그인이 필요합니다.");
-    try {
-      const res = await fetch(`/api/songs/${id}/comments/${commentId}/reactions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ emoji }),
-      });
-      if (res.ok) {
-        fetchComments();
-      }
-    } catch (error) {
-      console.error("Failed to toggle reaction:", error);
-    }
-  };
-
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
