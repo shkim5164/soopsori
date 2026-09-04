@@ -16,15 +16,15 @@ export default function RegisterPage() {
     name: "",
   });
   const [positions, setPositions] = useState<RankedPosition[]>([]);
-  const [error, setError] = useState("");
+  const [formErrors, setFormErrors] = useState<{ username?: string, password?: string, name?: string, general?: string }>({});
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setFormErrors({});
 
     if (form.password !== form.passwordConfirm) {
-      setError("비밀번호가 일치하지 않습니다");
+      setFormErrors({ password: "비밀번호가 일치하지 않습니다" });
       return;
     }
 
@@ -44,7 +44,10 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error);
+        if (data.error?.includes("아이디")) setFormErrors({ username: data.error });
+        else if (data.error?.includes("비밀번호")) setFormErrors({ password: data.error });
+        else if (data.error?.includes("닉네임") || data.error?.includes("이름")) setFormErrors({ name: data.error });
+        else setFormErrors({ general: data.error });
         setLoading(false);
         return;
       }
@@ -70,7 +73,7 @@ export default function RegisterPage() {
         router.refresh();
       }
     } catch {
-      setError("회원가입 중 오류가 발생했습니다");
+      setFormErrors({ general: "회원가입 중 오류가 발생했습니다" });
     } finally {
       setLoading(false);
     }
@@ -105,6 +108,9 @@ export default function RegisterPage() {
                 placeholder="3자 이상"
                 autoComplete="username"
               />
+              {formErrors.username && (
+                <p className="text-sm text-red-500 font-bold mt-1">{formErrors.username}</p>
+              )}
             </div>
 
             <div>
@@ -136,6 +142,9 @@ export default function RegisterPage() {
                 placeholder="비밀번호를 다시 입력하세요"
                 autoComplete="new-password"
               />
+              {formErrors.password && (
+                <p className="text-sm text-red-500 font-bold mt-1">{formErrors.password}</p>
+              )}
             </div>
 
             <div>
@@ -149,6 +158,9 @@ export default function RegisterPage() {
                 className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black focus:ring-1 focus:bg-neo-yellow focus:ring-0 transition-all"
                 placeholder="비워두면 아이디가 이름으로 사용됩니다"
               />
+              {formErrors.name && (
+                <p className="text-sm text-red-500 font-bold mt-1">{formErrors.name}</p>
+              )}
             </div>
 
             <div>
@@ -158,9 +170,9 @@ export default function RegisterPage() {
               <PositionPicker value={positions} onChange={setPositions} />
             </div>
 
-            {error && (
-              <div className="p-3 rounded-none bg-danger-500/10 border border-danger-500/20">
-                <p className="text-sm text-danger-400">{error}</p>
+            {formErrors.general && (
+              <div className="p-3 rounded-none bg-red-100 border border-red-200">
+                <p className="text-sm text-red-500 font-bold">{formErrors.general}</p>
               </div>
             )}
 

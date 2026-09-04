@@ -45,6 +45,7 @@ export default function AdminClient() {
     position: "",
     role: "MEMBER",
   });
+  const [formErrors, setFormErrors] = useState<{username?: string, name?: string, general?: string}>({});
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -169,6 +170,7 @@ export default function AdminClient() {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setFormErrors({});
 
     try {
       if (modalMode === "ADD") {
@@ -184,7 +186,9 @@ export default function AdminClient() {
           fetchMembers();
         } else {
           const errData = await res.json();
-          alert(`추가 실패: ${errData.error}`);
+          if (errData.error?.includes("아이디")) setFormErrors({ username: errData.error });
+          else if (errData.error?.includes("닉네임") || errData.error?.includes("이름")) setFormErrors({ name: errData.error });
+          else setFormErrors({ general: errData.error });
         }
       } else {
         const res = await fetch(`/api/admin/members/${formData.id}`, {
@@ -205,12 +209,13 @@ export default function AdminClient() {
           fetchMembers();
         } else {
           const errData = await res.json();
-          alert(`수정 실패: ${errData.error}`);
+          if (errData.error?.includes("닉네임") || errData.error?.includes("이름")) setFormErrors({ name: errData.error });
+          else setFormErrors({ general: errData.error });
         }
       }
     } catch (error) {
       console.error("Failed to submit form:", error);
-      alert("저장 중 오류가 발생했습니다.");
+      setFormErrors({ general: "저장 중 오류가 발생했습니다." });
     } finally {
       setSubmitting(false);
     }
@@ -385,6 +390,9 @@ export default function AdminClient() {
                       onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                       className="w-full bg-white border-2 border-black border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black"
                     />
+                    {formErrors.username && (
+                      <p className="text-sm text-red-500 font-bold mt-1">{formErrors.username}</p>
+                    )}
                   </div>
                 )}
 
@@ -409,6 +417,9 @@ export default function AdminClient() {
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full bg-white border-2 border-black border border-2 border-black rounded-none px-4 py-2 text-black font-black focus:outline-none focus:border-3 border-black"
                   />
+                  {formErrors.name && (
+                    <p className="text-sm text-red-500 font-bold mt-1">{formErrors.name}</p>
+                  )}
                 </div>
 
                 <div>
@@ -440,6 +451,12 @@ export default function AdminClient() {
                     <option value="ADMIN">관리자 (ADMIN)</option>
                   </select>
                 </div>
+                
+                {formErrors.general && (
+                  <div className="p-3 bg-red-100 border border-red-200">
+                    <p className="text-sm text-red-500 font-bold">{formErrors.general}</p>
+                  </div>
+                )}
 
                 <div className="pt-4 flex gap-3">
                   <button

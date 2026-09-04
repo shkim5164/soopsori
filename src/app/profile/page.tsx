@@ -56,7 +56,7 @@ export default function ProfilePage() {
   
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [formErrors, setFormErrors] = useState<{name?: string, password?: string, general?: string}>({});
 
   const [activities, setActivities] = useState<ActivityData | null>(null);
   const [loadingActivities, setLoadingActivities] = useState(false);
@@ -112,7 +112,7 @@ export default function ProfilePage() {
   const handleSave = async () => {
     if (!session?.user?.id) return;
     setSaving(true);
-    setPasswordError("");
+    setFormErrors({});
 
     let uploadedImageUrl = undefined;
     if (imageFile) {
@@ -127,13 +127,13 @@ export default function ProfilePage() {
           const data = await uploadRes.json();
           uploadedImageUrl = data.url;
         } else {
-          setPasswordError("이미지 업로드에 실패했습니다.");
+          setFormErrors({ general: "이미지 업로드에 실패했습니다." });
           setSaving(false);
           return;
         }
       } catch (error) {
         console.error("Failed to upload image:", error);
-        setPasswordError("이미지 업로드 중 오류가 발생했습니다.");
+        setFormErrors({ general: "이미지 업로드 중 오류가 발생했습니다." });
         setSaving(false);
         return;
       }
@@ -160,11 +160,18 @@ export default function ProfilePage() {
         setTimeout(() => setSaved(false), 2000);
       } else {
         const err = await res.json();
-        setPasswordError(err.error || "수정에 실패했습니다.");
+        const msg = err.error || "수정에 실패했습니다.";
+        if (msg.includes("닉네임")) {
+          setFormErrors({ name: msg });
+        } else if (msg.includes("비밀번호")) {
+          setFormErrors({ password: msg });
+        } else {
+          setFormErrors({ general: msg });
+        }
       }
     } catch (error) {
       console.error("Failed to save profile:", error);
-      setPasswordError("서버 오류가 발생했습니다.");
+      setFormErrors({ general: "서버 오류가 발생했습니다." });
     } finally {
       setSaving(false);
     }
@@ -266,6 +273,9 @@ export default function ProfilePage() {
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
               />
+              {formErrors.name && (
+                <p className="text-sm text-red-500 font-bold mt-1">{formErrors.name}</p>
+              )}
             </div>
 
             <div>
@@ -296,8 +306,11 @@ export default function ProfilePage() {
                     className="w-full px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black focus:outline-none focus:border-3 border-black transition-colors"
                   />
                 </div>
-                {passwordError && (
-                  <p className="text-sm text-danger-400 mt-1">{passwordError}</p>
+                {formErrors.password && (
+                  <p className="text-sm text-red-500 font-bold mt-1">{formErrors.password}</p>
+                )}
+                {formErrors.general && (
+                  <p className="text-sm text-red-500 font-bold mt-1">{formErrors.general}</p>
                 )}
               </div>
             </div>
