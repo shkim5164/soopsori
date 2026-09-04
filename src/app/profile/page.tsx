@@ -350,9 +350,6 @@ export default function ProfilePage() {
                               <span className={`text-xs px-2 py-0.5 rounded-full ${getPositionBadgeClass(session.position)}`}>
                                 {getPositionLabel(session.position)}
                               </span>
-                              <span className={`text-xs px-2 py-0.5 rounded ${session.status === 'FILLED' ? 'neo-btn neo-btn-primary/15 text-neo-pink font-black' : 'bg-neutral-500/15 text-black font-bold'}`}>
-                                {session.status === 'FILLED' ? '모집완료' : '모집중'}
-                              </span>
                             </div>
                             <h4 className="font-semibold text-black font-black group-hover:text-neo-pink font-black truncate">{session.song.title}</h4>
                             <p className="text-xs text-gray-800 font-bold truncate">{session.song.artist}</p>
