@@ -461,6 +461,7 @@ export default function AdminClient() {
             </div>
           </div>
         </div>
+      )}
       {selectedMember && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white border-3 border-black border border-2 border-black rounded-none w-full max-w-lg overflow-hidden shadow-2xl max-h-[90vh] flex flex-col">
