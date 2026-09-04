@@ -24,7 +24,7 @@ export default function StudiosPage() {
   const markersRef = useRef<naver.maps.Marker[]>([]);
   
   const [showAddModal, setShowAddModal] = useState(false);
-  const [formData, setFormData] = useState({ name: "", address: "", latitude: 37.5665, longitude: 126.9780, description: "" });
+  const [formData, setFormData] = useState({ name: "", address: "", description: "" });
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -97,15 +97,11 @@ export default function StudiosPage() {
       const res = await fetch("/api/studios", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          latitude: Number(formData.latitude),
-          longitude: Number(formData.longitude)
-        }),
+        body: JSON.stringify(formData),
       });
       if (res.ok) {
         setShowAddModal(false);
-        setFormData({ name: "", address: "", latitude: 37.5665, longitude: 126.9780, description: "" });
+        setFormData({ name: "", address: "", description: "" });
         mutate();
       } else {
         const err = await res.json();
@@ -175,16 +171,6 @@ export default function StudiosPage() {
               <div>
                 <label className="block text-sm font-bold mb-1">주소 *</label>
                 <input required type="text" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full border-2 border-black p-2 font-bold" />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-sm font-bold mb-1">위도 (Latitude) *</label>
-                  <input required type="number" step="any" value={formData.latitude} onChange={e => setFormData({...formData, latitude: Number(e.target.value)})} className="w-full border-2 border-black p-2 font-bold" />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold mb-1">경도 (Longitude) *</label>
-                  <input required type="number" step="any" value={formData.longitude} onChange={e => setFormData({...formData, longitude: Number(e.target.value)})} className="w-full border-2 border-black p-2 font-bold" />
-                </div>
               </div>
               <div>
                 <label className="block text-sm font-bold mb-1">소개</label>
