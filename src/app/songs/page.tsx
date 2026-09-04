@@ -321,12 +321,12 @@ export default function SongsPage() {
                   )}
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between mt-3 pt-3">
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t-2 border-black">
                     <div className="flex items-center gap-1.5">
                       {song.user.image && (
-                        <img src={song.user.image} alt="" className="w-4 h-4 rounded-full" />
+                        <img src={song.user.image} alt="" className="w-4 h-4 rounded-full border border-black" />
                       )}
-                      <span className="text-xs text-gray-800 font-bold">{song.user.name}</span>
+                      <span className="text-xs text-gray-800 font-bold">곡 등록자 : {song.user.name}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       {openSessions.length > 0 && (
