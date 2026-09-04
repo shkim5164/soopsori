@@ -45,11 +45,19 @@ interface Song {
   sessions: SongSession[];
 }
 
+interface CommentReaction {
+  id: string;
+  emoji: string;
+  userId: string;
+  user: { id: string; name: string; image: string };
+}
+
 interface Comment {
   id: string;
   content: string;
   createdAt: string;
   user: { id: string; name: string; image: string; role: string };
+  reactions?: CommentReaction[];
   replies?: Comment[];
 }
 
@@ -274,6 +282,97 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
       }
     } catch (error) {
       console.error("Failed to delete comment:", error);
+    }
+  };
+
+  const handleToggleReaction = async (commentId: string, emoji: string) => {
+    if (!session) return alert("로그인이 필요합니다.");
+    try {
+      const res = await fetch(`/api/songs/${id}/comments/${commentId}/reactions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ emoji }),
+      });
+      if (res.ok) {
+        fetchComments();
+      }
+    } catch (error) {
+      console.error("Failed to toggle reaction:", error);
+    }
+  };
+
+  const AVAILABLE_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "👏"];
+
+  const renderReactions = (comment: Comment) => {
+    const reactionCounts: Record<string, { count: number; hasMine: boolean; users: string[] }> = {};
+    AVAILABLE_EMOJIS.forEach(e => {
+      reactionCounts[e] = { count: 0, hasMine: false, users: [] };
+    });
+    
+    if (comment.reactions) {
+      comment.reactions.forEach(r => {
+        if (!reactionCounts[r.emoji]) {
+          reactionCounts[r.emoji] = { count: 0, hasMine: false, users: [] };
+        }
+        reactionCounts[r.emoji].count++;
+        reactionCounts[r.emoji].users.push(r.user.name);
+        if (r.userId === session?.user?.id) {
+          reactionCounts[r.emoji].hasMine = true;
+        }
+      });
+    }
+
+    const activeReactions = Object.entries(reactionCounts).filter(([_, data]) => data.count > 0);
+
+    return (
+      <div className="flex flex-wrap items-center gap-1.5 mt-2">
+        {activeReactions.map(([emoji, data]) => (
+          <button
+            key={emoji}
+            onClick={() => handleToggleReaction(comment.id, emoji)}
+            title={data.users.join(', ')}
+            className={`flex items-center gap-1 px-1.5 py-0.5 rounded border text-xs transition-colors ${
+              data.hasMine ? "border-neo-pink bg-neo-pink/10 text-neo-pink font-bold" : "border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <span>{emoji}</span>
+            <span className="font-medium">{data.count}</span>
+          </button>
+        ))}
+        
+        <div className="relative group">
+          <button className="flex items-center justify-center px-2 py-0.5 rounded border border-gray-200 bg-gray-50 text-gray-400 hover:bg-gray-100 transition-colors text-xs font-bold">
+            +
+          </button>
+          <div className="absolute left-0 bottom-full mb-1 hidden group-hover:flex bg-white border-2 border-black neo-shadow p-1 rounded-none gap-1 z-10">
+            {AVAILABLE_EMOJIS.map(emoji => (
+              <button
+                key={emoji}
+                onClick={() => handleToggleReaction(comment.id, emoji)}
+                className="hover:bg-gray-100 p-1.5 rounded transition-colors text-base leading-none"
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const handleToggleReaction = async (commentId: string, emoji: string) => {
+    if (!session) return alert("로그인이 필요합니다.");
+    try {
+      const res = await fetch(`/api/songs/${id}/comments/${commentId}/reactions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ emoji }),
+      });
+      if (res.ok) {
+        fetchComments();
+      }
+    } catch (error) {
+      console.error("Failed to toggle reaction:", error);
     }
   };
 
@@ -736,6 +835,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                     <p className="text-black font-bold text-sm whitespace-pre-wrap leading-relaxed mt-1">
                       {renderCommentContent(comment.content)}
                     </p>
+                    {renderReactions(comment)}
                     <div className="mt-2 flex">
                       <button
                         onClick={() => {
@@ -852,9 +952,12 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                               </div>
                             </div>
                           ) : (
-                            <p className="text-black font-bold text-xs whitespace-pre-wrap leading-relaxed">
-                              {renderCommentContent(reply.content)}
-                            </p>
+                            <>
+                              <p className="text-black font-bold text-xs whitespace-pre-wrap leading-relaxed">
+                                {renderCommentContent(reply.content)}
+                              </p>
+                              {renderReactions(reply)}
+                            </>
                           )}
                         </div>
                       </div>

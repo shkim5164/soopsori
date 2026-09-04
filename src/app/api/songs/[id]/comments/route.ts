@@ -13,8 +13,16 @@ export async function GET(
       where: { songId, parentId: null },
       include: {
         user: { select: { id: true, name: true, image: true, role: true } },
+        reactions: {
+          include: { user: { select: { id: true, name: true, image: true } } }
+        },
         replies: {
-          include: { user: { select: { id: true, name: true, image: true, role: true } } },
+          include: { 
+            user: { select: { id: true, name: true, image: true, role: true } },
+            reactions: {
+              include: { user: { select: { id: true, name: true, image: true } } }
+            }
+          },
           orderBy: { createdAt: "asc" },
         },
       },

@@ -98,6 +98,23 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
     }
   };
 
+  const handleDeleteSong = async (meetingSongId: string) => {
+    if (!confirm("세트리스트에서 이 곡을 삭제하시겠습니까?")) return;
+    try {
+      const res = await fetch(`/api/meetings/${id}/songs/${meetingSongId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        fetchMeeting();
+      } else {
+        const data = await res.json();
+        alert(data.error);
+      }
+    } catch (error) {
+      console.error("Failed to delete song:", error);
+    }
+  };
+
   const handleToggleAttendance = async (userId?: string) => {
     try {
       const targetUserId = userId || session?.user?.id;
@@ -306,6 +323,17 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                         <p className="text-xs text-black font-bold">{ms.picker.name}</p>
                         <p className="text-xs text-black font-black bg-neo-yellow px-1">{ms.picker.points}P</p>
                       </div>
+                      {(ms.picker.id === session?.user?.id || session?.user?.role === "ADMIN") && (
+                        <button
+                          onClick={() => handleDeleteSong(ms.id)}
+                          className="p-1 ml-2 text-gray-800 hover:text-danger-400 transition-colors"
+                          title="곡 삭제"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </div>
 

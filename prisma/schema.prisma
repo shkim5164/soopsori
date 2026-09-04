@@ -39,6 +39,7 @@ model User {
   notices             Notice[]
   createdMeetings     Meeting[] @relation("MeetingCreator")
   notifications       Notification[]
+  commentReactions    CommentReaction[]
 }
 
 model Song {
@@ -179,6 +180,21 @@ model SongComment {
   parentId  String?
   parent    SongComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies   SongComment[] @relation("CommentReplies")
+  reactions CommentReaction[]
+}
+
+model CommentReaction {
+  id        String   @id @default(cuid())
+  emoji     String   
+  createdAt DateTime @default(now())
+
+  commentId String
+  comment   SongComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId, emoji])
 }
 
 model Notification {
