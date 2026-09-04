@@ -26,28 +26,40 @@ export default function StudiosPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({ name: "", address: "", description: "" });
   const [submitting, setSubmitting] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
-    // Initialize map
-    if (!mapElement.current || !window.naver || !window.naver.maps) return;
+    let timer: NodeJS.Timeout;
 
-    const mapOptions: naver.maps.MapOptions = {
-      center: new window.naver.maps.LatLng(37.5665, 126.9780),
-      zoom: 13,
-      minZoom: 7,
-      zoomControl: true,
-      zoomControlOptions: {
-        position: window.naver.maps.Position.TOP_RIGHT,
-      },
+    const initMap = () => {
+      if (!mapElement.current || !window.naver || !window.naver.maps) {
+        timer = setTimeout(initMap, 200);
+        return;
+      }
+
+      if (!mapInstance.current) {
+        const mapOptions: naver.maps.MapOptions = {
+          center: new window.naver.maps.LatLng(37.5665, 126.9780),
+          zoom: 13,
+          minZoom: 7,
+          zoomControl: true,
+          zoomControlOptions: {
+            position: window.naver.maps.Position.TOP_RIGHT,
+          },
+        };
+
+        const map = new window.naver.maps.Map(mapElement.current, mapOptions);
+        mapInstance.current = map;
+        setMapLoaded(true);
+      }
     };
 
-    const map = new window.naver.maps.Map(mapElement.current, mapOptions);
-    mapInstance.current = map;
-
+    initMap();
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if (!mapInstance.current || !studios || !window.naver || !window.naver.maps) return;
+    if (!mapLoaded || !mapInstance.current || !studios || !window.naver || !window.naver.maps) return;
 
     // Clear old markers
     markersRef.current.forEach(marker => marker.setMap(null));

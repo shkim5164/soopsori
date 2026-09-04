@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     // 만약 위도/경도가 명시적으로 안 넘어왔다면 (혹은 0이라면) 주소를 기반으로 API 호출
     if (!finalLat || !finalLng) {
       const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID || process.env.NAVER_MAP_CLIENT_ID;
-      const clientSecret = process.env.NAVER_MAP_CLIENT_SECRET;
+      const clientSecret = process.env.NAVER_MAP_CLIENT_SECRET || process.env.NAVER_MAP_SECRET_ID;
 
       if (!clientId || !clientSecret) {
         return NextResponse.json({ error: "서버에 네이버 지도 API Client ID 또는 Secret이 설정되지 않았습니다. 관리자에게 문의하세요." }, { status: 500 });
@@ -47,7 +47,9 @@ export async function POST(req: NextRequest) {
       });
 
       if (!geocodeRes.ok) {
-        return NextResponse.json({ error: "주소 변환 API 호출에 실패했습니다." }, { status: 500 });
+        const errorText = await geocodeRes.text();
+        console.error("Naver Geocode Error:", geocodeRes.status, errorText);
+        return NextResponse.json({ error: `주소 변환 API 호출에 실패했습니다. (상태: ${geocodeRes.status}) NCP 콘솔에서 'Geocoding' 서비스가 활성화되어 있는지 확인해주세요.` }, { status: 500 });
       }
 
       const data = await geocodeRes.json();
