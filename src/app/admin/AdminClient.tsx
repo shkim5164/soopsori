@@ -48,10 +48,6 @@ export default function AdminClient() {
   const [formErrors, setFormErrors] = useState<{username?: string, name?: string, general?: string}>({});
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchMembers();
-  }, []);
-
   const fetchMembers = async () => {
     try {
       const res = await fetch("/api/admin/members");
@@ -65,6 +61,10 @@ export default function AdminClient() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchMembers();
+  }, []);
 
   const handlePointChange = (id: string, value: string) => {
     setEditingPoints(prev => ({ ...prev, [id]: parseInt(value) || 0 }));

@@ -73,6 +73,11 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
   const [editingCommentContent, setEditingCommentContent] = useState("");
   const [openPickerId, setOpenPickerId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({ title: "", artist: "", youtubeUrl: "", description: "", difficulty: 3, sessions: [] as string[], userId: "" });
+  const [customSession, setCustomSession] = useState("");
+  const [isFetchingMeta, setIsFetchingMeta] = useState(false);
+  const [allMembers, setAllMembers] = useState<{id: string, name: string}[]>([]);
 
   const fetchSong = async () => {
     try {
@@ -143,12 +148,6 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
       console.error("Failed to delete song:", error);
     }
   };
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ title: "", artist: "", youtubeUrl: "", description: "", difficulty: 3, sessions: [] as string[], userId: "" });
-  const [customSession, setCustomSession] = useState("");
-  const [isFetchingMeta, setIsFetchingMeta] = useState(false);
-  const [allMembers, setAllMembers] = useState<{id: string, name: string}[]>([]);
 
   const fetchYoutubeMeta = async (url: string) => {
     if (!url || !url.includes("youtu")) return;
