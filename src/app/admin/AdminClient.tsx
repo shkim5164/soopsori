@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import PositionBadges from "@/components/PositionBadges";
 import PositionPicker from "@/components/PositionPicker";
 import { parsePositions, stringifyPositions } from "@/lib/constants";
+import Link from "next/link";
 
 interface Member {
   id: string;
@@ -32,6 +33,7 @@ export default function AdminClient() {
   // Modals state
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<"ADD" | "EDIT">("ADD");
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   
   // Form state
   const [formData, setFormData] = useState({
@@ -283,15 +285,21 @@ export default function AdminClient() {
                       </div>
                     </td>
                     <td className="p-4 text-xs space-y-1.5 max-w-[250px]">
-                      <div className="line-clamp-2" title={member.songs?.map(s => s.title).join(", ")}>
-                        <span className="font-bold text-black">등록한 곡:</span> <span className="text-gray-800">{member.songs?.length > 0 ? member.songs.map(s => s.title).join(", ") : "-"}</span>
+                      <div className="line-clamp-1">
+                        <span className="font-bold text-black">등록:</span> <span className="text-gray-800">{member.songs?.length || 0}곡</span>
                       </div>
-                      <div className="line-clamp-2" title={member.songSessions?.length > 0 ? Array.from(new Set(member.songSessions.map(s => s.song.title))).join(", ") : ""}>
-                        <span className="font-bold text-black">참여한 곡:</span> <span className="text-gray-800">{member.songSessions?.length > 0 ? Array.from(new Set(member.songSessions.map(s => s.song.title))).join(", ") : "-"}</span>
+                      <div className="line-clamp-1">
+                        <span className="font-bold text-black">참여:</span> <span className="text-gray-800">{Array.from(new Set(member.songSessions?.map(s => s.song.id))).length || 0}곡</span>
                       </div>
-                      <div className="line-clamp-2" title={member.meetingAttendances?.map(m => m.meeting.title).join(", ")}>
-                        <span className="font-bold text-black">참여 모임:</span> <span className="text-gray-800">{member.meetingAttendances?.length > 0 ? member.meetingAttendances.map(m => m.meeting.title).join(", ") : "-"}</span>
+                      <div className="line-clamp-1">
+                        <span className="font-bold text-black">모임:</span> <span className="text-gray-800">{member.meetingAttendances?.length || 0}회</span>
                       </div>
+                      <button 
+                        onClick={() => setSelectedMember(member)}
+                        className="mt-1 px-2 py-1 bg-gray-100 hover:bg-gray-200 text-black border border-black rounded transition-colors text-xs font-bold"
+                      >
+                        상세 보기
+                      </button>
                     </td>
                     <td className="p-4">
                       <span className={`text-xs px-2 py-1 rounded ${
@@ -450,6 +458,81 @@ export default function AdminClient() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      {selectedMember && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white border-3 border-black border border-2 border-black rounded-none w-full max-w-lg overflow-hidden shadow-2xl max-h-[90vh] flex flex-col">
+            <div className="p-6 border-b-2 border-black bg-neo-yellow flex justify-between items-center">
+              <h2 className="text-xl font-bold text-black font-black">
+                {selectedMember.name} 님의 활동 내역
+              </h2>
+              <button onClick={() => setSelectedMember(null)} className="text-black font-black text-xl hover:text-gray-700">
+                ×
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto space-y-6">
+              <div>
+                <h3 className="font-bold text-lg border-b-2 border-black pb-2 mb-3">등록한 곡</h3>
+                {selectedMember.songs && selectedMember.songs.length > 0 ? (
+                  <ul className="space-y-2">
+                    {selectedMember.songs.map(song => (
+                      <li key={`reg-${song.id}`}>
+                        <Link href={`/songs/${song.id}`} className="text-blue-700 hover:text-neo-pink font-bold underline decoration-2 underline-offset-2">
+                          {song.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-600 font-medium">등록한 곡이 없습니다.</p>
+                )}
+              </div>
+
+              <div>
+                <h3 className="font-bold text-lg border-b-2 border-black pb-2 mb-3">참여한 곡</h3>
+                {selectedMember.songSessions && selectedMember.songSessions.length > 0 ? (
+                  <ul className="space-y-2">
+                    {Array.from(new Map(selectedMember.songSessions.map(s => [s.song.id, s.song])).values()).map(song => (
+                      <li key={`part-${song.id}`}>
+                        <Link href={`/songs/${song.id}`} className="text-blue-700 hover:text-neo-pink font-bold underline decoration-2 underline-offset-2">
+                          {song.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-600 font-medium">참여한 곡이 없습니다.</p>
+                )}
+              </div>
+
+              <div>
+                <h3 className="font-bold text-lg border-b-2 border-black pb-2 mb-3">참여 모임</h3>
+                {selectedMember.meetingAttendances && selectedMember.meetingAttendances.length > 0 ? (
+                  <ul className="space-y-2">
+                    {selectedMember.meetingAttendances.map(m => (
+                      <li key={`meet-${m.meeting.id}`}>
+                        <Link href={`/meetings/${m.meeting.id}`} className="text-blue-700 hover:text-neo-pink font-bold underline decoration-2 underline-offset-2">
+                          {m.meeting.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-600 font-medium">참여한 모임이 없습니다.</p>
+                )}
+              </div>
+            </div>
+
+            <div className="p-4 border-t-2 border-black bg-gray-50 flex justify-end">
+              <button
+                onClick={() => setSelectedMember(null)}
+                className="px-6 py-2 bg-white border-2 border-black hover:bg-neo-yellow text-black font-bold rounded-none transition-colors border border-2 border-black"
+              >
+                닫기
+              </button>
             </div>
           </div>
         </div>
