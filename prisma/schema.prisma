@@ -40,6 +40,7 @@ model User {
   createdMeetings     Meeting[] @relation("MeetingCreator")
   notifications       Notification[]
   commentReactions    CommentReaction[]
+  studioReviews       StudioReview[]
 }
 
 model Song {
@@ -207,4 +208,32 @@ model Notification {
 
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Studio {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  latitude    Float
+  longitude   Float
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reviews     StudioReview[]
+}
+
+model StudioReview {
+  id        String   @id @default(cuid())
+  rating    Int      @default(5)
+  content   String
+  images    String[] // 여러 장의 사진 URL을 저장할 배열
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  studioId  String
+  studio    Studio   @relation(fields: [studioId], references: [id], onDelete: Cascade)
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

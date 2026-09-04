@@ -14,6 +14,7 @@ const navLinks = [
   { href: "/meetings", label: "모임", icon: "📅" },
   { href: "/members", label: "회원", icon: "👥" },
   { href: "/notices", label: "공지", icon: "📢" },
+  { href: "/studios", label: "합주실 지도", icon: "🗺️" },
   { 
     href: "https://drive.google.com/drive/folders/1xmAtHn5z-uEfpKFlc5dt23PakDcHMR16?usp=drive_link", 
     label: "악보 드라이브", 

@@ -3,6 +3,7 @@ import "./globals.css";
 import { Providers } from "@/components/Providers";
 import Navbar from "@/components/Navbar";
 import { Analytics } from "@vercel/analytics/next"
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "soopsori | band crew",
@@ -59,6 +60,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </footer>
         </Providers>
         <Analytics />
+        <Script 
+          strategy="beforeInteractive" 
+          src={`https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID}`} 
+        />
       </body>
     </html>
   );
