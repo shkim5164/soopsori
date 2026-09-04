@@ -40,6 +40,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const targetName = name || username;
+    const existingName = await prisma.user.findFirst({
+      where: { name: targetName },
+    });
+
+    if (existingName) {
+      return NextResponse.json(
+        { error: "이미 사용 중인 닉네임(이름)입니다" },
+        { status: 409 }
+      );
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 첫 번째 회원이면 관리자로 설정
@@ -49,7 +61,7 @@ export async function POST(request: NextRequest) {
       data: {
         username,
         password: hashedPassword,
-        name: name || username,
+        name: targetName,
         role: userCount === 0 ? "ADMIN" : "MEMBER",
       },
     });

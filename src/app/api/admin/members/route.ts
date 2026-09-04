@@ -64,6 +64,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "이미 존재하는 아이디입니다." }, { status: 400 });
     }
 
+    if (name) {
+      const existingName = await prisma.user.findFirst({ where: { name } });
+      if (existingName) {
+        return NextResponse.json({ error: "이미 사용 중인 닉네임(이름)입니다." }, { status: 400 });
+      }
+    }
+
     const bcrypt = await import("bcryptjs");
     const hashedPassword = await bcrypt.hash(password, 10);
 

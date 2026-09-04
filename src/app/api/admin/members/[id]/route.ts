@@ -16,6 +16,18 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const body = await req.json();
     const { name, email, position, role, password } = body;
 
+    if (name) {
+      const existingName = await prisma.user.findFirst({
+        where: {
+          name,
+          id: { not: id }
+        }
+      });
+      if (existingName) {
+        return NextResponse.json({ error: "이미 사용 중인 닉네임(이름)입니다." }, { status: 400 });
+      }
+    }
+
     const dataToUpdate: any = {
       name: name || null,
       email: email || null,

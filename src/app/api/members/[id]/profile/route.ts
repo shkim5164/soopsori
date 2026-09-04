@@ -22,6 +22,18 @@ export async function PATCH(
 
     const { position, name, currentPassword, newPassword, image } = await request.json();
 
+    if (name) {
+      const existingName = await prisma.user.findFirst({
+        where: {
+          name,
+          id: { not: id }
+        }
+      });
+      if (existingName) {
+        return NextResponse.json({ error: "이미 사용 중인 닉네임(이름)입니다." }, { status: 400 });
+      }
+    }
+
     let passwordHash: string | undefined = undefined;
 
     // 비밀번호 변경 요청이 있는 경우
