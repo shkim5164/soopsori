@@ -344,16 +344,18 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
           <button className="flex items-center justify-center px-2 py-0.5 rounded border border-gray-200 bg-gray-50 text-gray-400 hover:bg-gray-100 transition-colors text-xs font-bold">
             +
           </button>
-          <div className="absolute left-0 bottom-full mb-1 hidden group-hover:flex bg-white border-2 border-black neo-shadow p-1 rounded-none gap-1 z-10">
-            {AVAILABLE_EMOJIS.map(emoji => (
-              <button
-                key={emoji}
-                onClick={() => handleToggleReaction(comment.id, emoji)}
-                className="hover:bg-gray-100 p-1.5 rounded transition-colors text-base leading-none"
-              >
-                {emoji}
-              </button>
-            ))}
+          <div className="absolute left-0 bottom-full pb-1 hidden group-hover:flex z-10">
+            <div className="flex bg-white border-2 border-black neo-shadow p-1 rounded-none gap-1">
+              {AVAILABLE_EMOJIS.map(emoji => (
+                <button
+                  key={emoji}
+                  onClick={() => handleToggleReaction(comment.id, emoji)}
+                  className="hover:bg-gray-100 p-1.5 rounded transition-colors text-base leading-none"
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
