@@ -14,6 +14,9 @@ interface Member {
   position: string | null;
   points: number;
   role: string;
+  songs: { id: string; title: string }[];
+  songSessions: { song: { id: string; title: string } }[];
+  meetingAttendances: { meeting: { id: string; title: string } }[];
   _count: {
     songs: number;
     meetingAttendances: number;
@@ -234,6 +237,7 @@ export default function AdminClient() {
             <thead>
               <tr className="bg-white border-2 border-black neo-shadow text-black font-bold text-sm">
                 <th className="p-4 font-medium">회원</th>
+                <th className="p-4 font-medium">활동 내역</th>
                 <th className="p-4 font-medium">역할</th>
                 <th className="p-4 font-medium">포지션</th>
                 <th className="p-4 font-medium text-center">현재 포인트</th>
@@ -244,13 +248,13 @@ export default function AdminClient() {
             <tbody className="divide-y divide-forest-700/30">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-gray-800 font-bold">
+                  <td colSpan={7} className="p-8 text-center text-gray-800 font-bold">
                     로딩 중...
                   </td>
                 </tr>
               ) : members.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-gray-800 font-bold">
+                  <td colSpan={7} className="p-8 text-center text-gray-800 font-bold">
                     회원이 없습니다.
                   </td>
                 </tr>
@@ -276,6 +280,17 @@ export default function AdminClient() {
                           </p>
                           <p className="text-xs text-gray-800 font-bold">{member.email || "이메일 없음"}</p>
                         </div>
+                      </div>
+                    </td>
+                    <td className="p-4 text-xs space-y-1.5 max-w-[250px]">
+                      <div className="line-clamp-2" title={member.songs?.map(s => s.title).join(", ")}>
+                        <span className="font-bold text-black">등록한 곡:</span> <span className="text-gray-800">{member.songs?.length > 0 ? member.songs.map(s => s.title).join(", ") : "-"}</span>
+                      </div>
+                      <div className="line-clamp-2" title={member.songSessions?.length > 0 ? Array.from(new Set(member.songSessions.map(s => s.song.title))).join(", ") : ""}>
+                        <span className="font-bold text-black">참여한 곡:</span> <span className="text-gray-800">{member.songSessions?.length > 0 ? Array.from(new Set(member.songSessions.map(s => s.song.title))).join(", ") : "-"}</span>
+                      </div>
+                      <div className="line-clamp-2" title={member.meetingAttendances?.map(m => m.meeting.title).join(", ")}>
+                        <span className="font-bold text-black">참여 모임:</span> <span className="text-gray-800">{member.meetingAttendances?.length > 0 ? member.meetingAttendances.map(m => m.meeting.title).join(", ") : "-"}</span>
                       </div>
                     </td>
                     <td className="p-4">

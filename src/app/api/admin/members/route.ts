@@ -22,6 +22,9 @@ export async function GET() {
         points: true,
         role: true,
         createdAt: true,
+        songs: { select: { id: true, title: true } },
+        songSessions: { select: { song: { select: { id: true, title: true } } } },
+        meetingAttendances: { select: { meeting: { select: { id: true, title: true } } } },
         _count: {
           select: {
             songs: true,
