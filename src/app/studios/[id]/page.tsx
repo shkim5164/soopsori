@@ -177,9 +177,10 @@ export default function StudioDetailPage({ params }: { params: Promise<{ id: str
         <h1 className="text-3xl font-black mb-2 pr-24">{studio.name}</h1>
         <p className="text-gray-700 font-bold mb-4">📍 {studio.address}</p>
         {studio.description && (
-          <div className="p-4 bg-gray-100 border-2 border-black text-sm whitespace-pre-wrap mb-4">
-            {studio.description}
-          </div>
+          <div 
+            className="p-4 bg-gray-100 border-2 border-black text-sm mb-4 prose prose-sm max-w-none break-words"
+            dangerouslySetInnerHTML={{ __html: studio.description }}
+          />
         )}
         <div ref={mapElement} className="w-full h-[300px] border-2 border-black"></div>
       </div>
@@ -287,12 +288,12 @@ export default function StudioDetailPage({ params }: { params: Promise<{ id: str
 
       {isEditingStudio && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white border-3 border-black border border-2 border-black rounded-none w-full max-w-md overflow-hidden shadow-2xl flex flex-col">
+          <div className="bg-white border-3 border-black border border-2 border-black rounded-none w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
             <div className="p-4 border-b-2 border-black bg-neo-yellow flex justify-between items-center">
               <h2 className="text-xl font-bold text-black font-black">합주실 수정</h2>
               <button onClick={() => setIsEditingStudio(false)} className="text-black font-black text-xl hover:text-gray-700">×</button>
             </div>
-            <form onSubmit={handleEditStudio} className="p-4 space-y-4">
+            <form onSubmit={handleEditStudio} className="p-4 space-y-4 overflow-y-auto">
               <div>
                 <label className="block text-sm font-bold mb-1">합주실 이름 *</label>
                 <input required type="text" value={editStudioData.name} onChange={e => setEditStudioData({...editStudioData, name: e.target.value})} className="w-full border-2 border-black p-2 font-bold" />
@@ -303,7 +304,13 @@ export default function StudioDetailPage({ params }: { params: Promise<{ id: str
               </div>
               <div>
                 <label className="block text-sm font-bold mb-1">소개</label>
-                <textarea value={editStudioData.description} onChange={e => setEditStudioData({...editStudioData, description: e.target.value})} className="w-full border-2 border-black p-2 font-bold" rows={2} />
+                <div className="min-h-[300px]">
+                  <RichTextEditor 
+                    value={editStudioData.description} 
+                    onChange={val => setEditStudioData({...editStudioData, description: val})} 
+                    placeholder="합주실에 대한 상세 소개, 장비, 이용 팁 등을 자유롭게 작성해주세요."
+                  />
+                </div>
               </div>
               <div className="flex gap-2 pt-2">
                 <button type="button" onClick={() => setIsEditingStudio(false)} className="flex-1 py-2 border-2 border-black font-bold hover:bg-gray-100">취소</button>

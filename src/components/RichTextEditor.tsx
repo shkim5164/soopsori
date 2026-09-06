@@ -95,21 +95,21 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`w-8 h-8 flex items-center justify-center border-2 border-black font-black text-sm bg-white hover:bg-black hover:text-white transition-colors ${editor.isActive('bold') ? 'bg-black text-white' : ''}`}
+          className={`w-8 h-8 flex items-center justify-center border-2 border-black font-black text-sm bg-white hover:bg-neo-pink hover:text-black transition-colors ${editor.isActive('bold') ? 'bg-neo-pink text-black' : ''}`}
         >
           B
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`w-8 h-8 flex items-center justify-center border-2 border-black font-black text-sm bg-white hover:bg-black hover:text-white transition-colors ${editor.isActive('italic') ? 'bg-black text-white' : ''}`}
+          className={`w-8 h-8 flex items-center justify-center border-2 border-black font-black text-sm bg-white hover:bg-neo-blue hover:text-black transition-colors ${editor.isActive('italic') ? 'bg-neo-blue text-black' : ''}`}
         >
           I
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleStrike().run()}
-          className={`w-8 h-8 flex items-center justify-center border-2 border-black font-black text-sm bg-white hover:bg-black hover:text-white transition-colors ${editor.isActive('strike') ? 'bg-black text-white' : ''}`}
+          className={`w-8 h-8 flex items-center justify-center border-2 border-black font-black text-sm bg-white hover:bg-neo-green hover:text-black transition-colors ${editor.isActive('strike') ? 'bg-neo-green text-black' : ''}`}
         >
           S
         </button>

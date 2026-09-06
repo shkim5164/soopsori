@@ -45,7 +45,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
   const [availableSongs, setAvailableSongs] = useState<Song[]>([]);
   const [selectedSongId, setSelectedSongId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [allMembers, setAllMembers] = useState<{id: string, name: string}[]>([]);
+  const [allMembers, setAllMembers] = useState<{ id: string, name: string }[]>([]);
   const [adminSelectedUserId, setAdminSelectedUserId] = useState("");
 
   const fetchMeeting = async () => {
@@ -119,7 +119,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
     try {
       const targetUserId = userId || session?.user?.id;
       const currentAttendance = meeting?.attendances.find((a) => a.user.id === targetUserId);
-      
+
       const res = await fetch(`/api/meetings/${id}/attendance`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -144,6 +144,31 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
       }
     } catch (error) {
       console.error("Failed to complete meeting:", error);
+    }
+  };
+
+  const handleJoinSession = async (songId: string, sessionId: string) => {
+    try {
+      const res = await fetch(`/api/songs/${songId}/sessions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId }),
+      });
+      if (res.ok) fetchMeeting();
+      else alert(await res.json().then(d => d.error));
+    } catch (error) {
+      console.error("Failed to join session:", error);
+    }
+  };
+
+  const handleLeaveSession = async (songId: string, sessionId: string) => {
+    if (!confirm("정말 세션 참여를 취소하시겠습니까?")) return;
+    try {
+      const res = await fetch(`/api/songs/${songId}/sessions/${sessionId}`, { method: "DELETE" });
+      if (res.ok) fetchMeeting();
+      else alert(await res.json().then(d => d.error));
+    } catch (error) {
+      console.error("Failed to leave session:", error);
     }
   };
 
@@ -218,6 +243,18 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
   const isUpcoming = meeting.status === "UPCOMING";
   const myAttendance = meeting.attendances.find((a) => a.user.id === session?.user?.id);
 
+  // 세트리스트에 한 곡이라도 참여한 사람들의 ID 집합
+  const setlistParticipantIds = new Set<string>();
+  meeting.meetingSongs.forEach(ms => {
+    ms.song.sessions.forEach(s => {
+      if (s.user) setlistParticipantIds.add(s.user.id);
+    });
+  });
+
+  const attendees = meeting.attendances.filter((a) => a.attended);
+  const sessionParticipants = attendees.filter(a => setlistParticipantIds.has(a.user.id));
+  const observers = attendees.filter(a => !setlistParticipantIds.has(a.user.id));
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <Link href="/meetings" className="text-sm text-gray-800 font-bold hover:text-neo-pink font-black transition-colors mb-6 inline-block">
@@ -230,9 +267,8 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-black font-black">{meeting.title}</h1>
-              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-                isUpcoming ? "neo-btn neo-btn-primary/15 text-neo-pink font-black" : "bg-neo-yellow border-2 border-black text-black text-gray-800 font-bold"
-              }`}>
+              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${isUpcoming ? "neo-btn neo-btn-primary/15 text-neo-pink font-black" : "bg-neo-yellow border-2 border-black text-black text-gray-800 font-bold"
+                }`}>
                 {isUpcoming ? "예정" : meeting.status === "COMPLETED" ? "완료" : "취소"}
               </span>
             </div>
@@ -244,11 +280,10 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             {isUpcoming && session?.user && (
               <button
                 onClick={() => handleToggleAttendance()}
-                className={`px-4 py-2 rounded-none text-sm font-medium transition-all duration-200 ${
-                  myAttendance?.attended
-                    ? "neo-btn neo-btn-primary/20 text-neo-pink font-black border border-3 border-black"
-                    : "bg-white border-3 border-black neo-shadow text-black font-bold border border-2 border-black hover:border-3 border-black"
-                }`}
+                className={`px-4 py-2 rounded-none text-sm font-medium transition-all duration-200 ${myAttendance?.attended
+                  ? "neo-btn neo-btn-primary/20 text-neo-pink font-black border border-3 border-black"
+                  : "bg-white border-3 border-black neo-shadow text-black font-bold border border-2 border-black hover:border-3 border-black"
+                  }`}
               >
                 {myAttendance?.attended ? "✅ 참석 예정" : "참석하기"}
               </button>
@@ -338,12 +373,44 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                   </div>
 
                   {/* Participants */}
-                  {ms.participants.length > 0 && (
+                  {ms.song.sessions.length > 0 && (
                     <div className="ml-11 flex flex-wrap gap-2 mt-2">
-                      {ms.participants.map((p) => (
-                        <span key={p.id} className={`text-xs px-2 py-0.5 rounded-full ${getPositionBadgeClass(p.position)}`}>
-                          {getPositionLabel(p.position)}: {p.user.name}
-                        </span>
+                      {ms.song.sessions.map((s) => (
+                        <div key={s.id} className="flex items-center">
+                          {s.user ? (
+                            <div className="flex items-center bg-gray-100 border-2 border-black rounded-full overflow-hidden">
+                              <span className={`text-xs px-2 py-0.5 border-r-2 border-black !border-y-0 !border-l-0 ${getPositionBadgeClass(s.position)}`}>
+                                {getPositionLabel(s.position)}
+                              </span>
+                              <span className="text-xs px-2 font-bold text-black">{s.user.name}</span>
+                              {(s.user.id === session?.user?.id || session?.user?.role === "ADMIN") && (
+                                <button
+                                  onClick={() => handleLeaveSession(ms.song.id, s.id)}
+                                  className="px-1.5 hover:bg-danger-400 hover:text-white border-l-2 border-black font-bold text-xs transition-colors"
+                                  title="참여 취소"
+                                >
+                                  ×
+                                </button>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="flex items-center bg-white border-2 border-dashed border-gray-400 rounded-full overflow-hidden hover:border-solid hover:border-black transition-all">
+                              <span className={`text-xs px-2 py-0.5 border-r-2 border-dashed border-gray-400 !border-y-0 !border-l-0 opacity-70 ${getPositionBadgeClass(s.position)}`}>
+                                {getPositionLabel(s.position)}
+                              </span>
+                              {session?.user && isUpcoming ? (
+                                <button
+                                  onClick={() => handleJoinSession(ms.song.id, s.id)}
+                                  className="text-xs px-2 py-0.5 font-bold text-gray-500 hover:text-neo-pink hover:bg-gray-50 transition-colors"
+                                >
+                                  참여하기
+                                </button>
+                              ) : (
+                                <span className="text-xs px-2 py-0.5 font-bold text-gray-400">빈자리</span>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       ))}
                     </div>
                   )}
@@ -360,43 +427,81 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
         {/* Attendance */}
         <div className="neo-card p-6 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
           <h2 className="text-lg font-bold text-black font-black mb-4">
-            👥 참석자 ({meeting.attendances.filter((a) => a.attended).length}명)
+            👥 참석자 ({attendees.length}명)
           </h2>
-          <div className="space-y-2">
-            {meeting.attendances.filter((a) => a.attended).map((a) => (
-              <div key={a.id} className="flex items-center gap-2 p-2 rounded-none hover:bg-white border-3 border-black neo-shadow transition-colors">
-                {a.user.image ? (
-                  <img src={a.user.image} alt="" className="w-7 h-7 rounded-full border border-2 border-black" />
-                ) : (
-                  <div className="w-7 h-7 rounded-full bg-neo-yellow border-2 border-black text-black flex items-center justify-center text-xs">
-                    {a.user.name?.[0]}
-                  </div>
-                )}
-                <span className="text-sm text-black font-bold">{a.user.name}</span>
-                <span className="text-xs text-neo-pink font-black ml-auto">✓</span>
-                {session?.user?.role === "ADMIN" && (
-                  <button 
-                    onClick={() => handleToggleAttendance(a.user.id)}
-                    className="ml-2 text-danger-400 font-bold hover:text-red-700"
-                    title="참석 취소"
-                  >
-                    ×
-                  </button>
-                )}
+          <div className="space-y-6">
+            {sessionParticipants.length > 0 && (
+              <div>
+                <h3 className="text-sm font-bold text-black mb-2 flex items-center gap-1">🎸 세션 참여</h3>
+                <div className="space-y-2">
+                  {sessionParticipants.map((a) => (
+                    <div key={a.id} className="flex items-center gap-2 p-2 rounded-none hover:bg-white border-3 border-black neo-shadow transition-colors">
+                      {a.user.image ? (
+                        <img src={a.user.image} alt="" className="w-7 h-7 rounded-full border border-2 border-black" />
+                      ) : (
+                        <div className="w-7 h-7 rounded-full bg-neo-yellow border-2 border-black text-black flex items-center justify-center text-xs">
+                          {a.user.name?.[0]}
+                        </div>
+                      )}
+                      <span className="text-sm text-black font-bold">{a.user.name}</span>
+                      <span className="text-xs text-neo-pink font-black ml-auto">✓</span>
+                      {session?.user?.role === "ADMIN" && (
+                        <button
+                          onClick={() => handleToggleAttendance(a.user.id)}
+                          className="ml-2 text-danger-400 font-bold hover:text-red-700"
+                          title="참석 취소"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-            {meeting.attendances.filter((a) => a.attended).length === 0 && (
+            )}
+
+            {observers.length > 0 && (
+              <div>
+                <h3 className="text-sm font-bold text-black mb-2 flex items-center gap-1">👀 연습 (세트리스트 미참여)</h3>
+                <div className="space-y-2">
+                  {observers.map((a) => (
+                    <div key={a.id} className="flex items-center gap-2 p-2 rounded-none hover:bg-white border-3 border-black neo-shadow transition-colors">
+                      {a.user.image ? (
+                        <img src={a.user.image} alt="" className="w-7 h-7 rounded-full border border-2 border-black" />
+                      ) : (
+                        <div className="w-7 h-7 rounded-full bg-neo-yellow border-2 border-black text-black flex items-center justify-center text-xs">
+                          {a.user.name?.[0]}
+                        </div>
+                      )}
+                      <span className="text-sm text-black font-bold">{a.user.name}</span>
+                      <span className="text-xs text-neo-pink font-black ml-auto">✓</span>
+                      {session?.user?.role === "ADMIN" && (
+                        <button
+                          onClick={() => handleToggleAttendance(a.user.id)}
+                          className="ml-2 text-danger-400 font-bold hover:text-red-700"
+                          title="참석 취소"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {attendees.length === 0 && (
               <p className="text-gray-800 font-bold text-sm text-center py-4">아직 참석자가 없습니다</p>
             )}
           </div>
-          
+
           {session?.user?.role === "ADMIN" && (
             <div className="mt-6 border-t-2 border-black pt-4">
               <h3 className="text-sm font-bold text-black mb-2 flex items-center gap-1">
                 <span className="text-neo-pink">⚙️</span> 관리자 메뉴: 참석자 추가
               </h3>
               <div className="flex gap-2">
-                <select 
+                <select
                   className="neo-input flex-1 p-2 text-sm"
                   value={adminSelectedUserId}
                   onChange={(e) => setAdminSelectedUserId(e.target.value)}
@@ -406,9 +511,9 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                     .filter(member => !meeting.attendances.some(a => a.user.id === member.id && a.attended))
                     .map(member => (
                       <option key={member.id} value={member.id}>{member.name}</option>
-                  ))}
+                    ))}
                 </select>
-                <button 
+                <button
                   onClick={() => {
                     if (adminSelectedUserId) {
                       handleToggleAttendance(adminSelectedUserId);
@@ -452,39 +557,38 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
         </div>
         <div className="space-y-3 max-h-[400px] overflow-y-auto mb-4">
           {availableSongs
-            .filter(song => 
-              song.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            .filter(song =>
+              song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
               song.artist.toLowerCase().includes(searchQuery.toLowerCase())
             )
             .map((song) => {
-            const isAlreadyAdded = meeting.meetingSongs.some((ms) => ms.song.id === song.id);
-            return (
-              <button
-                key={song.id}
-                onClick={() => !isAlreadyAdded && setSelectedSongId(song.id)}
-                disabled={isAlreadyAdded}
-                className={`w-full text-left p-3 rounded-none border transition-all duration-200 ${
-                  isAlreadyAdded
+              const isAlreadyAdded = meeting.meetingSongs.some((ms) => ms.song.id === song.id);
+              return (
+                <button
+                  key={song.id}
+                  onClick={() => !isAlreadyAdded && setSelectedSongId(song.id)}
+                  disabled={isAlreadyAdded}
+                  className={`w-full text-left p-3 rounded-none border transition-all duration-200 ${isAlreadyAdded
                     ? "border-2 border-black bg-white border-3 border-black neo-shadow opacity-50 cursor-not-allowed"
                     : selectedSongId === song.id
-                    ? "border-3 border-black neo-btn neo-btn-primary/10"
-                    : "border-2 border-black bg-white border-3 border-black neo-shadow hover:border-2 border-black"
-                }`}
-              >
-                <p className="text-sm font-medium text-black font-black">{song.title}</p>
-                <p className="text-xs text-gray-800 font-bold">{song.artist}</p>
-                {isAlreadyAdded && <span className="text-xs text-gray-800">이미 추가됨</span>}
-              </button>
-            );
-          })}
-          {availableSongs.filter(song => 
-            song.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                      ? "border-3 border-black neo-btn neo-btn-primary/10"
+                      : "border-2 border-black bg-white border-3 border-black neo-shadow hover:border-2 border-black"
+                    }`}
+                >
+                  <p className="text-sm font-medium text-black font-black">{song.title}</p>
+                  <p className="text-xs text-gray-800 font-bold">{song.artist}</p>
+                  {isAlreadyAdded && <span className="text-xs text-gray-800">이미 추가됨</span>}
+                </button>
+              );
+            })}
+          {availableSongs.filter(song =>
+            song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             song.artist.toLowerCase().includes(searchQuery.toLowerCase())
           ).length === 0 && (
-            <div className="text-center py-6">
-              <p className="text-sm text-gray-800 font-bold">검색 결과가 없습니다.</p>
-            </div>
-          )}
+              <div className="text-center py-6">
+                <p className="text-sm text-gray-800 font-bold">검색 결과가 없습니다.</p>
+              </div>
+            )}
         </div>
         <div className="flex gap-3">
           <button

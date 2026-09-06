@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
+import RichTextEditor from "@/components/RichTextEditor";
 
 interface Studio {
   id: string;
@@ -118,12 +119,12 @@ export default function StudiosPage() {
 
       {showAddModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white border-3 border-black border border-2 border-black rounded-none w-full max-w-md overflow-hidden shadow-2xl flex flex-col">
+          <div className="bg-white border-3 border-black border border-2 border-black rounded-none w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
             <div className="p-4 border-b-2 border-black bg-neo-yellow flex justify-between items-center">
               <h2 className="text-xl font-bold text-black font-black">합주실 등록</h2>
               <button onClick={() => setShowAddModal(false)} className="text-black font-black text-xl hover:text-gray-700">×</button>
             </div>
-            <form onSubmit={handleAddStudio} className="p-4 space-y-4">
+            <form onSubmit={handleAddStudio} className="p-4 space-y-4 overflow-y-auto">
               <div>
                 <label className="block text-sm font-bold mb-1">합주실 이름 *</label>
                 <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full border-2 border-black p-2 font-bold" />
@@ -134,7 +135,13 @@ export default function StudiosPage() {
               </div>
               <div>
                 <label className="block text-sm font-bold mb-1">소개</label>
-                <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full border-2 border-black p-2 font-bold" rows={2} />
+                <div className="min-h-[300px]">
+                  <RichTextEditor 
+                    value={formData.description} 
+                    onChange={val => setFormData({...formData, description: val})} 
+                    placeholder="합주실에 대한 상세 소개, 장비, 이용 팁 등을 자유롭게 작성해주세요."
+                  />
+                </div>
               </div>
               <div className="flex gap-2 pt-2">
                 <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 py-2 border-2 border-black font-bold hover:bg-gray-100">취소</button>
