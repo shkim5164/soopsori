@@ -14,10 +14,10 @@ const navLinks = [
   { href: "/meetings", label: "모임", icon: "📅" },
   { href: "/members", label: "회원", icon: "👥" },
   { href: "/notices", label: "공지", icon: "📢" },
-  { href: "/studios", label: "합주실 지도", icon: "🗺️" },
-  { 
-    href: "https://drive.google.com/drive/folders/1xmAtHn5z-uEfpKFlc5dt23PakDcHMR16?usp=drive_link", 
-    label: "악보 드라이브", 
+  { href: "/studios", label: "합주실", icon: "🗺️" },
+  {
+    href: "https://drive.google.com/drive/folders/1xmAtHn5z-uEfpKFlc5dt23PakDcHMR16?usp=drive_link",
+    label: "악보 드라이브",
     icon: "🎼",
     external: true
   },
@@ -78,7 +78,7 @@ export default function Navbar() {
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-3">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href || 
+              const isActive = pathname === link.href ||
                 (link.href !== "/" && pathname.startsWith(link.href));
               return (
                 <Link
@@ -86,11 +86,10 @@ export default function Navbar() {
                   href={link.href}
                   target={link.external ? "_blank" : undefined}
                   rel={link.external ? "noopener noreferrer" : undefined}
-                  className={`px-4 py-2 font-bold text-sm lowercase border-2 border-black rounded-full transition-all ${
-                    isActive
+                  className={`px-4 py-2 font-bold text-sm lowercase border-2 border-black rounded-full transition-all ${isActive
                       ? "bg-neo-pink text-white neo-shadow-sm translate-x-[2px] translate-y-[2px]"
                       : "bg-white text-black neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm hover:bg-neo-yellow hover:text-black"
-                  }`}
+                    }`}
                 >
                   <span className="mr-1.5">{link.icon}</span>
                   {link.label}
@@ -124,7 +123,7 @@ export default function Navbar() {
 
                 {/* Notification Bell */}
                 <div className="relative" ref={notifRef}>
-                  <button 
+                  <button
                     onClick={() => {
                       setNotifOpen(!notifOpen);
                       setProfileOpen(false);
@@ -139,9 +138,8 @@ export default function Navbar() {
                     )}
                   </button>
                   {/* Notification Dropdown */}
-                  <div className={`absolute -right-4 sm:right-0 mt-2 w-[260px] sm:w-80 bg-white border-2 border-black neo-shadow-lg p-0 transition-all duration-200 transform max-h-96 overflow-y-auto z-50 ${
-                    notifOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible translate-y-1"
-                  }`}>
+                  <div className={`absolute -right-4 sm:right-0 mt-2 w-[260px] sm:w-80 bg-white border-2 border-black neo-shadow-lg p-0 transition-all duration-200 transform max-h-96 overflow-y-auto z-50 ${notifOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible translate-y-1"
+                    }`}>
                     <div className="px-3 py-2 border-b-2 border-black bg-neo-yellow flex justify-between items-center sticky top-0 z-10">
                       <p className="text-sm font-black text-black">알림</p>
                       {unreadCount > 0 && (
@@ -171,9 +169,8 @@ export default function Navbar() {
                               }
                               setNotifOpen(false);
                             }}
-                            className={`p-3 border-b-2 border-black last:border-b-0 cursor-pointer hover:bg-neo-pink hover:text-white transition-colors ${
-                              notif.isRead ? "opacity-50 text-gray-500" : "bg-white text-black"
-                            }`}
+                            className={`p-3 border-b-2 border-black last:border-b-0 cursor-pointer hover:bg-neo-pink hover:text-white transition-colors ${notif.isRead ? "opacity-50 text-gray-500" : "bg-white text-black"
+                              }`}
                           >
                             <p className="text-sm font-medium line-clamp-2">
                               {notif.message}
@@ -194,7 +191,7 @@ export default function Navbar() {
 
                 {/* Profile Dropdown */}
                 <div className="relative" ref={profileRef}>
-                  <button 
+                  <button
                     onClick={() => {
                       setProfileOpen(!profileOpen);
                       setNotifOpen(false);
@@ -214,9 +211,8 @@ export default function Navbar() {
                     )}
                   </button>
                   {/* Dropdown */}
-                  <div className={`absolute right-0 mt-2 w-48 bg-white border-2 border-black neo-shadow-lg p-2 transition-all duration-200 transform ${
-                    profileOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible translate-y-1"
-                  }`}>
+                  <div className={`absolute right-0 mt-2 w-48 bg-white border-2 border-black neo-shadow-lg p-2 transition-all duration-200 transform ${profileOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible translate-y-1"
+                    }`}>
                     <div className="px-3 py-2 border-b-2 border-black mb-2 bg-neo-yellow">
                       <p className="text-sm font-black text-black truncate">
                         {session.user.name}
@@ -308,11 +304,10 @@ export default function Navbar() {
                   onClick={() => {
                     if (!link.external) setMobileOpen(false);
                   }}
-                  className={`block px-4 py-3 border-2 border-black font-bold lowercase transition-all ${
-                    isActive
+                  className={`block px-4 py-3 border-2 border-black font-bold lowercase transition-all ${isActive
                       ? "bg-neo-pink text-white neo-shadow"
                       : "bg-white text-black neo-shadow hover:bg-neo-yellow hover:text-black hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm"
-                  }`}
+                    }`}
                 >
                   <span className="mr-2">{link.icon}</span>
                   {link.label}

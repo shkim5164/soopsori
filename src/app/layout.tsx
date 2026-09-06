@@ -60,9 +60,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </footer>
         </Providers>
         <Analytics />
-        <Script 
-          strategy="beforeInteractive" 
-          src={`https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID || process.env.NAVER_MAP_CLIENT_ID}`} 
+        <Script
+          strategy="beforeInteractive"
+          src={`https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID || process.env.NAVER_MAP_CLIENT_ID}`}
         />
       </body>
     </html>

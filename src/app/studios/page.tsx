@@ -19,88 +19,9 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 export default function StudiosPage() {
   const { data: session } = useSession();
   const { data: studios, error, mutate } = useSWR<Studio[]>("/api/studios", fetcher);
-  const mapElement = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<naver.maps.Map | null>(null);
-  const markersRef = useRef<naver.maps.Marker[]>([]);
-  
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({ name: "", address: "", description: "" });
   const [submitting, setSubmitting] = useState(false);
-  const [mapLoaded, setMapLoaded] = useState(false);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-
-    const initMap = () => {
-      if (!mapElement.current || !window.naver || !window.naver.maps) {
-        timer = setTimeout(initMap, 200);
-        return;
-      }
-
-      if (!mapInstance.current) {
-        const mapOptions: naver.maps.MapOptions = {
-          center: new window.naver.maps.LatLng(37.5665, 126.9780),
-          zoom: 13,
-          minZoom: 7,
-          zoomControl: true,
-          zoomControlOptions: {
-            position: window.naver.maps.Position.TOP_RIGHT,
-          },
-        };
-
-        const map = new window.naver.maps.Map(mapElement.current, mapOptions);
-        mapInstance.current = map;
-        setMapLoaded(true);
-      }
-    };
-
-    initMap();
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (!mapLoaded || !mapInstance.current || !studios || !window.naver || !window.naver.maps) return;
-
-    // Clear old markers
-    markersRef.current.forEach(marker => marker.setMap(null));
-    markersRef.current = [];
-
-    // Add new markers
-    studios.forEach(studio => {
-      const marker = new window.naver.maps.Marker({
-        position: new window.naver.maps.LatLng(studio.latitude, studio.longitude),
-        map: mapInstance.current!,
-        title: studio.name,
-      });
-
-      const infoWindow = new window.naver.maps.InfoWindow({
-        content: `
-          <div style="padding: 10px; min-width: 150px; text-align: center;">
-            <h4 style="font-weight: bold; margin-bottom: 5px;">${studio.name}</h4>
-            <a href="/studios/${studio.id}" style="color: #e83e8c; font-weight: bold; font-size: 12px; text-decoration: underline;">상세보기</a>
-          </div>
-        `,
-        borderWidth: 2,
-        borderColor: "#000",
-        backgroundColor: "#fff",
-      });
-
-      window.naver.maps.Event.addListener(marker, "click", () => {
-        if (infoWindow.getMap()) {
-          infoWindow.close();
-        } else {
-          infoWindow.open(mapInstance.current!, marker);
-        }
-      });
-
-      markersRef.current.push(marker);
-    });
-
-    if (studios.length > 0 && mapInstance.current) {
-      mapInstance.current.setCenter(new window.naver.maps.LatLng(studios[0].latitude, studios[0].longitude));
-    }
-
-  }, [studios]);
 
   const handleAddStudio = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,11 +48,28 @@ export default function StudiosPage() {
     }
   };
 
+  const handleDeleteStudio = async (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm("정말 이 합주실을 삭제하시겠습니까?")) return;
+    try {
+      const res = await fetch(`/api/studios/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        mutate();
+      } else {
+        alert("삭제 실패");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("오류가 발생했습니다.");
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in-up">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-black font-black flex items-center gap-3">
-          <span className="text-4xl">🗺️</span> 합주실 지도
+          <span className="text-4xl">🎸</span> 합주실 리스트
         </h1>
         {session?.user && (
           <button
@@ -143,29 +81,37 @@ export default function StudiosPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[70vh] min-h-[500px]">
-        {/* Map Area */}
-        <div className="lg:col-span-2 neo-card p-2 h-full">
-          <div ref={mapElement} className="w-full h-full border-2 border-black bg-gray-100" />
-        </div>
-
-        {/* List Area */}
-        <div className="neo-card p-4 overflow-y-auto h-full">
-          <h2 className="text-xl font-bold border-b-2 border-black pb-2 mb-4">등록된 합주실 ({studios?.length || 0})</h2>
-          {error && <p className="text-red-500 font-bold">합주실 목록을 불러오지 못했습니다.</p>}
-          {!studios && !error && <p className="font-bold">로딩 중...</p>}
-          
-          <div className="space-y-3">
-            {studios?.map(studio => (
-              <Link href={`/studios/${studio.id}`} key={studio.id} className="block group">
-                <div className="p-3 bg-white border-2 border-black neo-shadow-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-none transition-all cursor-pointer">
-                  <h3 className="font-bold text-lg group-hover:text-neo-pink">{studio.name}</h3>
-                  <p className="text-sm text-gray-700 truncate">{studio.address}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
+      {error && <p className="text-red-500 font-bold mb-4">합주실 목록을 불러오지 못했습니다.</p>}
+      {!studios && !error && <p className="font-bold mb-4">로딩 중...</p>}
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {studios?.map(studio => (
+          <Link href={`/studios/${studio.id}`} key={studio.id} className="block group">
+            <div className="neo-card p-6 h-full bg-white flex flex-col justify-between hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-none transition-all cursor-pointer relative">
+              {(session?.user?.role === "ADMIN" || session?.user?.id === (studio as any).creatorId) && (
+                <button 
+                  onClick={(e) => handleDeleteStudio(e, studio.id)}
+                  className="absolute top-2 right-2 bg-red-500 text-white font-bold px-2 py-1 text-xs border-2 border-black hover:bg-red-700 z-10"
+                >
+                  삭제
+                </button>
+              )}
+              <div>
+                <h3 className="font-black text-2xl group-hover:text-neo-pink mb-2 line-clamp-1 pr-10">{studio.name}</h3>
+                <p className="text-sm font-bold text-gray-700 mb-3 flex items-start gap-1">
+                  <span>📍</span>
+                  <span className="line-clamp-2">{studio.address}</span>
+                </p>
+                {studio.description && (
+                  <p className="text-sm text-gray-600 line-clamp-3 mb-4">{studio.description}</p>
+                )}
+              </div>
+              <div className="text-right">
+                <span className="text-sm font-bold text-neo-pink">후기/지도 보기 →</span>
+              </div>
+            </div>
+          </Link>
+        ))}
       </div>
 
       {showAddModal && (

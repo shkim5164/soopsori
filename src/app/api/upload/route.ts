@@ -25,7 +25,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "이미지 파일만 업로드 가능합니다" }, { status: 400 });
     }
 
-    const fileName = `profiles/${session.user.id}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "")}`;
+    const folder = request.nextUrl.searchParams.get("folder") || "uploads";
+    const fileName = `${folder}/${session.user.id}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "")}`;
 
     console.log("[Upload API] 4. Calling @vercel/blob put...");
     const blob = await put(fileName, file, { 
