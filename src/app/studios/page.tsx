@@ -115,7 +115,7 @@ export default function StudiosPage() {
       </div>
 
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white border-3 border-black border border-2 border-black rounded-none w-full max-w-md overflow-hidden shadow-2xl flex flex-col">
             <div className="p-4 border-b-2 border-black bg-neo-yellow flex justify-between items-center">
               <h2 className="text-xl font-bold text-black font-black">합주실 등록</h2>
