@@ -66,8 +66,9 @@ export default function StudiosPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in-up">
-      <div className="flex justify-between items-center mb-6">
+    <>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in-up">
+        <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-black font-black flex items-center gap-3">
           <span className="text-4xl">🎸</span> 합주실 리스트
         </h1>
@@ -113,6 +114,7 @@ export default function StudiosPage() {
           </Link>
         ))}
       </div>
+      </div>
 
       {showAddModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -142,6 +144,6 @@ export default function StudiosPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

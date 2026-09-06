@@ -161,8 +161,9 @@ export default function StudioDetailPage({ params }: { params: Promise<{ id: str
   if (!studio) return <div className="text-center py-20 font-bold">로딩 중...</div>;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in-up">
-      <div className="mb-4">
+    <>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in-up">
+        <div className="mb-4">
         <Link href="/studios" className="text-sm font-bold border-2 border-black px-3 py-1 hover:bg-neo-yellow">← 지도 보기</Link>
       </div>
 
@@ -281,6 +282,7 @@ export default function StudioDetailPage({ params }: { params: Promise<{ id: str
             <p className="text-center font-bold text-gray-500 py-8">아직 등록된 후기가 없습니다. 첫 후기를 남겨주세요!</p>
           )}
         </div>
+        </div>
       </div>
 
       {isEditingStudio && (
@@ -311,6 +313,6 @@ export default function StudioDetailPage({ params }: { params: Promise<{ id: str
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
