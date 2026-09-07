@@ -47,6 +47,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
   const [searchQuery, setSearchQuery] = useState("");
   const [allMembers, setAllMembers] = useState<{ id: string, name: string }[]>([]);
   const [adminSelectedUserId, setAdminSelectedUserId] = useState("");
+  const [selectedPickerId, setSelectedPickerId] = useState("");
 
   const fetchMeeting = async () => {
     try {
@@ -82,12 +83,16 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
       const res = await fetch(`/api/meetings/${id}/songs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ songId: idToAdd }),
+        body: JSON.stringify({ 
+          songId: idToAdd,
+          pickerId: selectedPickerId || undefined
+        }),
       });
       if (res.ok) {
         setIsAddSongOpen(false);
         setSelectedSongId("");
         setSearchQuery("");
+        setSelectedPickerId("");
         fetchMeeting();
       } else {
         const data = await res.json();
@@ -555,6 +560,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
         setIsAddSongOpen(false);
         setSearchQuery("");
         setSelectedSongId("");
+        setSelectedPickerId("");
       }} title="세트리스트에 곡 추가">
         <div className="flex gap-2 items-center mb-4">
           <input
@@ -610,6 +616,18 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             )}
         </div>
         <div className="flex gap-3">
+          {session?.user?.role === "ADMIN" && (
+            <select
+              value={selectedPickerId}
+              onChange={(e) => setSelectedPickerId(e.target.value)}
+              className="flex-1 px-3 py-2.5 rounded-none bg-white border-3 border-black neo-shadow text-black font-bold focus:outline-none transition-colors text-sm"
+            >
+              <option value="">선곡자 (본인)</option>
+              {allMembers.map(m => (
+                <option key={m.id} value={m.id}>{m.name}</option>
+              ))}
+            </select>
+          )}
           <button
             onClick={() => setIsAddSongOpen(false)}
             className="flex-1 px-4 py-2.5 rounded-none bg-white border-3 border-black neo-shadow text-black font-bold hover:text-black font-black transition-colors text-sm font-medium"

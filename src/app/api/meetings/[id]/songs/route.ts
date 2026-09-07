@@ -14,7 +14,7 @@ export async function POST(
     }
 
     const { id: meetingId } = await params;
-    const { songId } = await request.json();
+    const { songId, pickerId } = await request.json();
 
     // 모임 존재 확인
     const meeting = await prisma.meeting.findUnique({ where: { id: meetingId } });
@@ -39,11 +39,13 @@ export async function POST(
     // 현재 곡 수로 순서 결정
     const songCount = await prisma.meetingSong.count({ where: { meetingId } });
 
+    const finalPickerId = (session.user.role === "ADMIN" && pickerId) ? pickerId : session.user.id;
+
     const meetingSong = await prisma.meetingSong.create({
       data: {
         meetingId,
         songId,
-        pickerId: session.user.id,
+        pickerId: finalPickerId,
         orderNum: songCount + 1,
       },
       include: {
