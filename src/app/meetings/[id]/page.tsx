@@ -147,12 +147,12 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
     }
   };
 
-  const handleJoinSession = async (songId: string, sessionId: string) => {
+  const handleJoinSession = async (songId: string, sessionId: string, targetUserId?: string) => {
     try {
       const res = await fetch(`/api/songs/${songId}/sessions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId }),
+        body: JSON.stringify({ sessionId, userId: targetUserId }),
       });
       if (res.ok) fetchMeeting();
       else alert(await res.json().then(d => d.error));
@@ -399,12 +399,31 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                                 {getPositionLabel(s.position)}
                               </span>
                               {session?.user && isUpcoming ? (
-                                <button
-                                  onClick={() => handleJoinSession(ms.song.id, s.id)}
-                                  className="text-xs px-2 py-0.5 font-bold text-gray-500 hover:text-neo-pink hover:bg-gray-50 transition-colors"
-                                >
-                                  참여하기
-                                </button>
+                                session?.user?.role === "ADMIN" ? (
+                                  <select 
+                                    className="text-xs px-2 py-0.5 font-bold text-gray-500 bg-transparent focus:outline-none appearance-none"
+                                    onChange={(e) => {
+                                      if (e.target.value) {
+                                        handleJoinSession(ms.song.id, s.id, e.target.value === "ME" ? undefined : e.target.value);
+                                        e.target.value = "";
+                                      }
+                                    }}
+                                    defaultValue=""
+                                  >
+                                    <option value="" disabled>추가 (관리자)...</option>
+                                    <option value="ME">내가 참여하기</option>
+                                    {allMembers.map(m => (
+                                      <option key={m.id} value={m.id}>{m.name}</option>
+                                    ))}
+                                  </select>
+                                ) : (
+                                  <button
+                                    onClick={() => handleJoinSession(ms.song.id, s.id)}
+                                    className="text-xs px-2 py-0.5 font-bold text-gray-500 hover:text-neo-pink hover:bg-gray-50 transition-colors"
+                                  >
+                                    참여하기
+                                  </button>
+                                )
                               ) : (
                                 <span className="text-xs px-2 py-0.5 font-bold text-gray-400">빈자리</span>
                               )}
@@ -566,12 +585,12 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
               return (
                 <button
                   key={song.id}
-                  onClick={() => !isAlreadyAdded && setSelectedSongId(song.id)}
+                  onClick={() => !isAlreadyAdded && setSelectedSongId(prev => prev === song.id ? "" : song.id)}
                   disabled={isAlreadyAdded}
                   className={`w-full text-left p-3 rounded-none border transition-all duration-200 ${isAlreadyAdded
                     ? "border-2 border-black bg-white border-3 border-black neo-shadow opacity-50 cursor-not-allowed"
                     : selectedSongId === song.id
-                      ? "border-3 border-black neo-btn neo-btn-primary/10"
+                      ? "border-3 border-black bg-neo-yellow neo-shadow"
                       : "border-2 border-black bg-white border-3 border-black neo-shadow hover:border-2 border-black"
                     }`}
                 >

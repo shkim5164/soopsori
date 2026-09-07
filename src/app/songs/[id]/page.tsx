@@ -113,12 +113,12 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
     }
   }, [id, session?.user?.role]);
 
-  const handleJoinSession = async (sessionId: string) => {
+  const handleJoinSession = async (sessionId: string, targetUserId?: string) => {
     try {
       const res = await fetch(`/api/songs/${id}/sessions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId }),
+        body: JSON.stringify({ sessionId, userId: targetUserId }),
       });
       if (res.ok) fetchSong();
     } catch (error) {
@@ -696,12 +696,31 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                         </div>
                       ) : (
                         session?.user?.id && (
-                          <button
-                            onClick={() => handleJoinSession(s.id)}
-                            className="w-full py-2 bg-neo-yellow text-black font-black border-2 border-black hover:translate-x-[2px] hover:translate-y-[2px] transition-transform text-sm"
-                          >
-                            참여하기
-                          </button>
+                          session.user.role === "ADMIN" ? (
+                            <select 
+                              className="w-full bg-white border-2 border-black p-2 text-sm font-bold text-black focus:outline-none"
+                              onChange={(e) => {
+                                if (e.target.value) {
+                                  handleJoinSession(s.id, e.target.value === "ME" ? undefined : e.target.value);
+                                  e.target.value = "";
+                                }
+                              }}
+                              defaultValue=""
+                            >
+                              <option value="" disabled>멤버 선택하여 추가 (관리자)...</option>
+                              <option value="ME">내가 참여하기</option>
+                              {allMembers.map(m => (
+                                <option key={m.id} value={m.id}>{m.name}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <button
+                              onClick={() => handleJoinSession(s.id)}
+                              className="w-full py-2 bg-neo-yellow text-black font-black border-2 border-black hover:translate-x-[2px] hover:translate-y-[2px] transition-transform text-sm"
+                            >
+                              참여하기
+                            </button>
+                          )
                         )
                       )}
                     </div>

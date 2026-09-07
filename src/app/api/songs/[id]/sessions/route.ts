@@ -14,7 +14,7 @@ export async function POST(
     }
 
     const { id: songId } = await params;
-    const { sessionId } = await request.json();
+    const { sessionId, userId: targetUserId } = await request.json();
 
     if (!sessionId) {
       return NextResponse.json({ error: "세션 ID가 필요합니다" }, { status: 400 });
@@ -33,10 +33,12 @@ export async function POST(
       return NextResponse.json({ error: "이미 충원된 세션입니다" }, { status: 400 });
     }
 
+    const finalUserId = (session.user.role === "ADMIN" && targetUserId) ? targetUserId : session.user.id;
+
     const updated = await prisma.songSession.update({
       where: { id: sessionId },
       data: {
-        userId: session.user.id,
+        userId: finalUserId,
         status: "FILLED",
       },
       include: {
@@ -44,12 +46,23 @@ export async function POST(
       },
     });
 
-    if (songSession.song.userId !== session.user.id) {
+    if (songSession.song.userId !== session.user.id && finalUserId === session.user.id) {
       await prisma.notification.create({
         data: {
           userId: songSession.song.userId,
           type: "SESSION_JOIN",
           message: `${session.user.name || "누군가"}님이 곡 '${songSession.song.title}'의 ${songSession.position} 세션에 참여했습니다.`,
+          linkUrl: `/songs/${songId}`,
+        }
+      });
+    }
+
+    if (finalUserId !== session.user.id) {
+      await prisma.notification.create({
+        data: {
+          userId: finalUserId,
+          type: "SESSION_JOIN",
+          message: `관리자에 의해 곡 '${songSession.song.title}'의 ${songSession.position} 세션에 추가되었습니다.`,
           linkUrl: `/songs/${songId}`,
         }
       });

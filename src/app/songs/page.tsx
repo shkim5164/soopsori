@@ -36,6 +36,7 @@ export default function SongsPage() {
   const [difficultyFilter, setDifficultyFilter] = useState<number | null>(null);
   const [positionFilter, setPositionFilter] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [allMembers, setAllMembers] = useState<{ id: string, name: string }[]>([]);
 
   const fetchSongs = useCallback(async () => {
     try {
@@ -56,14 +57,17 @@ export default function SongsPage() {
 
   useEffect(() => {
     fetchSongs();
-  }, [fetchSongs]);
+    if (session?.user?.role === "ADMIN") {
+      fetch("/api/members").then(res => res.ok && res.json()).then(data => setAllMembers(data || []));
+    }
+  }, [fetchSongs, session?.user?.role]);
 
-  const handleJoinSession = async (songId: string, sessionId: string) => {
+  const handleJoinSession = async (songId: string, sessionId: string, targetUserId?: string) => {
     try {
       const res = await fetch(`/api/songs/${songId}/sessions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId }),
+        body: JSON.stringify({ sessionId, userId: targetUserId }),
       });
       if (res.ok) fetchSongs();
     } catch (error) {
@@ -307,12 +311,31 @@ export default function SongsPage() {
                             </div>
                           ) : (
                             session?.user?.id && (
-                              <button
-                                onClick={() => handleJoinSession(song.id, s.id)}
-                                className="text-xs px-2 py-0.5 rounded neo-btn neo-btn-primary/15 text-neo-pink font-black hover:neo-btn neo-btn-primary/25 transition-colors"
-                              >
-                                참여
-                              </button>
+                              session.user.role === "ADMIN" ? (
+                                <select 
+                                  className="text-xs px-2 py-0.5 rounded bg-transparent focus:outline-none appearance-none font-bold text-gray-500"
+                                  onChange={(e) => {
+                                    if (e.target.value) {
+                                      handleJoinSession(song.id, s.id, e.target.value === "ME" ? undefined : e.target.value);
+                                      e.target.value = "";
+                                    }
+                                  }}
+                                  defaultValue=""
+                                >
+                                  <option value="" disabled>추가 (관리자)...</option>
+                                  <option value="ME">내가 참여</option>
+                                  {allMembers.map(m => (
+                                    <option key={m.id} value={m.id}>{m.name}</option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <button
+                                  onClick={() => handleJoinSession(song.id, s.id)}
+                                  className="text-xs px-2 py-0.5 rounded neo-btn neo-btn-primary/15 text-neo-pink font-black hover:neo-btn neo-btn-primary/25 transition-colors"
+                                >
+                                  참여
+                                </button>
+                              )
                             )
                           )}
                         </div>
