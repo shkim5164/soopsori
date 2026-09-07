@@ -82,3 +82,33 @@ export async function joinClass(classId: string) {
   revalidatePath(`/classes/${classId}`);
   revalidatePath("/classes");
 }
+
+export async function cancelJoinClass(classId: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const existingParticipant = await prisma.classParticipant.findUnique({
+    where: {
+      classId_userId: {
+        classId,
+        userId: session.user.id,
+      },
+    },
+  });
+
+  if (!existingParticipant) {
+    throw new Error("Not joined");
+  }
+
+  await prisma.classParticipant.delete({
+    where: {
+      id: existingParticipant.id,
+    },
+  });
+
+  revalidatePath(`/classes/${classId}`);
+  revalidatePath("/classes");
+}
+

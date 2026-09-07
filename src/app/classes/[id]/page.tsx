@@ -38,8 +38,8 @@ export default async function ClassDetailPage({ params }: { params: Promise<{ id
     buttonLabel = "내가 개설한 클래스입니다";
     buttonDisabled = true;
   } else if (isJoined) {
-    buttonLabel = "이미 참가 신청완료";
-    buttonDisabled = true;
+    buttonLabel = "참가 취소하기";
+    buttonDisabled = false;
   } else if (isFull) {
     buttonLabel = "모집 마감 (정원 초과)";
     buttonDisabled = true;
@@ -127,7 +127,7 @@ export default async function ClassDetailPage({ params }: { params: Promise<{ id
             
             {/* Sticky bottom action area */}
             <div className="p-4 border-t-2 border-black bg-white">
-              <JoinClassButton classId={classItem.id} disabled={buttonDisabled} label={buttonLabel} />
+              <JoinClassButton classId={classItem.id} disabled={buttonDisabled} label={buttonLabel} isJoined={isJoined} />
             </div>
           </div>
         </div>
