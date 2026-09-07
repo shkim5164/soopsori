@@ -167,9 +167,9 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
   };
 
   const handleLeaveSession = async (songId: string, sessionId: string) => {
-    if (!confirm("정말 세션 참여를 취소하시겠습니까?")) return;
+    if (!confirm("정말 세션 참여를 취소(제외)하시겠습니까?")) return;
     try {
-      const res = await fetch(`/api/songs/${songId}/sessions/${sessionId}`, { method: "DELETE" });
+      const res = await fetch(`/api/songs/${songId}/sessions?sessionId=${sessionId}`, { method: "DELETE" });
       if (res.ok) fetchMeeting();
       else alert(await res.json().then(d => d.error));
     } catch (error) {
