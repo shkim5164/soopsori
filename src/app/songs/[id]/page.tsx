@@ -685,12 +685,12 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                             )}
                             <span className="text-sm text-black font-black">{s.user.name}</span>
                           </div>
-                          {session?.user?.id === s.user.id && (
+                          {(session?.user?.id === s.user.id || session?.user?.role === "ADMIN") && (
                             <button
                               onClick={() => handleLeaveSession(s.id)}
                               className="text-xs px-3 py-1 font-black bg-danger-500/10 text-danger-400 hover:bg-danger-500/20 transition-colors border-2 border-black"
                             >
-                              참여 취소
+                              {session?.user?.id === s.user.id ? "참여 취소" : "멤버 제외"}
                             </button>
                           )}
                         </div>

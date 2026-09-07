@@ -96,14 +96,15 @@ export async function DELETE(
 
     const songSession = await prisma.songSession.findUnique({
       where: { id: sessionId },
+      include: { song: true },
     });
 
     if (!songSession || songSession.songId !== songId) {
       return NextResponse.json({ error: "세션을 찾을 수 없습니다" }, { status: 404 });
     }
 
-    if (songSession.userId !== session.user.id) {
-      return NextResponse.json({ error: "본인만 취소할 수 있습니다" }, { status: 403 });
+    if (songSession.userId !== session.user.id && session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     }
 
     const updated = await prisma.songSession.update({
@@ -113,6 +114,17 @@ export async function DELETE(
         status: "OPEN",
       },
     });
+
+    if (songSession.userId && songSession.userId !== session.user.id && session.user.role === "ADMIN") {
+      await prisma.notification.create({
+        data: {
+          userId: songSession.userId,
+          type: "SESSION_CANCEL",
+          message: `관리자에 의해 곡 '${songSession.song.title}'의 ${songSession.position} 세션에서 제외되었습니다.`,
+          linkUrl: `/songs/${songId}`,
+        }
+      });
+    }
 
     return NextResponse.json(updated);
   } catch (error) {
