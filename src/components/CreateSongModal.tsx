@@ -17,7 +17,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
     youtubeUrl: "",
     description: "",
     difficulty: 3,
-    sessions: [] as string[],
+    sessions: [] as { position: string, description: string }[],
   });
   const [loading, setLoading] = useState(false);
   const [isFetchingMeta, setIsFetchingMeta] = useState(false);
@@ -84,7 +84,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
   const [customSession, setCustomSession] = useState("");
 
   const addSession = (position: string) => {
-    setNewSong((prev) => ({ ...prev, sessions: [...prev.sessions, position] }));
+    setNewSong((prev) => ({ ...prev, sessions: [...prev.sessions, { position, description: "" }] }));
   };
 
   const removeSession = (index: number) => {
@@ -92,6 +92,14 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
       ...prev,
       sessions: prev.sessions.filter((_, i) => i !== index),
     }));
+  };
+
+  const updateSessionDescription = (index: number, desc: string) => {
+    setNewSong((prev) => {
+      const newSessions = [...prev.sessions];
+      newSessions[index].description = desc;
+      return { ...prev, sessions: newSessions };
+    });
   };
 
   return (
@@ -162,15 +170,24 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
             필요한 세션
           </label>
           
-          <div className="flex flex-wrap gap-2 mb-3">
-            {newSong.sessions.map((pos, index) => (
-              <div key={index} className={`flex items-center gap-1 px-3 py-1.5 rounded-none ${getPositionBadgeClass(pos)}`}>
-                <span className="text-sm">
-                  {getPositionEmoji(pos)} {getPositionLabel(pos)}
-                </span>
-                <button type="button" onClick={() => removeSession(index)} className="opacity-70 hover:opacity-100 ml-1 transition-opacity">
-                  ×
-                </button>
+          <div className="flex flex-col gap-2 mb-3">
+            {newSong.sessions.map((sessionItem, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <div className={`flex items-center gap-1 px-3 py-1.5 rounded-none ${getPositionBadgeClass(sessionItem.position)}`}>
+                  <span className="text-sm">
+                    {getPositionEmoji(sessionItem.position)} {getPositionLabel(sessionItem.position)}
+                  </span>
+                  <button type="button" onClick={() => removeSession(index)} className="opacity-70 hover:opacity-100 ml-1 transition-opacity">
+                    ×
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={sessionItem.description}
+                  onChange={(e) => updateSessionDescription(index, e.target.value)}
+                  placeholder="설명 (예: 메인, 백킹) - 선택사항"
+                  className="flex-1 px-3 py-1.5 rounded-none bg-white border-2 border-black text-sm text-black focus:outline-none focus:border-3 focus:bg-neo-yellow transition-colors"
+                />
               </div>
             ))}
             {newSong.sessions.length === 0 && <span className="text-gray-800 font-bold text-sm py-1.5">선택된 세션이 없습니다</span>}

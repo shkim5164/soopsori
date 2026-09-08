@@ -29,6 +29,7 @@ const renderCommentContent = (content: string) => {
 interface SongSession {
   id: string;
   position: string;
+  description: string | null;
   status: string;
   user: { id: string; name: string; image: string } | null;
 }
@@ -74,7 +75,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
   const [openPickerId, setOpenPickerId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ title: "", artist: "", youtubeUrl: "", description: "", difficulty: 3, sessions: [] as string[], userId: "" });
+  const [editForm, setEditForm] = useState({ title: "", artist: "", youtubeUrl: "", description: "", difficulty: 3, sessions: [] as { id?: string, position: string, description: string }[], userId: "" });
   const [customSession, setCustomSession] = useState("");
   const [isFetchingMeta, setIsFetchingMeta] = useState(false);
   const [allMembers, setAllMembers] = useState<{id: string, name: string}[]>([]);
@@ -181,7 +182,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
   };
 
   const addSession = (position: string) => {
-    setEditForm((prev) => ({ ...prev, sessions: [...prev.sessions, position] }));
+    setEditForm((prev) => ({ ...prev, sessions: [...prev.sessions, { position, description: "" }] }));
   };
 
   const removeSession = (index: number) => {
@@ -189,6 +190,14 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
       ...prev,
       sessions: prev.sessions.filter((_, i) => i !== index),
     }));
+  };
+
+  const updateSessionDescription = (index: number, desc: string) => {
+    setEditForm((prev) => {
+      const newSessions = [...prev.sessions];
+      newSessions[index].description = desc;
+      return { ...prev, sessions: newSessions };
+    });
   };
 
   const handleEditClick = () => {
@@ -199,7 +208,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
         youtubeUrl: song.youtubeUrl || "",
         description: song.description || "",
         difficulty: song.difficulty,
-        sessions: song.sessions.map((s) => s.position),
+        sessions: song.sessions.map((s) => ({ id: s.id, position: s.position, description: s.description || "" })),
         userId: song.user.id,
       });
       setIsEditing(true);
@@ -507,15 +516,24 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                 <div>
                   <label className="block text-sm text-black font-bold mb-2">필요한 세션</label>
                   
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {editForm.sessions.map((pos, index) => (
-                      <div key={index} className={`flex items-center gap-1 px-3 py-1.5 rounded-none ${getPositionBadgeClass(pos)}`}>
-                        <span className="text-sm">
-                          {getPositionEmoji(pos)} {getPositionLabel(pos)}
-                        </span>
-                        <button type="button" onClick={() => removeSession(index)} className="opacity-70 hover:opacity-100 ml-1 transition-opacity">
-                          ×
-                        </button>
+                  <div className="flex flex-col gap-2 mb-3">
+                    {editForm.sessions.map((sessionItem, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className={`flex items-center gap-1 px-3 py-1.5 rounded-none ${getPositionBadgeClass(sessionItem.position)}`}>
+                          <span className="text-sm">
+                            {getPositionEmoji(sessionItem.position)} {getPositionLabel(sessionItem.position)}
+                          </span>
+                          <button type="button" onClick={() => removeSession(index)} className="opacity-70 hover:opacity-100 ml-1 transition-opacity">
+                            ×
+                          </button>
+                        </div>
+                        <input
+                          type="text"
+                          value={sessionItem.description}
+                          onChange={(e) => updateSessionDescription(index, e.target.value)}
+                          placeholder="설명 (예: 메인, 백킹) - 선택사항"
+                          className="flex-1 px-3 py-1.5 rounded-none bg-white border-2 border-black text-sm text-black focus:outline-none focus:border-3 focus:bg-neo-yellow transition-colors"
+                        />
                       </div>
                     ))}
                     {editForm.sessions.length === 0 && <span className="text-gray-800 font-bold text-sm py-1.5">선택된 세션이 없습니다</span>}
@@ -665,8 +683,9 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className={`text-sm px-2.5 py-0.5 rounded-full font-medium ${getPositionBadgeClass(s.position)}`}>
+                        <span className={`text-sm px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1 ${getPositionBadgeClass(s.position)}`}>
                           {getPositionEmoji(s.position)} {displayLabel}
+                          {s.description && <span className="text-xs opacity-75">({s.description})</span>}
                         </span>
                         <span className={`text-xs ${s.status === "OPEN" ? "text-neo-pink font-black" : "text-gray-800 font-bold"}`}>
                           {s.status === "OPEN" ? "모집 중" : "완료"}

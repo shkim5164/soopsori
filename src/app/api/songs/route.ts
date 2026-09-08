@@ -94,10 +94,15 @@ export async function POST(request: NextRequest) {
         difficulty: isNaN(parsedDifficulty) ? 3 : parsedDifficulty,
         userId: session.user.id,
         sessions: {
-          create: (sessionPositions || []).map((position: string) => ({
-            position,
-            status: "OPEN",
-          })),
+          create: (sessionPositions || []).map((session: any) => {
+            const position = typeof session === "string" ? session : session.position;
+            const description = typeof session === "string" ? null : session.description;
+            return {
+              position,
+              description: description || null,
+              status: "OPEN",
+            };
+          }),
         },
       },
       include: {

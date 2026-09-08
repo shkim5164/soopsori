@@ -66,9 +66,10 @@ model Song {
 }
 
 model SongSession {
-  id       String  @id @default(cuid())
-  position String  // 필요한 포지션 (어쿠스틱 기타, 일렉기타, 베이스 등)
-  status   String  @default("OPEN") // OPEN | FILLED
+  id          String  @id @default(cuid())
+  position    String  // 필요한 포지션 (어쿠스틱 기타, 일렉기타, 베이스 등)
+  description String? // 파트 구분용 설명 (예: 메인, 백킹)
+  status      String  @default("OPEN") // OPEN | FILLED
 
   songId String
   song   Song   @relation(fields: [songId], references: [id], onDelete: Cascade)

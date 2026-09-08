@@ -103,36 +103,29 @@ export async function PATCH(
     }
 
     if (newSessions && Array.isArray(newSessions)) {
-      const existingCounts: Record<string, number> = {};
-      song.sessions.forEach(s => existingCounts[s.position] = (existingCounts[s.position] || 0) + 1);
-      
-      const newCounts: Record<string, number> = {};
-      newSessions.forEach(p => newCounts[p] = (newCounts[p] || 0) + 1);
+      // newSessions can be strings (legacy) or objects { id?, position, description? }
+      const incomingSessions = newSessions.map((s: any) => {
+        if (typeof s === "string") return { position: s, description: null };
+        return { id: s.id, position: s.position, description: s.description || null };
+      });
 
-      const toDeleteIds: string[] = [];
-      const toCreate: { position: string, status: "OPEN" }[] = [];
-
-      const uniquePositions = new Set([...Object.keys(existingCounts), ...Object.keys(newCounts)]);
-      for (const pos of uniquePositions) {
-        const oldC = existingCounts[pos] || 0;
-        const newC = newCounts[pos] || 0;
-        
-        if (newC > oldC) {
-          for (let i = 0; i < newC - oldC; i++) toCreate.push({ position: pos, status: "OPEN" });
-        } else if (newC < oldC) {
-          const sessionsForPos = song.sessions.filter(s => s.position === pos);
-          // Sort so that OPEN sessions are deleted first
-          sessionsForPos.sort((a, b) => a.status === "OPEN" ? -1 : 1);
-          
-          for (let i = 0; i < oldC - newC; i++) {
-            toDeleteIds.push(sessionsForPos[i].id);
-          }
-        }
-      }
+      // Simple diffing by ID if available, otherwise just fall back to delete/recreate
+      // To keep it simple and robust:
+      // We identify which existing sessions to keep, update, or delete.
+      const incomingIds = incomingSessions.map(s => s.id).filter(Boolean);
+      const toDeleteIds = song.sessions.filter(s => !incomingIds.includes(s.id)).map(s => s.id);
 
       updateData.sessions = {
         deleteMany: { id: { in: toDeleteIds } },
-        create: toCreate
+        create: incomingSessions.filter(s => !s.id).map(s => ({
+          position: s.position,
+          description: s.description,
+          status: "OPEN"
+        })),
+        update: incomingSessions.filter(s => s.id).map(s => ({
+          where: { id: s.id },
+          data: { description: s.description }
+        }))
       };
     }
 

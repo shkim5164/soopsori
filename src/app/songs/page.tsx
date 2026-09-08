@@ -10,6 +10,7 @@ import Link from "next/link";
 interface SongSession {
   id: string;
   position: string;
+  description: string | null;
   status: string;
   user: { id: string; name: string; image: string } | null;
 }
@@ -293,6 +294,7 @@ export default function SongsPage() {
                             className={`text-xs px-2 py-0.5 rounded-full ${getPositionBadgeClass(s.position)}`}
                           >
                             {getPositionLabel(s.position)}
+                            {s.description && <span className="opacity-75 ml-1">({s.description})</span>}
                           </span>
                           {s.status === "FILLED" && s.user ? (
                             <div className="flex items-center gap-1.5">
