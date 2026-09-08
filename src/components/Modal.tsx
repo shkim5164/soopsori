@@ -48,7 +48,7 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
 
       {/* Modal Content */}
       <div
-        className={`relative w-full ${sizeClasses[size]} neo-card p-6 animate-fade-in-up`}
+        className={`relative w-full ${sizeClasses[size]} neo-card p-6 animate-fade-in-up max-h-[90vh] overflow-y-auto`}
         style={{ animationDuration: "0.3s" }}
       >
         {/* Header */}

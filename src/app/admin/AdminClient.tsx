@@ -373,7 +373,7 @@ export default function AdminClient() {
       {/* 회원 추가/수정 모달 */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white border-3 border-black border border-2 border-black rounded-none w-full max-w-md overflow-hidden shadow-2xl">
+          <div className="bg-white border-3 border-black border border-2 border-black rounded-none w-full max-w-md shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <h2 className="text-xl font-bold text-black font-black mb-4">
                 {modalMode === "ADD" ? "새 회원 추가" : "회원 정보 수정"}

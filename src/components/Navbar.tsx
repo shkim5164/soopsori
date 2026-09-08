@@ -291,7 +291,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="lg:hidden border-t-4 border-black bg-white animate-fade-in-up">
+        <div className="lg:hidden border-t-4 border-black bg-white animate-fade-in-up max-h-[calc(100vh-5rem)] overflow-y-auto">
           <div className="px-4 py-4 flex flex-col gap-2">
             {navLinks.map((link) => {
               const isActive = pathname === link.href ||
