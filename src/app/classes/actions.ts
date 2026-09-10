@@ -79,6 +79,17 @@ export async function joinClass(classId: string) {
     },
   });
 
+  if (targetClass.creatorId !== session.user.id) {
+    await prisma.notification.create({
+      data: {
+        type: "CLASS_JOIN",
+        message: `${session.user.name || "누군가"}님이 [${targetClass.title}] 클래스에 참여 신청했습니다.`,
+        linkUrl: `/classes/${classId}`,
+        userId: targetClass.creatorId,
+      },
+    });
+  }
+
   revalidatePath(`/classes/${classId}`);
   revalidatePath("/classes");
 }
