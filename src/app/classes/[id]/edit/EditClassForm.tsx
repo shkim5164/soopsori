@@ -1,5 +1,7 @@
 "use client";
 
+
+
 import { useState } from "react";
 import { updateClass } from "../../actions";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -26,6 +28,8 @@ export default function EditClassForm({ classItem }: EditClassFormProps) {
       .slice(0, 16);
   };
 
+
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -34,7 +38,10 @@ export default function EditClassForm({ classItem }: EditClassFormProps) {
       const formData = new FormData(e.currentTarget);
       formData.append("content", content);
       await updateClass(classItem.id, formData);
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.message === "NEXT_REDIRECT" || error?.digest?.startsWith("NEXT_REDIRECT")) {
+        throw error;
+      }
       console.error(error);
       alert("클래스 수정 중 오류가 발생했습니다.");
       setIsSubmitting(false);

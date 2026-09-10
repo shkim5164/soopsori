@@ -16,6 +16,9 @@ export default function ClassActionButtons({ classId }: { classId: string }) {
     try {
       await deleteClass(classId);
     } catch (error: any) {
+      if (error?.message === "NEXT_REDIRECT" || error?.digest?.startsWith("NEXT_REDIRECT")) {
+        throw error;
+      }
       console.error(error);
       alert(error.message || "삭제 중 오류가 발생했습니다.");
       setIsDeleting(false);
@@ -33,7 +36,7 @@ export default function ClassActionButtons({ classId }: { classId: string }) {
       <button
         onClick={handleDelete}
         disabled={isDeleting}
-        className="px-4 py-2 text-sm font-black bg-white border-2 border-black text-danger-500 hover:bg-danger-500 hover:text-white transition-colors shadow-[2px_2px_0px_black] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-50"
+        className="px-4 py-2 text-sm font-black bg-white border-2 border-black text-danger-500 hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0px_black] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-50"
       >
         {isDeleting ? "삭제 중..." : "삭제"}
       </button>

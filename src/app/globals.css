@@ -255,3 +255,12 @@ h1, h2, h3, h4, h5, h6 {
   scrollbar-width: none;  /* Firefox */
 }
 
+/* Fix for empty paragraphs in prose collapsing */
+.prose p {
+  min-height: 1.5rem;
+}
+.prose p:empty::after {
+  content: "\00a0";
+}
+
+
