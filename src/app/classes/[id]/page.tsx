@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import JoinClassButton from "./JoinClassButton";
+import ClassActionButtons from "./ClassActionButtons";
 import { auth } from "@/auth";
 
 export default async function ClassDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -27,6 +28,7 @@ export default async function ClassDetailPage({ params }: { params: Promise<{ id
     ? classItem.participants.some(p => p.userId === session.user.id)
     : false;
   const isCreator = session?.user?.id === classItem.creatorId;
+  const canEdit = session?.user?.role === "ADMIN" || isCreator;
 
   let buttonLabel = "클래스 참가하기";
   let buttonDisabled = false;
@@ -54,13 +56,16 @@ export default async function ClassDetailPage({ params }: { params: Promise<{ id
       <div className="neo-card overflow-hidden bg-white mb-8">
         {/* Header Section */}
         <div className="p-6 md:p-8 border-b-2 border-black bg-neo-yellow">
-          <div className="flex flex-wrap items-center gap-2 mb-4">
-            <span className={`text-xs px-3 py-1 border-2 border-black font-black bg-white ${isFull ? "text-danger-500" : "text-black"}`}>
-              {isFull ? "모집 마감" : "모집 중"}
-            </span>
-            <span className="text-xs px-3 py-1 border-2 border-black font-black bg-white">
-              정원 {classItem.capacity}명
-            </span>
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className={`text-xs px-3 py-1 border-2 border-black font-black bg-white ${isFull ? "text-danger-500" : "text-black"}`}>
+                {isFull ? "모집 마감" : "모집 중"}
+              </span>
+              <span className="text-xs px-3 py-1 border-2 border-black font-black bg-white">
+                정원 {classItem.capacity}명
+              </span>
+            </div>
+            {canEdit && <ClassActionButtons classId={classItem.id} />}
           </div>
           
           <h1 className="text-3xl md:text-4xl font-black text-black mb-4 leading-tight">

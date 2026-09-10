@@ -112,3 +112,79 @@ export async function cancelJoinClass(classId: string) {
   revalidatePath("/classes");
 }
 
+export async function updateClass(classId: string, formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const targetClass = await prisma.class.findUnique({
+    where: { id: classId },
+  });
+
+  if (!targetClass) {
+    throw new Error("Class not found");
+  }
+
+  if (targetClass.creatorId !== session.user.id && session.user.role !== "ADMIN") {
+    throw new Error("Forbidden");
+  }
+
+  const title = formData.get("title") as string;
+  const content = formData.get("content") as string;
+  const deadlineStr = formData.get("deadline") as string;
+  const capacityStr = formData.get("capacity") as string;
+
+  if (!title || !content || !deadlineStr || !capacityStr) {
+    throw new Error("Missing fields");
+  }
+
+  const deadline = new Date(deadlineStr);
+  const capacity = parseInt(capacityStr, 10);
+
+  const imgRegex = /<img[^>]+src="([^">]+)"/;
+  const match = content.match(imgRegex);
+  const thumbnail = match ? match[1] : null;
+
+  await prisma.class.update({
+    where: { id: classId },
+    data: {
+      title,
+      content,
+      deadline,
+      capacity,
+      thumbnail,
+    },
+  });
+
+  revalidatePath(`/classes/${classId}`);
+  revalidatePath("/classes");
+  redirect(`/classes/${classId}`);
+}
+
+export async function deleteClass(classId: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const targetClass = await prisma.class.findUnique({
+    where: { id: classId },
+  });
+
+  if (!targetClass) {
+    throw new Error("Class not found");
+  }
+
+  if (targetClass.creatorId !== session.user.id && session.user.role !== "ADMIN") {
+    throw new Error("Forbidden");
+  }
+
+  await prisma.class.delete({
+    where: { id: classId },
+  });
+
+  revalidatePath("/classes");
+  redirect("/classes");
+}
+
