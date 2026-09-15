@@ -119,11 +119,34 @@ export function getPositionBadgeClass(id: string): string {
 export function getYouTubeEmbedUrl(url: string): string | null {
   if (!url) return null;
   const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    /(?:youtube\.com\/watch\?(?:.*&)?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
   ];
   for (const pattern of patterns) {
     const match = url.match(pattern);
-    if (match) return `https://www.youtube.com/embed/${match[1]}`;
+    if (match) {
+      const videoId = match[1];
+      let startParam = "";
+      
+      const timeMatch = url.match(/[?&](t|start)=([^&]+)/);
+      if (timeMatch) {
+        const timeVal = timeMatch[2];
+        let seconds = 0;
+        if (timeVal.includes("h") || timeVal.includes("m") || timeVal.includes("s")) {
+          const hMatch = timeVal.match(/(\d+)h/);
+          const mMatch = timeVal.match(/(\d+)m/);
+          const sMatch = timeVal.match(/(\d+)s/);
+          if (hMatch) seconds += parseInt(hMatch[1]) * 3600;
+          if (mMatch) seconds += parseInt(mMatch[1]) * 60;
+          if (sMatch) seconds += parseInt(sMatch[1]);
+        } else {
+          seconds = parseInt(timeVal);
+        }
+        if (!isNaN(seconds) && seconds > 0) {
+          startParam = `?start=${seconds}`;
+        }
+      }
+      return `https://www.youtube.com/embed/${videoId}${startParam}`;
+    }
   }
   return null;
 }
@@ -131,7 +154,7 @@ export function getYouTubeEmbedUrl(url: string): string | null {
 // YouTube 썸네일 URL
 export function getYouTubeThumbnail(url: string): string | null {
   if (!url) return null;
-  const pattern = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/;
+  const pattern = /(?:youtube\.com\/watch\?(?:.*&)?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/;
   const match = url.match(pattern);
   if (match) return `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg`;
   return null;

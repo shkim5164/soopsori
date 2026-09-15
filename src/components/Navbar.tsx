@@ -77,7 +77,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2 xl:gap-3">
             {navLinks.map((link) => {
               const isActive = pathname === link.href ||
                 (link.href !== "/" && pathname.startsWith(link.href));
@@ -87,12 +87,12 @@ export default function Navbar() {
                   href={link.href}
                   target={link.external ? "_blank" : undefined}
                   rel={link.external ? "noopener noreferrer" : undefined}
-                  className={`px-4 py-2 font-bold text-sm lowercase border-2 border-black rounded-full transition-all ${isActive
+                  className={`px-2 xl:px-4 py-1.5 xl:py-2 font-bold text-xs xl:text-sm whitespace-nowrap lowercase border-2 border-black rounded-full transition-all ${isActive
                       ? "bg-neo-pink text-white neo-shadow-sm translate-x-[2px] translate-y-[2px]"
                       : "bg-white text-black neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm hover:bg-neo-yellow hover:text-black"
                     }`}
                 >
-                  <span className="mr-1.5">{link.icon}</span>
+                  <span className="mr-1 xl:mr-1.5">{link.icon}</span>
                   {link.label}
                 </Link>
               );
