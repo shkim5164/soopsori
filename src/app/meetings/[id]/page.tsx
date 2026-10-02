@@ -248,13 +248,13 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
   const isUpcoming = meeting.status === "UPCOMING";
   const myAttendance = meeting.attendances.find((a) => a.user.id === session?.user?.id);
 
-  // 세트리스트에 한 곡이라도 참여한 사람들의 ID 집합
-  const setlistParticipantIds = new Set<string>();
+  // 참여자별 참여 세트리스트(곡) 개수 (한 곡에서 여러 세션을 맡아도 1곡으로 집계)
+  const setlistCountByUser = new Map<string, number>();
   meeting.meetingSongs.forEach(ms => {
-    ms.song.sessions.forEach(s => {
-      if (s.user) setlistParticipantIds.add(s.user.id);
-    });
+    const userIds = new Set(ms.song.sessions.flatMap(s => (s.user ? [s.user.id] : [])));
+    userIds.forEach(uid => setlistCountByUser.set(uid, (setlistCountByUser.get(uid) ?? 0) + 1));
   });
+  const setlistParticipantIds = new Set(setlistCountByUser.keys());
 
   const attendees = meeting.attendances.filter((a) => a.attended);
   const sessionParticipants = attendees.filter(a => setlistParticipantIds.has(a.user.id));
@@ -468,6 +468,9 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                         </div>
                       )}
                       <span className="text-sm text-black font-bold">{a.user.name}</span>
+                      <span className="text-xs font-black bg-neo-yellow border-2 border-black px-1.5" title="참여 세트리스트 수">
+                        {setlistCountByUser.get(a.user.id)}곡
+                      </span>
                       <span className="text-xs text-neo-pink font-black ml-auto">✓</span>
                       {session?.user?.role === "ADMIN" && (
                         <button
