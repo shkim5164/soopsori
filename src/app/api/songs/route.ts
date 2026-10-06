@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getBandSessions } from "@/lib/bands";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -43,6 +44,7 @@ export async function GET(request: NextRequest) {
     const songs = await prisma.song.findMany({
       where: Object.keys(whereClause).length > 0 ? whereClause : undefined,
       include: {
+        band: { select: { id: true, name: true } },
         user: { select: { id: true, name: true, image: true } },
         sessions: {
           include: {
@@ -77,16 +79,21 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, artist, youtubeUrl, description, sessions: sessionPositions, difficulty } = body;
+    const { title, artist, youtubeUrl, description, sessions: sessionPositions, difficulty, bandId } = body;
 
     if (!title || !artist) {
       return NextResponse.json({ error: "곡 제목과 아티스트는 필수입니다" }, { status: 400 });
     }
 
+    if (bandId != null && typeof bandId !== "string") return NextResponse.json({ error: "밴드를 확인해주세요" }, { status: 400 });
+    const bandSessions = bandId ? await getBandSessions(bandId) : null;
+    if (bandId && !bandSessions) return NextResponse.json({ error: "구성원이 있는 밴드를 선택해주세요" }, { status: 400 });
+
     const parsedDifficulty = difficulty !== undefined ? parseInt(difficulty, 10) : 3;
 
     const song = await prisma.song.create({
       data: {
+        bandId: bandId || null,
         title,
         artist,
         youtubeUrl: youtubeUrl || null,
@@ -94,7 +101,7 @@ export async function POST(request: NextRequest) {
         difficulty: isNaN(parsedDifficulty) ? 3 : parsedDifficulty,
         userId: session.user.id,
         sessions: {
-          create: (sessionPositions || []).map((session: any) => {
+          create: bandSessions ?? (sessionPositions || []).map((session: any) => {
             const position = typeof session === "string" ? session : session.position;
             const description = typeof session === "string" ? null : session.description;
             return {
@@ -106,6 +113,7 @@ export async function POST(request: NextRequest) {
         },
       },
       include: {
+        band: { select: { id: true, name: true } },
         user: { select: { id: true, name: true, image: true } },
         sessions: {
           include: {

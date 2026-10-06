@@ -8,6 +8,7 @@
 | --- | --- | --- |
 | 로그인·회원가입 | `src/app/login`, `src/app/register` | `src/auth.ts`, `src/app/api/auth`, `src/types/next-auth.d.ts` |
 | 곡·세션·좋아요·댓글 | `src/app/songs` | `src/app/api/songs`, `src/components/CreateSongModal.tsx` |
+| 밴드·구성원 | `src/app/bands` | `src/app/api/bands`, `src/components/BandPicker.tsx`, `src/lib/bands.ts` |
 | 모임·출석·세트리스트·정산 | `src/app/meetings` | `src/app/api/meetings` |
 | 클래스 | `src/app/classes` | `src/app/classes/actions.ts` (Server Actions) |
 | 회원·프로필·포인트 | `src/app/members`, `src/app/profile` | `src/app/api/members` |
@@ -28,6 +29,9 @@ API Route Handler와 클래스 Server Action이 Prisma로 DB에 접근합니다.
 
 ## 혼동하기 쉬운 도메인 규칙
 
+- `Band`는 등록자와 이름, `BandMember`는 숲소리 회원과 담당 포지션을 저장합니다. 한 회원은 여러 밴드·포지션에 참여할 수 있지만 같은 밴드 내 동일 회원·포지션은 중복되지 않습니다. 로그인 회원은 등록할 수 있고 등록자·관리자만 수정합니다.
+- `Song.bandId`는 선택 사항입니다. 곡 등록 또는 다른 밴드로 지정할 때 서버에서 밴드 구성원을 조회해 `FILLED` 세션으로 원자적으로 저장합니다. 기존 세션은 교체됩니다. 같은 밴드로 곡 정보를 수정하거나 밴드 구성원을 수정해도 기존 곡 세션은 자동으로 덮어쓰지 않습니다. 일반 합주곡으로 전환하면 기존 세션 참여는 유지합니다.
+- 모임 세트리스트는 곡의 현재 밴드를 기준으로 일반 합주곡과 밴드별 곡을 나눕니다. 각 그룹 내부는 기존 세트리스트 순서와 번호를 유지합니다. 밴드 지정은 모임 출석·포인트·`MeetingParticipant`를 생성하거나 변경하지 않습니다.
 - `SongSession`은 곡의 모집 포지션입니다. `OPEN` / `FILLED` 상태와 선택적인 참여 회원을 가집니다.
 - `MeetingSong`은 특정 모임의 세트리스트 항목이며 곡, 선곡자(`pickerId`), 순서를 가집니다. 곡 작성자와 선곡자는 다를 수 있습니다.
 - `MeetingParticipant`는 모임 곡별 참여입니다. `(meetingSongId, userId)`가 유일하므로 한 회원이 같은 모임 곡에 여러 행을 가질 수 없습니다.

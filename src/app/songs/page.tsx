@@ -16,6 +16,7 @@ interface SongSession {
 }
 
 interface Song {
+  band: { id: string; name: string } | null;
   id: string;
   title: string;
   artist: string;
@@ -255,6 +256,7 @@ export default function SongsPage() {
                     <Link href={`/songs/${song.id}`} className="min-w-0 flex-1">
                       <h3 className="font-semibold text-black font-black truncate hover:text-neo-pink font-black transition-colors">
                         {song.title}
+                        {song.band && <span className="block text-sm font-bold mt-2">🎸 {song.band.name}</span>}
                       </h3>
                       <div className="flex items-center gap-2 mt-0.5">
                         <p className="text-sm text-gray-800 font-bold">{song.artist}</p>

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getBandSessions } from "@/lib/bands";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -12,6 +13,7 @@ export async function GET(
     const song = await prisma.song.findUnique({
       where: { id },
       include: {
+        band: { select: { id: true, name: true } },
         user: { select: { id: true, name: true, image: true, position: true } },
         sessions: {
           include: {
@@ -88,10 +90,15 @@ export async function PATCH(
       return NextResponse.json({ error: "권한이 없습니다" }, { status: 403 });
     }
 
-    const { title, artist, youtubeUrl, description, difficulty, sessions: newSessions, userId } = await request.json();
+    const { title, artist, youtubeUrl, description, difficulty, sessions: newSessions, userId, bandId } = await request.json();
     if (!title || !artist) {
       return NextResponse.json({ error: "제목과 아티스트는 필수입니다" }, { status: 400 });
     }
+
+    if (bandId !== undefined && bandId !== null && typeof bandId !== "string") return NextResponse.json({ error: "밴드를 확인해주세요" }, { status: 400 });
+    const bandChanged = bandId !== undefined && (bandId || null) !== song.bandId;
+    const bandSessions = bandChanged && bandId ? await getBandSessions(bandId) : null;
+    if (bandChanged && bandId && !bandSessions) return NextResponse.json({ error: "구성원이 있는 밴드를 선택해주세요" }, { status: 400 });
 
     const parsedDifficulty = difficulty !== undefined ? parseInt(difficulty, 10) : undefined;
     const updateData: any = { title, artist, youtubeUrl, description };
@@ -102,7 +109,11 @@ export async function PATCH(
       updateData.userId = userId;
     }
 
-    if (newSessions && Array.isArray(newSessions)) {
+    if (bandId !== undefined) updateData.bandId = bandId || null;
+
+    if (bandSessions) {
+      updateData.sessions = { deleteMany: {}, create: bandSessions };
+    } else if (newSessions && Array.isArray(newSessions)) {
       // newSessions can be strings (legacy) or objects { id?, position, description? }
       const incomingSessions = newSessions.map((s: any) => {
         if (typeof s === "string") return { position: s, description: null };

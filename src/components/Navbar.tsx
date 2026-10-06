@@ -12,6 +12,7 @@ const navLinks = [
   { href: "/", label: "홈", icon: "🏠" },
   { href: "/songs", label: "곡 목록", icon: "🎵" },
   { href: "/meetings", label: "모임", icon: "📅" },
+  { href: "/bands", label: "밴드", icon: "🎸" },
   { href: "/members", label: "회원", icon: "👥" },
   { href: "/notices", label: "공지", icon: "📢" },
   { href: "/studios", label: "합주실", icon: "🗺️" },

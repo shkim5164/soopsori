@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { useSession } from "next-auth/react";
+import BandPicker from "@/components/BandPicker";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { getPositionLabel, getPositionBadgeClass, getPositionEmoji, formatDate, POSITIONS } from "@/lib/constants";
 import Link from "next/link";
@@ -35,6 +36,8 @@ interface SongSession {
 }
 
 interface Song {
+  band: { id: string; name: string } | null;
+  bandId: string | null;
   id: string;
   title: string;
   artist: string;
@@ -75,7 +78,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
   const [openPickerId, setOpenPickerId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ title: "", artist: "", youtubeUrl: "", description: "", difficulty: 3, sessions: [] as { id?: string, position: string, description: string }[], userId: "" });
+  const [editForm, setEditForm] = useState({ bandId: "", title: "", artist: "", youtubeUrl: "", description: "", difficulty: 3, sessions: [] as { id?: string, position: string, description: string }[], userId: "" });
   const [customSession, setCustomSession] = useState("");
   const [isFetchingMeta, setIsFetchingMeta] = useState(false);
   const [allMembers, setAllMembers] = useState<{id: string, name: string}[]>([]);
@@ -203,6 +206,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
   const handleEditClick = () => {
     if (song) {
       setEditForm({
+        bandId: song.bandId || "",
         title: song.title,
         artist: song.artist,
         youtubeUrl: song.youtubeUrl || "",
@@ -513,7 +517,8 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                     ))}
                   </div>
                 </div>
-                <div>
+                <BandPicker value={editForm.bandId} onChange={bandId => setEditForm({ ...editForm, bandId })} />
+                <div hidden={!!editForm.bandId && editForm.bandId !== song.bandId}>
                   <label className="block text-sm text-black font-bold mb-2">필요한 세션</label>
                   
                   <div className="flex flex-col gap-2 mb-3">
@@ -606,6 +611,7 @@ export default function SongDetailPage({ params }: { params: Promise<{ id: strin
                   <div>
                     <h1 className="text-2xl font-bold text-black font-black flex items-center gap-3">
                       {song.title}
+                      {song.band && <span className="block text-sm font-bold mt-2">🎸 {song.band.name}</span>}
                       <span className="text-sm px-2 py-0.5 rounded bg-gold-500/10 text-black font-black bg-neo-yellow px-1 border border-gold-500/20 whitespace-nowrap">
                         {"⭐".repeat(song.difficulty)}
                       </span>

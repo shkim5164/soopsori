@@ -16,6 +16,7 @@ export async function GET(
           include: {
             song: {
               include: {
+                band: { select: { id: true, name: true } },
                 sessions: {
                   include: { user: { select: { id: true, name: true, image: true } } },
                 },

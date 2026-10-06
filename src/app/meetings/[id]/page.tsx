@@ -6,6 +6,7 @@ import Modal from "@/components/Modal";
 import CreateSongModal from "@/components/CreateSongModal";
 import { formatDateTime, getPositionLabel, getPositionBadgeClass, formatDateForInput } from "@/lib/constants";
 import Link from "next/link";
+import { groupSetlist } from "@/lib/setlist";
 
 interface Meeting {
   id: string;
@@ -20,6 +21,7 @@ interface Meeting {
       id: string;
       title: string;
       artist: string;
+      band: { id: string; name: string } | null;
       sessions: { id: string; position: string; status: string; user: { id: string; name: string; image: string } | null }[];
     };
     picker: { id: string; name: string; image: string; points: number };
@@ -30,6 +32,7 @@ interface Meeting {
 }
 
 interface Song {
+  band: { id: string; name: string } | null;
   id: string;
   title: string;
   artist: string;
@@ -347,7 +350,9 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
 
           {meeting.meetingSongs.length > 0 ? (
             <div className="space-y-3">
-              {meeting.meetingSongs.map((ms, i) => (
+              {groupSetlist(meeting.meetingSongs).map(group => <section key={group.id} className="space-y-3">
+                <h3 className="font-black border-b-2 border-black pb-2 pt-3">{group.name} ({group.songs.length}곡)</h3>
+                {group.songs.map((ms) => (
                 <div key={ms.id} className="p-4 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black hover:border-2 border-black transition-all">
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-lg font-bold text-gray-800 w-8 text-right">{ms.orderNum}.</span>
@@ -439,7 +444,8 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                     </div>
                   )}
                 </div>
-              ))}
+                ))}
+              </section>)}
             </div>
           ) : (
             <div className="text-center py-8">
@@ -605,6 +611,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                 >
                   <p className="text-sm font-medium text-black font-black">{song.title}</p>
                   <p className="text-xs text-gray-800 font-bold">{song.artist}</p>
+                  {song.band && <p className="text-xs font-bold">🎸 {song.band.name}</p>}
                   {isAlreadyAdded && <span className="text-xs text-gray-800">이미 추가됨</span>}
                 </button>
               );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import BandPicker from "@/components/BandPicker";
 import Modal from "@/components/Modal";
 import { POSITIONS, getPositionBadgeClass, getPositionEmoji, getPositionLabel } from "@/lib/constants";
 
@@ -12,6 +13,7 @@ interface CreateSongModalProps {
 
 export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSongModalProps) {
   const [newSong, setNewSong] = useState({
+    bandId: "",
     title: "",
     artist: "",
     youtubeUrl: "",
@@ -67,7 +69,7 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
       });
       if (res.ok) {
         const data = await res.json();
-        setNewSong({ title: "", artist: "", youtubeUrl: "", description: "", difficulty: 3, sessions: [] });
+        setNewSong({ bandId: "", title: "", artist: "", youtubeUrl: "", description: "", difficulty: 3, sessions: [] });
         onSuccess(data.id);
       } else {
         const err = await res.json();
@@ -165,7 +167,8 @@ export default function CreateSongModal({ isOpen, onClose, onSuccess }: CreateSo
           />
         </div>
 
-        <div>
+        <BandPicker value={newSong.bandId} onChange={bandId => setNewSong({ ...newSong, bandId })} />
+        <div hidden={!!newSong.bandId}>
           <label className="block text-sm font-medium text-black font-bold mb-2">
             필요한 세션
           </label>
