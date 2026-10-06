@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import Modal from "@/components/Modal";
+import useSWR from "swr";
 import CreateSongModal from "@/components/CreateSongModal";
 import { POSITIONS, getPositionLabel, getPositionBadgeClass, getYouTubeThumbnail } from "@/lib/constants";
 import Link from "next/link";
@@ -29,40 +29,51 @@ interface Song {
   likes: { userId: string }[] | false;
 }
 
+async function fetchList(url: string) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("목록을 불러오지 못했습니다");
+  return response.json();
+}
+
 export default function SongsPage() {
   const { data: session } = useSession();
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [bandFilter, setBandFilter] = useState("");
   const [sort, setSort] = useState<"latest" | "popular" | "comments">("latest");
   const [difficultyFilter, setDifficultyFilter] = useState<number | null>(null);
   const [positionFilter, setPositionFilter] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [allMembers, setAllMembers] = useState<{ id: string, name: string }[]>([]);
 
-  const fetchSongs = useCallback(async () => {
-    try {
-      const searchParam = search ? `search=${encodeURIComponent(search)}` : "";
-      const sortParam = `sort=${sort}`;
-      const diffParam = difficultyFilter ? `difficulty=${difficultyFilter}` : "";
-      const posParam = positionFilter ? `position=${positionFilter}` : "";
-      const params = [searchParam, sortParam, diffParam, posParam].filter(Boolean).join("&");
-      const res = await fetch(`/api/songs?${params}`);
-      const data = await res.json();
-      setSongs(data);
-    } catch (error) {
-      console.error("Failed to fetch songs:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [search, sort, difficultyFilter, positionFilter]);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search.trim()), 250);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const query = new URLSearchParams({ sort });
+  if (debouncedSearch) query.set("search", debouncedSearch);
+  if (difficultyFilter) query.set("difficulty", String(difficultyFilter));
+  if (positionFilter) query.set("position", positionFilter);
+  if (bandFilter) query.set("bandId", bandFilter);
+  // 검색 조건별 캐시를 사용하여 이전 요청의 늦은 응답이 현재 결과를 덮어쓰지 않게 합니다.
+  const { data: songs = [], error, isLoading: loading, mutate: mutateSongs } = useSWR<Song[]>([`/api/songs?${query}`, session?.user?.id ?? null], ([url]: [string, string | null]) => fetchList(url));
+  const { data: bands = [], error: bandsError, isLoading: bandsLoading, mutate: reloadBands } = useSWR<{ id: string; name: string }[]>("/api/bands", fetchList);
+  const fetchSongs = () => mutateSongs();
+  const hasFilters = !!(search.trim() || bandFilter || positionFilter || difficultyFilter);
+  const resetFilters = () => {
+    setSearch("");
+    setDebouncedSearch("");
+    setBandFilter("");
+    setPositionFilter("");
+    setDifficultyFilter(null);
+  };
 
   useEffect(() => {
-    fetchSongs();
     if (session?.user?.role === "ADMIN") {
-      fetch("/api/members").then(res => res.ok && res.json()).then(data => setAllMembers(data || []));
+      fetch("/api/members").then(res => res.ok && res.json()).then(data => setAllMembers(data || [])).catch(() => setAllMembers([]));
     }
-  }, [fetchSongs, session?.user?.role]);
+  }, [session?.user?.role]);
 
   const handleJoinSession = async (songId: string, sessionId: string, targetUserId?: string) => {
     try {
@@ -94,7 +105,7 @@ export default function SongsPage() {
       return;
     }
     // 낙관적 업데이트
-    setSongs(prevSongs => prevSongs.map(song => {
+    mutateSongs(prevSongs => (prevSongs || []).map(song => {
       if (song.id === songId) {
         return {
           ...song,
@@ -106,7 +117,7 @@ export default function SongsPage() {
         };
       }
       return song;
-    }));
+    }), { revalidate: false });
 
     try {
       const res = await fetch(`/api/songs/${songId}/like`, { method: "POST" });
@@ -139,11 +150,12 @@ export default function SongsPage() {
       </div>
 
       {/* Search and Sort */}
-      <div className="mb-6 animate-fade-in-up flex flex-col sm:flex-row gap-3" style={{ animationDelay: "0.1s" }}>
-        <div className="relative flex-1 max-w-md">
+      <div className="mb-6 animate-fade-in-up flex flex-wrap gap-3" style={{ animationDelay: "0.1s" }}>
+        <div className="relative w-full sm:min-w-72 sm:flex-1">
           <input
             type="text"
-            placeholder="곡 제목 또는 아티스트 검색..."
+            aria-label="곡 제목, 아티스트, 밴드 이름 검색"
+            placeholder="곡 제목 · 아티스트 · 밴드 검색"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-3 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-black font-black placeholder-neutral-600 focus:outline-none focus:border-3 border-black focus:ring-1 focus:bg-neo-yellow focus:ring-0 transition-all"
@@ -152,8 +164,22 @@ export default function SongsPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 self-start">
+        <div className="flex flex-wrap gap-3">
           <select
+            aria-label="밴드 필터"
+            value={bandFilter}
+            onChange={(e) => setBandFilter(e.target.value)}
+            className="max-w-full px-4 py-2 bg-white border-3 border-black neo-shadow text-sm text-black font-black"
+          >
+            <option value="">모든 곡</option>
+            <option value="none">일반 합주곡</option>
+            <option value="any">밴드곡 전체</option>
+            <optgroup label="밴드별">
+              {bands.map(band => <option key={band.id} value={band.id}>{band.name}</option>)}
+            </optgroup>
+          </select>
+          <select
+            aria-label="포지션 필터"
             value={positionFilter}
             onChange={(e) => setPositionFilter(e.target.value)}
             className="px-4 py-2 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-sm text-black font-black focus:outline-none focus:border-3 border-black"
@@ -167,6 +193,7 @@ export default function SongsPage() {
           </select>
 
           <select
+            aria-label="난이도 필터"
             value={difficultyFilter || ""}
             onChange={(e) => setDifficultyFilter(e.target.value ? Number(e.target.value) : null)}
             className="px-4 py-2 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black text-sm text-black font-black focus:outline-none focus:border-3 border-black"
@@ -208,8 +235,20 @@ export default function SongsPage() {
         </div>
       </div>
 
+      {bandsLoading && <p className="text-sm mb-4">밴드 목록을 불러오는 중…</p>}
+      {bandsError && <p role="alert" className="text-sm mb-4">밴드 목록을 불러오지 못했습니다. <button className="underline" onClick={() => reloadBands()}>다시 시도</button></p>}
+      <div className="flex items-center gap-4 mb-4 text-sm font-bold" aria-live="polite">
+        {!loading && !error && <span>{songs.length}곡</span>}
+        {hasFilters && <button onClick={resetFilters} className="underline">검색·필터 초기화</button>}
+      </div>
+
       {/* Songs Grid */}
-      {loading ? (
+      {error ? (
+        <div className="neo-card p-8 text-center" role="alert">
+          <p className="font-bold">곡 목록을 불러오지 못했습니다.</p>
+          <button className="neo-btn mt-4" onClick={() => fetchSongs()}>다시 시도</button>
+        </div>
+      ) : loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="neo-card p-4">
@@ -371,9 +410,9 @@ export default function SongsPage() {
       ) : (
         <div className="text-center py-16 neo-card">
           <span className="text-5xl mb-4 block">🎸</span>
-          <p className="text-black font-bold text-lg">등록된 곡이 없습니다</p>
+          <p className="text-black font-bold text-lg">{hasFilters ? "검색 조건에 맞는 곡이 없습니다" : "등록된 곡이 없습니다"}</p>
           <p className="text-gray-800 text-sm mt-1">
-            첫 번째 곡을 등록해보세요!
+            {hasFilters ? "검색어나 필터를 바꿔보세요." : "첫 번째 곡을 등록해보세요!"}
           </p>
         </div>
       )}

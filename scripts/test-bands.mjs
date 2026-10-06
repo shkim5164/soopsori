@@ -8,6 +8,7 @@ import * as nextServer from 'next/server.js';
 import { Prisma } from '@prisma/client';
 let session = { user: { id: 'owner', role: 'MEMBER' } };
 let saved;
+let songQuery;
 const members = [{ userId: 'm1', position: 'vocal' }, { userId: 'm1', position: 'keyboard' }, { userId: 'm2', position: 'drum' }];
 const band = { id: 'band', creatorId: 'owner', members };
 let song = { id: 'song', userId: 'owner', bandId: null, sessions: [{ id: 'old', position: 'vocal' }] };
@@ -19,6 +20,7 @@ const prisma = {
     update: async ({ data }) => (saved = data),
   },
   song: {
+    findMany: async query => { songQuery = query; return []; },
     findUnique: async () => song,
     create: async ({ data }) => (saved = data),
     update: async ({ data }) => (saved = data),
@@ -50,6 +52,27 @@ async function run() {
   const bandEdit = load('src/app/api/bands/[id]/route.ts');
   const songs = load('src/app/api/songs/route.ts');
   const songEdit = load('src/app/api/songs/[id]/route.ts');
+  // 검색과 밴드·포지션·난이도 필터가 하나의 조회에 함께 적용되는지 확인합니다.
+  session = null;
+  const response = await songs.GET({ url: 'http://localhost/api/songs?search=%20oAsIs%20&bandId=band&position=vocal&difficulty=3&sort=popular' });
+  assert.equal(response.status, 200);
+  assert.deepEqual(json(songQuery.where), {
+    OR: [
+      { title: { contains: 'oAsIs', mode: 'insensitive' } },
+      { artist: { contains: 'oAsIs', mode: 'insensitive' } },
+      { band: { is: { name: { contains: 'oAsIs', mode: 'insensitive' } } } },
+    ],
+    bandId: 'band', difficulty: 3, sessions: { some: { position: 'vocal' } },
+  });
+  assert.deepEqual(json(songQuery.orderBy), { likes: { _count: 'desc' } });
+  assert.equal(songQuery.include.likes, false);
+  for (const [filter, expected] of [['none', null], ['any', { not: null }], ['band', 'band']]) {
+    assert.equal((await songs.GET({ url: `http://localhost/api/songs?bandId=${filter}` })).status, 200);
+    assert.deepEqual(json(songQuery.where.bandId), expected);
+  }
+  await songs.GET({ url: 'http://localhost/api/songs?search=%20%20' });
+  assert.equal(songQuery.where, undefined);
+  assert.deepEqual(json(songQuery.orderBy), { createdAt: 'desc' });
   session = null;
   assert.equal((await bands.POST(request({}))).status, 401);
   assert.equal((await bandEdit.PATCH(request({}), params('band'))).status, 401);
@@ -96,6 +119,6 @@ async function run() {
   assert.deepEqual(json(groupSetlist(entries).map(g => g.songs.map(s => s.id))), [['g1'], ['a1', 'a2'], ['b1']]);
   assert.equal(groupSetlist([]).length, 0);
   assert.equal(groupSetlist([entries[0]]).length, 1);
-  console.log('밴드 API 회귀 검증 통과: 인증, 권한, 입력 오류, 다중 포지션, 서버 세션 배정, 변경·유지·해제, 일반곡');
+  console.log('밴드 API 회귀 검증 통과: 인증, 권한, 입력 오류, 다중 포지션, 서버 세션 배정, 변경·유지·해제, 일반곡, 검색·밴드 복합 필터');
 }
 run().catch(error => { console.error(error); process.exitCode = 1; });

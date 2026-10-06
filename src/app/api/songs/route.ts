@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getBandSessions } from "@/lib/bands";
 import { auth } from "@/auth";
@@ -7,11 +8,12 @@ import { prisma } from "@/lib/prisma";
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const search = searchParams.get("search") || "";
+    const search = (searchParams.get("search") || "").trim();
     const sort = searchParams.get("sort") || "latest"; // "latest" | "popular"
     const difficultyParam = searchParams.get("difficulty");
     const difficulty = difficultyParam ? parseInt(difficultyParam) : undefined;
     const position = searchParams.get("position");
+    const bandId = searchParams.get("bandId");
 
     const session = await auth();
     const currentUserId = session?.user?.id;
@@ -23,12 +25,16 @@ export async function GET(request: NextRequest) {
         ? { comments: { _count: "desc" as const } }
         : { createdAt: "desc" as const };
 
-    const whereClause: any = {};
+    const whereClause: Prisma.SongWhereInput = {};
     if (search) {
       whereClause.OR = [
-        { title: { contains: search } },
-        { artist: { contains: search } },
+        { title: { contains: search, mode: "insensitive" } },
+        { artist: { contains: search, mode: "insensitive" } },
+        { band: { is: { name: { contains: search, mode: "insensitive" } } } },
       ];
+    }
+    if (bandId) {
+      whereClause.bandId = bandId === "none" ? null : bandId === "any" ? { not: null } : bandId;
     }
     if (difficulty !== undefined && !isNaN(difficulty)) {
       whereClause.difficulty = difficulty;
