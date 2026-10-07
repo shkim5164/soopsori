@@ -68,7 +68,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-white neo-divider">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between gap-3 lg:gap-4 h-20">
           {/* Logo */}
           <Link
             href="/"
@@ -81,7 +81,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-2 xl:gap-3">
+          <div className="hidden min-[1120px]:flex flex-1 justify-evenly items-center gap-2 xl:gap-3">
             {navLinks.map((link) => {
               const isActive = pathname.startsWith(link.href);
               return (
@@ -90,12 +90,12 @@ export default function Navbar() {
                   href={link.href}
                   target={link.external ? "_blank" : undefined}
                   rel={link.external ? "noopener noreferrer" : undefined}
-                  className={`px-2 xl:px-4 py-1.5 xl:py-2 font-bold text-xs xl:text-sm whitespace-nowrap lowercase border-2 border-black rounded-full transition-all ${isActive
+                  className={`px-2 xl:px-3 py-1.5 xl:py-2 font-bold text-xs xl:text-sm whitespace-nowrap lowercase border-2 border-black rounded-full transition-all ${isActive
                       ? "bg-neo-pink text-white neo-shadow-sm translate-x-[2px] translate-y-[2px]"
                       : "bg-white text-black neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm hover:bg-neo-yellow hover:text-black"
                     }`}
                 >
-                  <span className="mr-1 xl:mr-1.5">{link.icon}</span>
+                  <span className="mr-1">{link.icon}</span>
                   {link.label}
                 </Link>
               );
@@ -278,7 +278,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className={getButtonClasses({ variant: "secondary", size: "icon", className: "lg:hidden rounded-none" })}
+              className={getButtonClasses({ variant: "secondary", size: "icon", className: "min-[1120px]:hidden rounded-none" })}
             >
               <svg className="w-6 h-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {mobileOpen ? (
@@ -294,7 +294,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="lg:hidden border-t-4 border-black bg-white animate-fade-in-up max-h-[calc(100vh-5rem)] overflow-y-auto">
+        <div className="min-[1120px]:hidden border-t-4 border-black bg-white animate-fade-in-up max-h-[calc(100vh-5rem)] overflow-y-auto">
           <div className="px-4 py-4 flex flex-col gap-2">
             {navLinks.map((link) => {
               const isActive = pathname.startsWith(link.href);
