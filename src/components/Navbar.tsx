@@ -9,7 +9,6 @@ import { useTheme } from "next-themes";
 import { getButtonClasses } from "@/components/ui/Button";
 
 const navLinks = [
-  { href: "/", label: "홈", icon: "🏠" },
   { href: "/songs", label: "곡 목록", icon: "🎵" },
   { href: "/meetings", label: "모임", icon: "📅" },
   { href: "/bands", label: "밴드", icon: "🎸" },
@@ -71,7 +70,11 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group shrink-0">
+          <Link
+            href="/"
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center gap-2 group shrink-0"
+          >
             <div className="font-black text-2xl sm:text-3xl tracking-tighter lowercase px-2 sm:px-3 py-1 bg-neo-yellow border-2 border-black neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:neo-shadow-sm transition-all text-black">
               soopsori
             </div>
@@ -80,8 +83,7 @@ export default function Navbar() {
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-2 xl:gap-3">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href ||
-                (link.href !== "/" && pathname.startsWith(link.href));
+              const isActive = pathname.startsWith(link.href);
               return (
                 <Link
                   key={link.href}
@@ -295,8 +297,7 @@ export default function Navbar() {
         <div className="lg:hidden border-t-4 border-black bg-white animate-fade-in-up max-h-[calc(100vh-5rem)] overflow-y-auto">
           <div className="px-4 py-4 flex flex-col gap-2">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href ||
-                (link.href !== "/" && pathname.startsWith(link.href));
+              const isActive = pathname.startsWith(link.href);
               return (
                 <Link
                   key={link.href}
