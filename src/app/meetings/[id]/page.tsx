@@ -354,18 +354,6 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
             )}
           </div>
           <p role="status" className="text-sm font-bold mb-2">{orderNotice}</p>
-          {isOrderOpen && isUpcoming && session?.user?.role === "ADMIN" && <SetlistOrderEditor
-            meetingId={id} songs={meeting.meetingSongs}
-            onClose={() => { setIsOrderOpen(false); fetchMeeting(); }}
-            onSaved={ids => {
-              setMeeting(current => current ? { ...current, meetingSongs: ids.flatMap((songId, index) => {
-                const song = current.meetingSongs.find(entry => entry.id === songId);
-                return song ? [{ ...song, orderNum: index + 1 }] : [];
-              }) } : current);
-              setIsOrderOpen(false);
-              setOrderNotice("세트리스트 순서를 저장했습니다.");
-              fetchMeeting();
-            }} />}
 
           {meeting.meetingSongs.length > 0 ? (
             <div className="space-y-3">
@@ -582,6 +570,20 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
           )}
         </div>
       </div>
+
+      {/* Keep the fixed modal outside the transformed setlist card. */}
+      {isOrderOpen && isUpcoming && session?.user?.role === "ADMIN" && <SetlistOrderEditor
+        meetingId={id} songs={meeting.meetingSongs}
+        onClose={() => { setIsOrderOpen(false); fetchMeeting(); }}
+        onSaved={ids => {
+          setMeeting(current => current ? { ...current, meetingSongs: ids.flatMap((songId, index) => {
+            const song = current.meetingSongs.find(entry => entry.id === songId);
+            return song ? [{ ...song, orderNum: index + 1 }] : [];
+          }) } : current);
+          setIsOrderOpen(false);
+          setOrderNotice("세트리스트 순서를 저장했습니다.");
+          fetchMeeting();
+        }} />}
 
       {/* Add Song Modal */}
       <Modal isOpen={isAddSongOpen} onClose={() => {
