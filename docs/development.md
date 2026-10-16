@@ -41,6 +41,7 @@ npx prisma generate
 
 ```sh
 npm run typecheck
+node scripts/test-setlist-order.mjs # 세트리스트 순서 변경 권한·입력·충돌 회귀 검증
 node scripts/test-bands.mjs # DB 없이 밴드 API와 세트리스트 그룹 회귀 검증
 npm run check
 ```

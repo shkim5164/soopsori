@@ -17,7 +17,7 @@ export async function GET() {
               },
             },
           },
-          orderBy: { orderNum: "asc" },
+          orderBy: [{ orderNum: "asc" }, { id: "asc" }],
         },
         attendances: {
           include: {

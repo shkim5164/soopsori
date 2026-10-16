@@ -6,7 +6,8 @@ import Modal from "@/components/Modal";
 import CreateSongModal from "@/components/CreateSongModal";
 import { formatDateTime, getPositionLabel, getPositionBadgeClass, formatDateForInput } from "@/lib/constants";
 import Link from "next/link";
-import { groupSetlist } from "@/lib/setlist";
+import { groupSetlistInOrder } from "@/lib/setlist";
+import SetlistOrderEditor from "@/components/SetlistOrderEditor";
 
 interface Meeting {
   id: string;
@@ -44,6 +45,8 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
   const [meeting, setMeeting] = useState<Meeting | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAddSongOpen, setIsAddSongOpen] = useState(false);
+  const [isOrderOpen, setIsOrderOpen] = useState(false);
+  const [orderNotice, setOrderNotice] = useState("");
   const [isCreateSongOpen, setIsCreateSongOpen] = useState(false);
   const [availableSongs, setAvailableSongs] = useState<Song[]>([]);
   const [selectedSongId, setSelectedSongId] = useState("");
@@ -333,8 +336,11 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Setlist */}
         <div className="lg:col-span-2 neo-card p-6 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <h2 className="text-lg font-bold text-black font-black">🎵 세트리스트</h2>
+            {isUpcoming && session?.user?.role === "ADMIN" && meeting.meetingSongs.length > 1 && (
+              <button onClick={() => { setOrderNotice(""); setIsOrderOpen(true); }} className="neo-btn text-sm">순서 변경</button>
+            )}
             {isUpcoming && session?.user && (
               <button
                 onClick={() => {
@@ -347,10 +353,23 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
               </button>
             )}
           </div>
+          <p role="status" className="text-sm font-bold mb-2">{orderNotice}</p>
+          {isOrderOpen && isUpcoming && session?.user?.role === "ADMIN" && <SetlistOrderEditor
+            meetingId={id} songs={meeting.meetingSongs}
+            onClose={() => { setIsOrderOpen(false); fetchMeeting(); }}
+            onSaved={ids => {
+              setMeeting(current => current ? { ...current, meetingSongs: ids.flatMap((songId, index) => {
+                const song = current.meetingSongs.find(entry => entry.id === songId);
+                return song ? [{ ...song, orderNum: index + 1 }] : [];
+              }) } : current);
+              setIsOrderOpen(false);
+              setOrderNotice("세트리스트 순서를 저장했습니다.");
+              fetchMeeting();
+            }} />}
 
           {meeting.meetingSongs.length > 0 ? (
             <div className="space-y-3">
-              {groupSetlist(meeting.meetingSongs).map(group => <section key={group.id} className="space-y-3">
+              {groupSetlistInOrder(meeting.meetingSongs).map(group => <section key={group.id} className="space-y-3">
                 <h3 className="font-black border-b-2 border-black pb-2 pt-3">{group.name} ({group.songs.length}곡)</h3>
                 {group.songs.map((ms) => (
                 <div key={ms.id} className="p-4 rounded-none bg-white border-3 border-black neo-shadow border border-2 border-black hover:border-2 border-black transition-all">

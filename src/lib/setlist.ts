@@ -10,3 +10,15 @@ export function groupSetlist<T extends { song: { band: { id: string; name: strin
   }
   return [...groups.values()].filter(group => group.songs.length > 0);
 }
+
+/** 공연 순서를 유지하면서 연속된 같은 밴드 곡만 묶습니다. */
+export function groupSetlistInOrder<T extends { id: string; song: { band: { id: string; name: string } | null } }>(songs: T[]) {
+  const groups: { id: string; bandId: string | null; name: string; songs: T[] }[] = [];
+  for (const song of songs) {
+    const band = song.song.band;
+    const last = groups[groups.length - 1];
+    if (last && last.bandId === (band?.id ?? null)) last.songs.push(song);
+    else groups.push({ id: song.id, bandId: band?.id ?? null, name: band ? `밴드곡 · ${band.name}` : "일반 합주곡", songs: [song] });
+  }
+  return groups;
+}
